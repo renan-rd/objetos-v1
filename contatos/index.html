@@ -3409,6 +3409,7 @@
       font-family: 'DM Sans', sans-serif;
     }
     .login-overlay.hidden { display: none; }
+    body:not(.is-authenticated) .navbar { display: none !important; }
     .login-card {
       background: #fff;
       border-radius: 20px;
@@ -5139,8 +5140,17 @@
     }
 
     function renderPagination() {
-      const totalPages = Math.ceil(totalCount / pageSize);
-      if (totalPages <= 1) { paginationNav.innerHTML = ''; return; }
+      const nav = document.getElementById('pagination-nav') || paginationNav;
+      if (!nav) return;
+
+      const size = Math.max(1, parseInt(pageSizeSelect?.value, 10) || pageSize || 10);
+      pageSize = size;
+      const totalPages = Math.ceil((Number(totalCount) || 0) / size);
+
+      if (totalPages <= 1) {
+        nav.innerHTML = '';
+        return;
+      }
 
       const pages = [];
       pages.push(`<button class="page-btn${currentPage === 1 ? ' disabled' : ''}" data-page="${currentPage - 1}">Anterior</button>`);
@@ -5154,11 +5164,11 @@
       if (end < totalPages) { if (end < totalPages - 1) pages.push(`<button class="page-btn disabled">...</button>`); pages.push(`<button class="page-btn" data-page="${totalPages}">${totalPages}</button>`); }
       pages.push(`<button class="page-btn${currentPage === totalPages ? ' disabled' : ''}" data-page="${currentPage + 1}">Próxima</button>`);
 
-      paginationNav.innerHTML = pages.join('');
-      paginationNav.querySelectorAll('.page-btn[data-page]').forEach(btn => {
+      nav.innerHTML = pages.join('');
+      nav.querySelectorAll('.page-btn[data-page]').forEach(btn => {
         if (btn.classList.contains('disabled') || btn.classList.contains('active')) return;
         btn.addEventListener('click', () => {
-          currentPage = parseInt(btn.dataset.page);
+          currentPage = parseInt(btn.dataset.page, 10);
           loadPage();
         });
       });
@@ -5201,83 +5211,102 @@
     }
 
     async function loadPage() {
-      const colSpan = window.__tableColumns.filter(c => c.visible).length + 2;
-      tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center;padding:32px;color:var(--color-text-low)">Carregando...</td></tr>`;
-      renderThead();
-      const from = (currentPage - 1) * pageSize;
-      const to = from + pageSize - 1;
-
-      let query = db
-        .from('claude_contatos')
-        .select('id,nome,email,emails,telefone,telefones,carteira,cargo,origem,chip,empresa_nome,empresa_cnpj,foto_perfil,status,cpf,rg,data_nascimento,cep,rua,complemento,bairro,cidade,estado,pais,rede_social,rede_social_usuario,redes_sociais,created_at,claude_contato_tags(claude_tags(id,label,color))', { count: 'exact' });
-
-      // Apply active filters (read directly from per-tab store, works before filter IIFE runs)
-      const _activeTabEl = document.querySelector('.tab[draggable="true"].active');
-      const _activeTabId = _activeTabEl ? _activeTabEl.dataset.tabId : '1';
-      const f = (window.__tabFilters && window.__tabFilters[_activeTabId]) || {};
-      if (f.quickFilter) {
-        const now = new Date();
-        if (f.quickFilter === 'today') {
-          query = query.gte('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString());
-        } else if (f.quickFilter === 'week') {
-          const d = new Date(now); d.setDate(now.getDate() - ((now.getDay() + 6) % 7)); d.setHours(0,0,0,0);
-          query = query.gte('created_at', d.toISOString());
-        } else if (f.quickFilter === 'month') {
-          query = query.gte('created_at', new Date(now.getFullYear(), now.getMonth(), 1).toISOString());
-        } else if (f.quickFilter === 'inactive30') {
-          query = query.lt('created_at', new Date(now - 30*24*60*60*1000).toISOString());
-        }
-      }
-      if (f.search) {
-        const s = f.search;
-        query = query.or([
-          'nome','email','telefone','carteira','origem','chip','empresa_nome','empresa_cnpj',
-          'cidade','estado','pais','cpf','rg','bairro','rua','complemento','rede_social_usuario'
-        ].map(col => `${col}.ilike.%${s}%`).join(','));
-      }
-      if (f.nome)        query = query.ilike('nome', `%${f.nome}%`);
-      if (f.email)       query = query.ilike('email', `%${f.email}%`);
-      if (f.status)      query = query.eq('status', f.status);
-      if (f.telefone)    query = query.ilike('telefone', `%${f.telefone}%`);
-      if (f.rede_social) query = query.eq('rede_social', f.rede_social);
-      if (f.username)    query = query.ilike('rede_social_usuario', `%${f.username}%`);
-      if (f.empresa)     query = query.ilike('empresa_nome', `%${f.empresa}%`);
-      if (f.cidade)      query = query.ilike('cidade', `%${f.cidade}%`);
-      if (f.estado)      query = query.ilike('estado', `%${f.estado}%`);
-
-      const { data, error, count } = await query
-        .order('nome', { ascending: true })
-        .range(from, to);
-
-      if (error) {
-        tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center;padding:32px;color:var(--color-danger)">Erro ao carregar: ${error.message}</td></tr>`;
+      if (window.__contactsLoading) {
+        window.__contactsReloadQueued = true;
         return;
       }
+      window.__contactsLoading = true;
 
-      if (totalCount === 0 && count !== null) {
-        totalCount = count;
-        totalEl.textContent = count;
-      }
+      try {
+        const colSpan = window.__tableColumns.filter(c => c.visible).length + 2;
+        tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center;padding:32px;color:var(--color-text-low)">Carregando...</td></tr>`;
+        renderThead();
+        pageSize = Math.max(1, parseInt(pageSizeSelect?.value, 10) || pageSize || 10);
+        const from = (currentPage - 1) * pageSize;
+        const to = from + pageSize - 1;
 
-      if (data.length) {
-        tbody.innerHTML = data.map(renderRow).join('');
-      } else {
-        const hasFilters = !!(f.search || f.quickFilter || f.nome || f.email || f.status || f.telefone || f.rede_social || f.username || f.empresa || f.cidade || f.estado);
-        tbody.innerHTML = renderEmptyState(colSpan, hasFilters);
-        bindEmptyStateActions();
+        const DATA_SELECT = 'id,nome,email,emails,telefone,telefones,carteira,cargo,origem,chip,empresa_nome,empresa_cnpj,foto_perfil,status,cpf,rg,data_nascimento,cep,rua,complemento,bairro,cidade,estado,pais,rede_social,rede_social_usuario,redes_sociais,created_at,claude_contato_tags(claude_tags(id,label,color))';
+
+        const _activeTabEl = document.querySelector('.tab[draggable="true"].active');
+        const _activeTabId = _activeTabEl ? _activeTabEl.dataset.tabId : '1';
+        const f = (window.__tabFilters && window.__tabFilters[_activeTabId]) || {};
+
+        function applyFilters(q) {
+          if (f.quickFilter) {
+            const now = new Date();
+            if (f.quickFilter === 'today') {
+              q = q.gte('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString());
+            } else if (f.quickFilter === 'week') {
+              const d = new Date(now); d.setDate(now.getDate() - ((now.getDay() + 6) % 7)); d.setHours(0,0,0,0);
+              q = q.gte('created_at', d.toISOString());
+            } else if (f.quickFilter === 'month') {
+              q = q.gte('created_at', new Date(now.getFullYear(), now.getMonth(), 1).toISOString());
+            } else if (f.quickFilter === 'inactive30') {
+              q = q.lt('created_at', new Date(now - 30*24*60*60*1000).toISOString());
+            }
+          }
+          if (f.search) {
+            const s = f.search;
+            q = q.or([
+              'nome','email','telefone','carteira','origem','chip','empresa_nome','empresa_cnpj',
+              'cidade','estado','pais','cpf','rg','bairro','rua','complemento','rede_social_usuario'
+            ].map(col => `${col}.ilike.%${s}%`).join(','));
+          }
+          if (f.nome)        q = q.ilike('nome', `%${f.nome}%`);
+          if (f.email)       q = q.ilike('email', `%${f.email}%`);
+          if (f.status)      q = q.eq('status', f.status);
+          if (f.telefone)    q = q.ilike('telefone', `%${f.telefone}%`);
+          if (f.rede_social) q = q.eq('rede_social', f.rede_social);
+          if (f.username)    q = q.ilike('rede_social_usuario', `%${f.username}%`);
+          if (f.empresa)     q = q.ilike('empresa_nome', `%${f.empresa}%`);
+          if (f.cidade)      q = q.ilike('cidade', `%${f.cidade}%`);
+          if (f.estado)      q = q.ilike('estado', `%${f.estado}%`);
+          return q;
+        }
+
+        let listQuery = applyFilters(db.from('claude_contatos').select(DATA_SELECT));
+        let countQuery = applyFilters(db.from('claude_contatos').select('id', { count: 'exact', head: true }));
+
+        const [listRes, countRes] = await Promise.all([
+          listQuery.order('nome', { ascending: true }).range(from, to),
+          countQuery,
+        ]);
+
+        const { data, error } = listRes;
+        const rawCount = countRes?.count;
+        const resolvedCount = rawCount == null ? null : Number(rawCount);
+
+        // Atualiza total + paginação ANTES de montar as linhas (evita nav vazio se renderRow falhar)
+        totalCount = Number.isFinite(resolvedCount) ? resolvedCount : (Array.isArray(data) ? data.length : 0);
+        if (totalEl) totalEl.textContent = totalCount;
+        renderPagination();
+
+        if (error) {
+          tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center;padding:32px;color:var(--color-danger)">Erro ao carregar: ${error.message}</td></tr>`;
+          return;
+        }
+
+        if (data && data.length) {
+          tbody.innerHTML = data.map(renderRow).join('');
+        } else {
+          const hasFilters = !!(f.search || f.quickFilter || f.nome || f.email || f.status || f.telefone || f.rede_social || f.username || f.empresa || f.cidade || f.estado);
+          tbody.innerHTML = renderEmptyState(colSpan, hasFilters);
+          bindEmptyStateActions();
+        }
+        syncHeaderCheckbox();
+        updateBulkBar();
+        renderPagination();
+      } finally {
+        window.__contactsLoading = false;
+        if (window.__contactsReloadQueued) {
+          window.__contactsReloadQueued = false;
+          loadPage();
+        }
       }
-      syncHeaderCheckbox();
-      updateBulkBar();
-      renderPagination();
     }
 
-    // Count once on init
-    db.from('claude_contatos').select('*', { count: 'exact', head: true }).then(({ count }) => {
-      if (count !== null) { totalCount = count; totalEl.textContent = count; renderPagination(); }
-    });
-
     pageSizeSelect.addEventListener('change', () => {
-      pageSize = parseInt(pageSizeSelect.value);
+      pageSize = parseInt(pageSizeSelect.value, 10) || 10;
       currentPage = 1;
       loadPage();
     });
@@ -5286,6 +5315,8 @@
     try { window.__tabFilters = JSON.parse(localStorage.getItem('contacts_tab_filters') || '{}'); } catch(e) { window.__tabFilters = {}; }
     window.__tabFilters['1'] = window.__tabFilters['1'] || {};
 
+    window.__contactsLoading = false;
+    window.__contactsReloadQueued = false;
     window.__contactsReload = () => { currentPage = 1; loadPage(); };
     window.addEventListener('resize', adjustTableWidth);
 
@@ -7189,12 +7220,13 @@
       : '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
   });
 
-  // Show/hide overlay
   function showApp() {
+    document.body.classList.add('is-authenticated');
     overlay.classList.add('hidden');
     if (window.__contactsReload) window.__contactsReload();
   }
   function showLogin() {
+    document.body.classList.remove('is-authenticated');
     overlay.classList.remove('hidden');
     if (window.__syncFlipHeight) requestAnimationFrame(window.__syncFlipHeight);
     emailEl.focus();
@@ -7241,7 +7273,9 @@
       errorEl.style.display = 'block';
       pwEl.value = '';
       pwEl.focus();
+      return;
     }
+    showApp();
   }
 
   loginBtn.addEventListener('click', doLogin);

@@ -516,11 +516,7 @@
       }
       if (field === 'empresa' && window.__renderProfileCompanies) {
         const data = window.__profileFieldRaw || {};
-        window.__renderProfileCompanies({
-          empresa_nome: newRaw,
-          empresa_cnpj: data.empresa_cnpj,
-          cargo: data.cargo || '',
-        });
+        window.__renderProfileCompanies({ ...data, empresa_nome: newRaw });
       }
       if (field === 'rede_social_usuario' && window.__refreshProfileSocials) {
         window.__refreshProfileSocials();
@@ -683,7 +679,9 @@
       if (!item || item.dataset.bound === '1') return;
       item.dataset.bound = '1';
       const nameEl = item.querySelector('.profile-company-name');
-      const open = () => openSlot(item, nameEl, 'empresa');
+      // Ancora o slot na linha do nome, não no bloco inteiro (que inclui campos abaixo)
+      const anchor = item.querySelector('.profile-company-head') || item;
+      const open = () => openSlot(anchor, nameEl, 'empresa');
       nameEl?.addEventListener('click', open);
       item.querySelector('.profile-ident-edit')?.addEventListener('click', e => {
         e.stopPropagation();
@@ -762,7 +760,8 @@
     function bindSocialItem(item) {
       if (!item || item.dataset.socialBound === '1') return;
       item.dataset.socialBound = '1';
-      bindField(item, item.querySelector('span'), 'rede_social_usuario');
+      const valueEl = item.querySelector('.profile-detail-value') || item.querySelector('span:not(.profile-detail-label)');
+      bindField(item, valueEl, 'rede_social_usuario');
     }
 
     function bindPrivacyItem(item) {
@@ -776,19 +775,23 @@
     window.__bindProfileSocialItem = bindSocialItem;
 
     document.querySelectorAll('.profile-ident-item[data-field]').forEach(item => {
+      if (item.closest('#profile-contact-card')) return;
       bindField(item, item.querySelector('span'), item.dataset.field);
     });
 
     document.querySelectorAll('.profile-name-field[data-field]').forEach(item => {
+      if (item.closest('#profile-contact-card')) return;
       bindField(item, item.querySelector('.profile-name, .profile-role'), item.dataset.field);
     });
 
     document.querySelectorAll('.profile-detail-item[data-field]').forEach(item => {
+      if (item.closest('#profile-more-info-card')) return;
       bindField(item, item.querySelector('.profile-detail-value'), item.dataset.field);
     });
   }
 
   window.__socialNetworks = SOCIAL_NETWORKS;
+  window.__countries = window.__countries || COUNTRIES;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

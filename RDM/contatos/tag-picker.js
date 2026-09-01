@@ -1,12 +1,30 @@
 (function() {
   const TAG_COLORS = ['#E60F57','#0077B2','#FF9800','#6C63FF','#00897B','#9C27B0','#D32F2F','#43A047','#00ACC1','#FFB300','#795548','#3F51B5','#607D8B'];
+  const PRODUCTS = ['RD Marketing', 'RD Atendimento', 'RD Vendas'];
+  const PRODUCT_LABELS = { vendas: 'RD Vendas', marketing: 'RD Marketing', conversas: 'RD Atendimento' };
 
   function escHtml(s) {
     return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
   function normalizeLabel(label) {
-    return String(label || '').trim().toLowerCase();
+    return String(label || '').trim().toLocaleLowerCase('pt-BR');
+  }
+
+  function inferProduct(label) {
+    const normalized = normalizeLabel(label);
+    if (['campeão', 'evento', 'nutrição', 'reativação', 'trial'].includes(normalized)) return 'RD Marketing';
+    if (['churn', 'detrator'].includes(normalized)) return 'RD Atendimento';
+    return 'RD Vendas';
+  }
+
+  function withProduct(tag) {
+    return tag ? { ...tag, produto: tag.produto || inferProduct(tag.label) } : tag;
+  }
+
+  function getCurrentProduct() {
+    const productId = document.getElementById('products-menu')?.dataset.currentProduct || 'vendas';
+    return PRODUCT_LABELS[productId] || 'RD Vendas';
   }
 
   window.__tagPicker = {
@@ -22,9 +40,18 @@
 
     async ensureTagsLoaded() {
       if (this._loaded || !this._db) return;
-      const { data, error } = await this._db.from('claude_tags').select('id,label,color').order('label');
+      let { data, error } = await this._db
+        .from('claude_tags')
+        .select('id,label,color,produto')
+        .order('produto')
+        .order('label');
+      if (error?.code === '42703') {
+        const fallback = await this._db.from('claude_tags').select('id,label,color').order('label');
+        data = fallback.data;
+        error = fallback.error;
+      }
       if (!error && data) {
-        this._allTags = data;
+        this._allTags = data.map(withProduct);
         this._loaded = true;
       }
     },
@@ -42,7 +69,7 @@
       (tags || []).forEach(tag => {
         if (tag && tag.id) {
           const id = String(tag.id);
-          this._selected.set(id, { id, label: tag.label, color: tag.color });
+          this._selected.set(id, { id, label: tag.label, color: tag.color, produto: tag.produto });
         }
       });
       this._renderChips();
@@ -62,15 +89,23 @@
         this.reset();
         return;
       }
-      const { data, error } = await this._db
+      let { data, error } = await this._db
         .from('claude_contato_tags')
-        .select('tag_id, claude_tags(id, label, color)')
+        .select('tag_id, claude_tags(id, label, color, produto)')
         .eq('contato_id', contactId);
+      if (error?.code === '42703') {
+        const fallback = await this._db
+          .from('claude_contato_tags')
+          .select('tag_id, claude_tags(id, label, color)')
+          .eq('contato_id', contactId);
+        data = fallback.data;
+        error = fallback.error;
+      }
       if (error) {
         this.reset();
         return;
       }
-      const tags = (data || []).map(row => row.claude_tags).filter(Boolean);
+      const tags = (data || []).map(row => withProduct(row.claude_tags)).filter(Boolean);
       this.setSelected(tags);
     },
 
@@ -121,8 +156,8 @@
         if (!inputEl) return;
         const id = String(inputEl.dataset.tagId || '');
         const tag = this._allTags.find(t => String(t.id) === id);
-        if (!tag) return;
-        if (inputEl.checked) this._selected.set(id, { id, label: tag.label, color: tag.color });
+        if (!tag || tag.produto !== getCurrentProduct()) return;
+        if (inputEl.checked) this._selected.set(id, { id, label: tag.label, color: tag.color, produto: tag.produto });
         else this._selected.delete(id);
         this._renderChips();
       });
@@ -159,8 +194,10 @@
 
     _filteredTags() {
       const q = normalizeLabel(this._getQuery());
-      if (!q) return this._allTags;
-      return this._allTags.filter(t => normalizeLabel(t.label).includes(q));
+      const currentProduct = getCurrentProduct();
+      const productTags = this._allTags.filter(tag => tag.produto === currentProduct);
+      if (!q) return productTags;
+      return productTags.filter(t => normalizeLabel(t.label).includes(q));
     },
 
     _renderChips() {
@@ -170,12 +207,24 @@
         chipsEl.innerHTML = '';
         return;
       }
-      chipsEl.innerHTML = [...this._selected.values()].map(tag => `
-        <span class="tag-picker-chip">
-          <span class="tag-picker-chip-dot" style="background:${escHtml(tag.color || '#405466')}"></span>
-          <span>${escHtml(tag.label)}</span>
-          <button type="button" class="tag-picker-chip-remove" data-tag-id="${tag.id}" title="Remover" aria-label="Remover tag">&times;</button>
-        </span>`).join('');
+      const selected = [...this._selected.values()];
+      chipsEl.innerHTML = PRODUCTS.map((product, index) => {
+        const tags = selected.filter(tag => tag.produto === product);
+        const chips = tags.length
+          ? tags.map(tag => `
+              <span class="tag-picker-chip">
+                <span class="tag-picker-chip-dot" style="background:${escHtml(tag.color || '#405466')}"></span>
+                <span>${escHtml(tag.label)}</span>
+                <button type="button" class="tag-picker-chip-remove" data-tag-id="${tag.id}" title="Remover" aria-label="Remover etiqueta">&times;</button>
+              </span>`).join('')
+          : '<span class="tag-picker-product-empty">Nenhuma etiqueta selecionada</span>';
+        return `
+          <div class="tag-picker-product-group">
+            <div class="tag-picker-product-title">${product}</div>
+            <div class="tag-picker-product-tags">${chips}</div>
+          </div>
+          ${index < PRODUCTS.length - 1 ? '<div class="tag-picker-product-divider"></div>' : ''}`;
+      }).join('');
 
       chipsEl.querySelectorAll('.tag-picker-chip-remove').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -193,11 +242,12 @@
 
       const query = this._getQuery();
       const filtered = this._filteredTags();
+      const currentProduct = getCurrentProduct();
 
       createBtn.disabled = !query;
       createBtn.innerHTML = query
-        ? `Criar nova tag <span class="tag-picker-create-label">"${escHtml(query)}"</span>`
-        : 'Criar nova tag';
+        ? `Criar nova etiqueta <span class="tag-picker-create-label">"${escHtml(query)}" em ${currentProduct}</span>`
+        : `Criar nova etiqueta em ${currentProduct}`;
 
       if (!filtered.length) {
         optionsEl.innerHTML = `<div class="tag-picker-empty">Nenhuma tag encontrada</div>`;
@@ -228,10 +278,13 @@
       if (!label || !this._db) return;
 
       await this.ensureTagsLoaded();
+      const currentProduct = getCurrentProduct();
 
-      const existing = this._allTags.find(t => normalizeLabel(t.label) === normalizeLabel(label));
+      const existing = this._allTags.find(t =>
+        t.produto === currentProduct && normalizeLabel(t.label) === normalizeLabel(label)
+      );
       if (existing) {
-        this._selected.set(String(existing.id), { id: String(existing.id), label: existing.label, color: existing.color });
+        this._selected.set(String(existing.id), { id: String(existing.id), label: existing.label, color: existing.color, produto: existing.produto });
         this._renderChips();
         this._renderDropdown();
         document.getElementById('dc-tag-input').value = '';
@@ -239,17 +292,26 @@
       }
 
       const color = TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)];
-      const { data, error } = await this._db
+      let { data, error } = await this._db
         .from('claude_tags')
-        .insert([{ label, color }])
-        .select('id, label, color')
+        .insert([{ label, color, produto: currentProduct }])
+        .select('id, label, color, produto')
         .single();
+      if (error?.code === '42703') {
+        const fallback = await this._db
+          .from('claude_tags')
+          .insert([{ label, color }])
+          .select('id, label, color')
+          .single();
+        data = fallback.data ? { ...fallback.data, produto: currentProduct } : null;
+        error = fallback.error;
+      }
 
       if (error || !data) return;
 
       this._allTags.push(data);
       this._allTags.sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
-      this._selected.set(String(data.id), { id: String(data.id), label: data.label, color: data.color });
+      this._selected.set(String(data.id), { id: String(data.id), label: data.label, color: data.color, produto: data.produto });
       document.getElementById('dc-tag-input').value = '';
       this._renderChips();
       this._renderDropdown();

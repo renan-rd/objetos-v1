@@ -1,12 +1,32 @@
 (function() {
   const TAG_COLORS = ['#E60F57','#0077B2','#FF9800','#6C63FF','#00897B','#9C27B0','#D32F2F','#43A047','#00ACC1','#FFB300','#795548','#3F51B5','#607D8B'];
+  const PRODUCTS = ['RD Marketing', 'RD Atendimento', 'RD Vendas'];
+  const PRODUCT_LABELS = { vendas: 'RD Vendas', marketing: 'RD Marketing', conversas: 'RD Atendimento' };
+  const CHECK_SVG = '<svg viewBox="4 3.73 16 16"><path d="M10.3964 15.3107L7.14644 12.0607C6.95119 11.8654 6.95119 11.5488 7.14644 11.3536L7.85353 10.6464C8.04879 10.4512 8.36539 10.4512 8.56064 10.6464L10.75 12.8358L15.4394 8.14644C15.6346 7.95119 15.9512 7.95119 16.1465 8.14644L16.8536 8.85355C17.0488 9.0488 17.0488 9.36539 16.8536 9.56066L11.1036 15.3107C10.9083 15.5059 10.5917 15.5059 10.3964 15.3107Z"/></svg>';
+  const TAG_PLUS_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 11.8787V5.5C3 4.67156 3.67156 4 4.5 4H10.8787C11.2765 4 11.658 4.15804 11.9393 4.43934L16.6761 9.17605C15.7909 9.53478 15.1667 10.4028 15.1667 11.4167V13.1667H13.4167C12.0819 13.1667 11 14.2486 11 15.5833V16.4167C11 17.5931 11.8404 18.573 12.9536 18.789L12.182 19.5607C11.5962 20.1464 10.6464 20.1464 10.0607 19.5607L3.43934 12.9393C3.15804 12.658 3 12.2765 3 11.8787ZM6.5 6C5.67156 6 5 6.67156 5 7.5C5 8.32844 5.67156 9 6.5 9C7.32844 9 8 8.32844 8 7.5C8 6.67156 7.32844 6 6.5 6ZM18.8333 15.1667H22.5833C22.8135 15.1667 23 15.3531 23 15.5833V16.4167C23 16.6469 22.8135 16.8333 22.5833 16.8333H18.8333V20.5833C18.8333 20.8135 18.6469 21 18.4167 21H17.5833C17.3531 21 17.1667 20.8135 17.1667 20.5833V16.8333H13.4167C13.1865 16.8333 13 16.6469 13 16.4167V15.5833C13 15.3531 13.1865 15.1667 13.4167 15.1667H17.1667V11.4167C17.1667 11.1865 17.3531 11 17.5833 11H18.4167C18.6469 11 18.8333 11.1865 18.8333 11.4167V15.1667Z"/></svg>';
 
   function escHtml(s) {
     return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
   function normalizeLabel(label) {
-    return String(label || '').trim().toLowerCase();
+    return String(label || '').trim().toLocaleLowerCase('pt-BR');
+  }
+
+  function inferProduct(label) {
+    const normalized = normalizeLabel(label);
+    if (['campeão', 'evento', 'nutrição', 'reativação', 'trial'].includes(normalized)) return 'RD Marketing';
+    if (['churn', 'detrator'].includes(normalized)) return 'RD Atendimento';
+    return 'RD Vendas';
+  }
+
+  function withProduct(tag) {
+    return tag ? { ...tag, produto: tag.produto || inferProduct(tag.label) } : tag;
+  }
+
+  function getCurrentProduct() {
+    const productId = document.getElementById('products-menu')?.dataset.currentProduct || 'vendas';
+    return PRODUCT_LABELS[productId] || 'RD Vendas';
   }
 
   window.__tagPicker = {
@@ -22,9 +42,18 @@
 
     async ensureTagsLoaded() {
       if (this._loaded || !this._db) return;
-      const { data, error } = await this._db.from('claude_tags').select('id,label,color').order('label');
+      let { data, error } = await this._db
+        .from('claude_tags')
+        .select('id,label,color,produto')
+        .order('produto')
+        .order('label');
+      if (error?.code === '42703') {
+        const fallback = await this._db.from('claude_tags').select('id,label,color').order('label');
+        data = fallback.data;
+        error = fallback.error;
+      }
       if (!error && data) {
-        this._allTags = data;
+        this._allTags = data.map(withProduct);
         this._loaded = true;
       }
     },
@@ -42,7 +71,7 @@
       (tags || []).forEach(tag => {
         if (tag && tag.id) {
           const id = String(tag.id);
-          this._selected.set(id, { id, label: tag.label, color: tag.color });
+          this._selected.set(id, { id, label: tag.label, color: tag.color, produto: tag.produto });
         }
       });
       this._renderChips();
@@ -62,15 +91,23 @@
         this.reset();
         return;
       }
-      const { data, error } = await this._db
+      let { data, error } = await this._db
         .from('claude_contato_tags')
-        .select('tag_id, claude_tags(id, label, color)')
+        .select('tag_id, claude_tags(id, label, color, produto)')
         .eq('contato_id', contactId);
+      if (error?.code === '42703') {
+        const fallback = await this._db
+          .from('claude_contato_tags')
+          .select('tag_id, claude_tags(id, label, color)')
+          .eq('contato_id', contactId);
+        data = fallback.data;
+        error = fallback.error;
+      }
       if (error) {
         this.reset();
         return;
       }
-      const tags = (data || []).map(row => row.claude_tags).filter(Boolean);
+      const tags = (data || []).map(row => withProduct(row.claude_tags)).filter(Boolean);
       this.setSelected(tags);
     },
 
@@ -89,9 +126,8 @@
     _bindEvents() {
       const input = document.getElementById('dc-tag-input');
       const dropdown = document.getElementById('dc-tag-dropdown');
-      const createBtn = document.getElementById('dc-tag-create-btn');
-      const optionsEl = document.getElementById('dc-tag-options');
-      if (!input || !dropdown || !createBtn || !optionsEl) return;
+      if (!input || !dropdown) return;
+      const caret = document.getElementById('dc-tag-caret');
 
       input.addEventListener('focus', async () => {
         await this.ensureTagsLoaded();
@@ -105,36 +141,47 @@
       });
 
       input.addEventListener('keydown', async e => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          await this._createFromQuery();
+        if (e.key === 'Escape') {
+          this._closeDropdown();
+          input.blur();
+          return;
+        }
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        const tags = this._filteredTags();
+        if (tags.length === 1) {
+          this._toggleTag(tags[0]);
         }
       });
 
-      createBtn.addEventListener('click', async e => {
+      caret?.addEventListener('click', async e => {
         e.preventDefault();
-        await this._createFromQuery();
+        e.stopPropagation();
+        const isOpen = dropdown.classList.contains('open');
+        if (isOpen) {
+          this._closeDropdown();
+          return;
+        }
+        await this.ensureTagsLoaded();
+        input.focus();
+        this._openDropdown();
+        this._renderDropdown();
       });
 
-      optionsEl.addEventListener('change', e => {
-        const inputEl = e.target.closest('.tag-picker-check');
-        if (!inputEl) return;
-        const id = String(inputEl.dataset.tagId || '');
-        const tag = this._allTags.find(t => String(t.id) === id);
-        if (!tag) return;
-        if (inputEl.checked) this._selected.set(id, { id, label: tag.label, color: tag.color });
-        else this._selected.delete(id);
-        this._renderChips();
-      });
-
-      optionsEl.addEventListener('click', e => {
-        if (e.target.closest('.tag-picker-check')) return;
-        const label = e.target.closest('.tg-checkbox-label');
-        if (!label) return;
-        const cb = label.querySelector('.tag-picker-check');
-        if (!cb || e.target.closest('.tg-checkbox-box')) return;
-        cb.checked = !cb.checked;
-        cb.dispatchEvent(new Event('change', { bubbles: true }));
+      dropdown.addEventListener('click', async e => {
+        const option = e.target.closest('.profile-tags-option');
+        if (option) {
+          e.preventDefault();
+          e.stopPropagation();
+          const tag = this._allTags.find(t => String(t.id) === String(option.dataset.tagId));
+          if (tag) this._toggleTag(tag);
+          return;
+        }
+        if (e.target.closest('[data-create-tag]')) {
+          e.preventDefault();
+          e.stopPropagation();
+          await this._createFromQuery(e.target.closest('[data-create-tag]').dataset.createProduct);
+        }
       });
 
       document.addEventListener('click', e => {
@@ -145,12 +192,20 @@
 
     _openDropdown() {
       const dropdown = document.getElementById('dc-tag-dropdown');
+      const shell = document.getElementById('dc-tag-input-shell');
+      const input = document.getElementById('dc-tag-input');
       if (dropdown) dropdown.classList.add('open');
+      shell?.classList.add('is-open');
+      input?.setAttribute('aria-expanded', 'true');
     },
 
     _closeDropdown() {
       const dropdown = document.getElementById('dc-tag-dropdown');
+      const shell = document.getElementById('dc-tag-input-shell');
+      const input = document.getElementById('dc-tag-input');
       if (dropdown) dropdown.classList.remove('open');
+      shell?.classList.remove('is-open');
+      input?.setAttribute('aria-expanded', 'false');
     },
 
     _getQuery() {
@@ -159,8 +214,19 @@
 
     _filteredTags() {
       const q = normalizeLabel(this._getQuery());
-      if (!q) return this._allTags;
-      return this._allTags.filter(t => normalizeLabel(t.label).includes(q));
+      const currentProduct = getCurrentProduct();
+      const productTags = this._allTags.filter(tag => tag.produto === currentProduct);
+      if (!q) return productTags;
+      return productTags.filter(t => normalizeLabel(t.label).includes(q));
+    },
+
+    _toggleTag(tag) {
+      if (!tag || tag.produto !== getCurrentProduct()) return;
+      const id = String(tag.id);
+      if (this._selected.has(id)) this._selected.delete(id);
+      else this._selected.set(id, { id, label: tag.label, color: tag.color, produto: tag.produto });
+      this._renderChips();
+      this._renderDropdown();
     },
 
     _renderChips() {
@@ -170,12 +236,24 @@
         chipsEl.innerHTML = '';
         return;
       }
-      chipsEl.innerHTML = [...this._selected.values()].map(tag => `
-        <span class="tag-picker-chip">
-          <span class="tag-picker-chip-dot" style="background:${escHtml(tag.color || '#405466')}"></span>
-          <span>${escHtml(tag.label)}</span>
-          <button type="button" class="tag-picker-chip-remove" data-tag-id="${tag.id}" title="Remover" aria-label="Remover tag">&times;</button>
-        </span>`).join('');
+      const selected = [...this._selected.values()];
+      chipsEl.innerHTML = PRODUCTS.map((product, index) => {
+        const tags = selected.filter(tag => (tag.produto || 'RD Vendas') === product);
+        const chips = tags.length
+          ? tags.map(tag => `
+              <span class="tag-picker-chip">
+                <span class="tag-picker-chip-dot" style="background:${escHtml(tag.color || '#405466')}"></span>
+                <span>${escHtml(tag.label)}</span>
+                <button type="button" class="tag-picker-chip-remove" data-tag-id="${tag.id}" title="Remover" aria-label="Remover etiqueta">&times;</button>
+              </span>`).join('')
+          : '<span class="tag-picker-product-empty">Nenhuma etiqueta selecionada</span>';
+        return `
+          <div class="tag-picker-product-group">
+            <div class="tag-picker-product-title">${product}</div>
+            <div class="tag-picker-product-tags">${chips}</div>
+          </div>
+          ${index < PRODUCTS.length - 1 ? '<div class="tag-picker-product-divider"></div>' : ''}`;
+      }).join('');
 
       chipsEl.querySelectorAll('.tag-picker-chip-remove').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -187,69 +265,87 @@
     },
 
     _renderDropdown() {
-      const createBtn = document.getElementById('dc-tag-create-btn');
-      const optionsEl = document.getElementById('dc-tag-options');
-      if (!createBtn || !optionsEl) return;
+      const dropdown = document.getElementById('dc-tag-dropdown');
+      if (!dropdown) return;
 
       const query = this._getQuery();
       const filtered = this._filteredTags();
+      const currentProduct = getCurrentProduct();
+      const hasExactMatch = filtered.some(tag => normalizeLabel(tag.label) === normalizeLabel(query));
+      const options = filtered.length
+        ? `
+          <div class="tag-picker-dropdown-group">
+            <div class="tag-picker-product-title">${currentProduct}</div>
+            ${filtered.map(tag => {
+              const selected = this._selected.has(String(tag.id));
+              return `
+                <button type="button" class="profile-tags-option${selected ? ' is-selected' : ''}" data-tag-id="${escHtml(tag.id)}" role="option" aria-selected="${selected}">
+                  <span class="profile-tags-checkbox" aria-hidden="true">${CHECK_SVG}</span>
+                  <span>${escHtml(tag.label)}</span>
+                </button>`;
+            }).join('')}
+          </div>`
+        : '';
 
-      createBtn.disabled = !query;
-      createBtn.innerHTML = query
-        ? `Criar nova tag <span class="tag-picker-create-label">"${escHtml(query)}"</span>`
-        : 'Criar nova tag';
+      const empty = !filtered.length && !query
+        ? '<div class="profile-tags-dropdown-empty">Nenhuma etiqueta disponível</div>'
+        : '';
 
-      if (!filtered.length) {
-        optionsEl.innerHTML = `<div class="tag-picker-empty">Nenhuma tag encontrada</div>`;
-        return;
-      }
+      const create = query && !hasExactMatch && !filtered.length
+        ? `
+          <div class="profile-tags-dropdown-empty">Nenhuma etiqueta encontrada. Tente outro termo ou crie uma nova etiqueta.</div>
+          <div class="profile-tags-create-divider"></div>
+          <div class="tag-picker-create-products">
+            <button type="button" class="profile-tags-create" data-create-tag data-create-product="${currentProduct}">
+              ${TAG_PLUS_SVG}
+              <span>Criar "${escHtml(query)}" em ${currentProduct}</span>
+            </button>
+          </div>`
+        : '';
 
-      optionsEl.innerHTML = filtered.map(tag => {
-        const checked = this._selected.has(String(tag.id)) ? ' checked' : '';
-        const uid = `tag-pick-${tag.id}`;
-        return `
-          <label class="tg-checkbox-label tag-picker-option" for="${uid}">
-            <input class="tg-checkbox-input tag-picker-check" type="checkbox" id="${uid}" data-tag-id="${tag.id}"${checked}>
-            <span class="tg-checkbox-box">
-              <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9.114 18.16l-5.85-5.85a.9.9 0 010-1.274l1.272-1.272a.9.9 0 011.273 0l3.941 3.94 8.44-8.44a.9.9 0 011.274 0l1.272 1.272a.9.9 0 010 1.273L9.752 18.16a.9.9 0 01-1.273 0z"/>
-              </svg>
-            </span>
-            <span class="tg-checkbox-text tag-picker-option-text">
-              <span class="tag-picker-option-dot" style="background:${escHtml(tag.color || '#405466')}"></span>
-              ${escHtml(tag.label)}
-            </span>
-          </label>`;
-      }).join('');
+      dropdown.innerHTML = options || empty;
+      dropdown.insertAdjacentHTML('beforeend', create);
     },
 
-    async _createFromQuery() {
+    async _createFromQuery(product) {
       const label = this._getQuery();
-      if (!label || !this._db) return;
+      const currentProduct = getCurrentProduct();
+      if (!label || !this._db || product !== currentProduct) return;
 
       await this.ensureTagsLoaded();
 
-      const existing = this._allTags.find(t => normalizeLabel(t.label) === normalizeLabel(label));
+      const existing = this._allTags.find(t =>
+        t.produto === currentProduct && normalizeLabel(t.label) === normalizeLabel(label)
+      );
       if (existing) {
-        this._selected.set(String(existing.id), { id: String(existing.id), label: existing.label, color: existing.color });
+        this._selected.set(String(existing.id), { id: String(existing.id), label: existing.label, color: existing.color, produto: existing.produto });
+        document.getElementById('dc-tag-input').value = '';
         this._renderChips();
         this._renderDropdown();
-        document.getElementById('dc-tag-input').value = '';
         return;
       }
 
       const color = TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)];
-      const { data, error } = await this._db
+      let { data, error } = await this._db
         .from('claude_tags')
-        .insert([{ label, color }])
-        .select('id, label, color')
+        .insert([{ label, color, produto: product }])
+        .select('id, label, color, produto')
         .single();
+      if (error?.code === '42703') {
+        const fallback = await this._db
+          .from('claude_tags')
+          .insert([{ label, color }])
+          .select('id, label, color')
+          .single();
+        data = fallback.data ? { ...fallback.data, produto: product } : null;
+        error = fallback.error;
+      }
 
       if (error || !data) return;
 
       this._allTags.push(data);
       this._allTags.sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
-      this._selected.set(String(data.id), { id: String(data.id), label: data.label, color: data.color });
+      this._selected.set(String(data.id), { id: String(data.id), label: data.label, color: data.color, produto: data.produto });
       document.getElementById('dc-tag-input').value = '';
       this._renderChips();
       this._renderDropdown();

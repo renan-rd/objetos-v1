@@ -2,9 +2,13 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Template de Lista — RD Station</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/inline-edit.css?v=20260831-actions-fade-2">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
@@ -25,8 +29,10 @@
       --color-text-high:            #002233;
       --color-text-low:             #405466;
       --color-text-disabled:        #7f8d99;
+      --color-icon-low:             #596B7A;
       --color-primary-border:       #00dbff;
       --color-primary-surface-low:  #b2f4ff;
+      --color-primary-surface-high: #00dbff;
       --color-primary-text:         #0077b2;
       --color-primary-text-on:      #00dbff;
       --color-primary-inverse:      #003d5c;
@@ -36,6 +42,7 @@
       --radius-xs:  4px;
       --radius-sm:  8px;
       --radius-md:  12px;
+      --radius-lg:  16px;
       --radius-pill: 999px;
       --sp-1: 4px;
       --sp-2: 8px;
@@ -335,6 +342,15 @@
       overflow: hidden;
     }
 
+    .content-main {
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
     .content-body {
       flex: 1;
       padding: 24px;
@@ -355,8 +371,20 @@
     }
 
     .content.detail-open .detail-panel {
-      width: 300px;
+      width: min(400px, 38vw);
       border-left-color: var(--color-border);
+    }
+
+    .content.detail-open.detail-edit .detail-panel {
+      width: min(400px, 38vw);
+    }
+
+    .detail-panel .drawer-back {
+      display: none;
+    }
+
+    .content.detail-open.detail-edit .detail-panel .drawer.open {
+      display: flex;
     }
 
     .detail-panel .drawer {
@@ -373,8 +401,8 @@
     }
 
     .detail-panel .drawer .drawer-header {
-      align-items: center;
-      padding: 16px 24px;
+      align-items: flex-start;
+      padding: 16px 24px 8px;
       background: var(--color-surface);
       gap: 8px;
     }
@@ -1113,37 +1141,47 @@
     .drawer {
       display: flex;
       flex-direction: column;
+      gap: 8px;
       background: var(--color-surface);
     }
 
+    #drawer-edit-tags:not(.open),
+    #drawer-edit-company:not(.open),
+    #drawer-edit-responsible:not(.open),
     #drawer-add-contact:not(.open) {
       display: none !important;
     }
 
     .drawer-header {
-      display: flex; align-items: flex-start; gap: 24px;
-      padding: 24px;
-      border-bottom: 1px solid var(--color-border);
+      display: flex; align-items: flex-start; gap: 8px;
+      min-height: 56px;
+      padding: 16px 24px 8px;
+      border-bottom: none;
       flex-shrink: 0;
     }
     .drawer-title {
-      flex: 1; padding-top: 4px;
-      font-size: 20px; font-weight: 700;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      min-height: 32px;
+      padding-top: 0;
+      font-size: 16px; font-weight: 700;
       color: var(--color-text-high);
-      letter-spacing: -0.2px; line-height: 1.5;
+      letter-spacing: -0.16px; line-height: 1.5;
     }
     .drawer-close {
-      width: 40px; height: 40px;
+      width: 32px; height: 32px;
+      padding: 6px;
       display: flex; align-items: center; justify-content: center;
       border: none; background: none; cursor: pointer;
-      border-radius: var(--radius-md); flex-shrink: 0;
+      border-radius: var(--radius-sm); flex-shrink: 0;
     }
     .drawer-close:hover { background: var(--color-surface-low); }
-    .drawer-close svg { width: 24px; height: 24px; fill: var(--color-text-high); }
+    .drawer-close svg { width: 20px; height: 20px; fill: var(--color-icon-low); }
 
     .drawer-body {
       flex: 1; overflow-y: auto;
-      padding: 24px;
+      padding: 0 16px;
       display: flex; flex-direction: column; gap: 0;
     }
 
@@ -1326,32 +1364,33 @@
     .phone-dropdown-empty { padding: 16px; text-align: center; color: var(--color-text-low); font-size: 14px; font-family: var(--font); }
 
     .drawer-footer {
-      border-top: 1px solid var(--color-border);
-      padding: 24px;
+      border-top: none;
+      min-height: 48px;
+      padding: 8px 24px;
       display: flex; justify-content: flex-end;
       flex-shrink: 0;
     }
     .drawer-actions { display: flex; gap: 12px; align-items: center; }
 
     .drawer-btn-cancel {
-      height: 40px; padding: 8px 16px;
-      background: var(--color-primary-surface-low);
+      height: 32px; min-width: 59px; padding: 6px 12px;
+      background: none;
       color: var(--color-primary-text);
-      border: none; border-radius: var(--radius-md);
-      font-family: var(--font); font-size: 16px; font-weight: 700;
-      cursor: pointer; letter-spacing: -0.16px;
+      border: none; border-radius: var(--radius-sm);
+      font-family: var(--font); font-size: 14px; font-weight: 700;
+      cursor: pointer; letter-spacing: -0.14px; line-height: 1.4;
     }
-    .drawer-btn-cancel:hover { opacity: 0.85; }
+    .drawer-btn-cancel:hover { background: var(--color-primary-surface-low); }
 
     .drawer-btn-save {
-      height: 40px; padding: 8px 16px;
-      background: var(--color-primary-inverse);
-      color: var(--color-primary-text-on);
-      border: none; border-radius: var(--radius-md);
-      font-family: var(--font); font-size: 16px; font-weight: 700;
-      cursor: pointer; letter-spacing: -0.16px;
+      height: 32px; min-width: 59px; padding: 6px 12px;
+      background: var(--color-primary-surface-low);
+      color: var(--color-primary-text);
+      border: none; border-radius: var(--radius-sm);
+      font-family: var(--font); font-size: 14px; font-weight: 700;
+      cursor: pointer; letter-spacing: -0.14px; line-height: 1.4;
     }
-    .drawer-btn-save:hover { opacity: 0.9; }
+    .drawer-btn-save:hover { background: #66EBFF; color: #005580; }
     .drawer-btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .drawer-error {
@@ -1364,28 +1403,60 @@
       display: flex;
       align-items: center;
       justify-content: flex-start;
+      gap: 16px;
       padding: 4px 0 16px;
     }
     .drawer-avatar-wrap {
       position: relative;
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      cursor: pointer;
+      width: 80px;
+      height: 80px;
+      border-radius: 999px;
       overflow: hidden;
       flex-shrink: 0;
+      background: #E5E8EA;
+      cursor: pointer;
     }
     .drawer-avatar-preview {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      border-radius: 999px;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--color-surface-low);
+      background: #E5E8EA;
     }
     .drawer-avatar-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .drawer-avatar-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+    .drawer-avatar-label {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 24px;
+    }
+    .drawer-avatar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px 6px 8px;
+      background: var(--color-primary-surface-low);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--color-primary-text);
+      font-size: 14px;
+      font-family: var(--font);
+      font-weight: 700;
+      line-height: 1.4;
+      transition: background .15s;
+      white-space: nowrap;
+    }
+    .drawer-avatar-btn:hover { background: #8eeeff; }
     .drawer-avatar-overlay {
       position: absolute;
       inset: 0;
@@ -1399,68 +1470,178 @@
     }
     .drawer-avatar-wrap:hover .drawer-avatar-overlay { opacity: 1; }
 
-    /* ─── TAG PICKER ───────────────────────────────────── */
-    .tag-picker-input-wrap { position: relative; }
-
-    .tag-picker-search {
-      height: 40px;
+    /* ─── LEGAL BASIS SELECT ─────────────────────────────── */
+    .legal-select {
+      position: relative;
       width: 100%;
+    }
+    .legal-select-trigger {
+      width: 100%;
+      height: 40px;
       display: flex;
       align-items: center;
-      gap: var(--sp-2);
-      padding: var(--sp-1) var(--sp-1) var(--sp-1) var(--sp-3);
-      background: var(--color-surface);
+      gap: 8px;
+      padding: 8px 8px 8px 12px;
       border: 1px solid var(--color-border-interactive);
       border-radius: var(--radius-md);
+      background: var(--color-surface);
+      cursor: pointer;
+      text-align: left;
+      font-family: var(--font);
       box-sizing: border-box;
+      outline: none;
     }
-
-    .tag-picker-search:focus-within {
+    .legal-select-trigger:focus {
       border-color: var(--color-primary-border);
       box-shadow: 0 0 0 2px rgba(0,219,255,0.15);
     }
-
-    .tag-picker-search .tag-picker-input {
+    .legal-select-trigger[aria-expanded="true"] {
+      border-color: var(--color-primary-border);
+      box-shadow: 0 0 0 2px rgba(0,219,255,0.15);
+    }
+    .legal-select-value {
       flex: 1;
-      border: none;
-      outline: none;
-      background: transparent;
+      min-width: 0;
       font-size: 16px;
-      font-family: var(--font);
       font-weight: 500;
       color: var(--color-text-high);
       letter-spacing: -0.16px;
-      min-width: 0;
-      height: 100%;
-      padding: 0;
+      line-height: 1.5;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-
-    .tag-picker-search .tag-picker-input::placeholder { color: var(--color-text-low); }
-
-    .tag-picker-search-icon {
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .legal-select-value.is-placeholder { color: var(--color-text-low); }
+    .legal-select-caret {
+      width: 24px;
+      height: 24px;
       flex-shrink: 0;
+      fill: var(--color-text-low);
+      transition: transform 0.15s;
+    }
+    .legal-select-trigger[aria-expanded="true"] .legal-select-caret {
+      transform: rotate(180deg);
+    }
+    .legal-select-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      width: 100%;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 12px rgba(0,34,51,0.14);
+      padding: 8px;
+      z-index: 300;
+      display: none;
+      box-sizing: border-box;
+    }
+    .legal-select-dropdown.open { display: block; }
+    .legal-select-dropdown-scroll {
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .legal-select-item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .legal-select-item:hover { background: var(--color-surface-low); }
+    .legal-select-item--disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
       pointer-events: none;
     }
-
-    .tag-picker-search-icon svg {
-      width: 20px;
-      height: 20px;
-      fill: var(--color-text-low);
+    .legal-select-item--disabled:hover { background: transparent; }
+    .legal-select-item-title {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-high);
     }
+    .legal-select-item-desc {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      color: var(--color-text-low);
+    }
+    .legal-select-divider {
+      height: 1px;
+      background: var(--color-border);
+      margin: 4px 0;
+    }
+    .legal-basis-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      box-sizing: border-box;
+    }
+    .legal-basis-card .legal-canal-select,
+    .legal-basis-card .legal-basis-select,
+    .legal-basis-card .legal-select {
+      width: 100%;
+    }
+    .legal-basis-remove-btn {
+      display: inline-flex;
+      align-items: center;
+      align-self: flex-start;
+      gap: 4px;
+      margin-top: 4px;
+      padding: 6px 12px 6px 8px;
+      background: none;
+      border: none;
+      border-radius: var(--radius-sm);
+      color: var(--color-primary-text);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .legal-basis-remove-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+    .legal-basis-remove-btn:hover {
+      background: var(--color-primary-surface-low);
+      color: #005580;
+    }
+    #dc-legal-basis-container {
+      gap: 12px;
+    }
+    .detail-panel .drawer .legal-select-dropdown,
+    .detail-panel .drawer .phone-dropdown,
+    .detail-panel .drawer .social-dropdown,
+    .detail-panel .drawer .empresa-autocomplete-dropdown,
+    .detail-panel .drawer .resp-autocomplete-dropdown {
+      z-index: 9600;
+    }
+
+    /* ─── TAG PICKER ───────────────────────────────────── */
+    .tag-picker {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .tag-picker-input-wrap { position: relative; }
 
     .tag-picker-chips {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 8px;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    .tag-picker-chips:empty { display: none; margin-bottom: 0; }
+    .tag-picker-chips:empty { display: none; }
 
     .tag-picker-chip {
       display: inline-flex;
@@ -1492,67 +1673,67 @@
       color: var(--color-text-low);
     }
 
+    .tag-picker-product-group,
+    .tag-picker-dropdown-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tag-picker-product-title {
+      color: var(--color-text-low);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 19.6px;
+      overflow-wrap: break-word;
+    }
+
+    .tag-picker-product-divider + .tag-picker-dropdown-group > .tag-picker-product-title {
+      padding-top: 8px;
+    }
+
+    .tag-picker-product-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag-picker-product-divider {
+      width: 100%;
+      height: 1px;
+      background: var(--color-border);
+    }
+
+    .tag-picker-product-empty {
+      color: var(--color-text-low);
+      font: 500 14px/1.4 var(--font);
+      letter-spacing: -.14px;
+    }
+
+    .tag-picker-create-products {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
     .tag-picker-dropdown {
       display: none;
       position: absolute;
       top: calc(100% + 4px);
       left: 0;
       right: 0;
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-      z-index: 400;
-      max-height: 260px;
+      z-index: 9600;
+      max-height: 176px;
+      padding: 8px;
       overflow-y: auto;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      box-shadow: 0 4px 12px rgba(0, 34, 51, .14);
     }
 
     .tag-picker-dropdown.open { display: block; }
-
-    .tag-picker-create {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 16px;
-      border: none;
-      background: none;
-      cursor: pointer;
-      font-family: var(--font);
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--color-primary-text);
-      text-align: left;
-    }
-
-    .tag-picker-create:hover:not(:disabled) { background: var(--color-surface-low); }
-    .tag-picker-create:disabled { opacity: 0.45; cursor: not-allowed; }
-
-    .tag-picker-create-label { font-weight: 500; color: var(--color-text-high); }
-
-    .tag-picker-divider {
-      height: 1px;
-      background: var(--color-border);
-    }
-
-    .tag-picker-options .tg-checkbox-label {
-      padding: 10px 16px;
-      border-bottom: none;
-    }
-
-    .tag-picker-option-text {
-      display: inline-flex !important;
-      align-items: center;
-      gap: 8px;
-      text-transform: none !important;
-    }
-
-    .tag-picker-option-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
 
     .tag-picker-empty {
       padding: 12px 16px;
@@ -1918,15 +2099,15 @@
     .profile-col .overview-card {
       background: var(--color-surface);
       border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      padding: 4px 16px;
+      border-radius: var(--radius-lg);
+      padding: 16px;
     }
 
     .profile-col .overview-accordion-head {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 0;
+      padding: 0;
       cursor: pointer;
       user-select: none;
       width: 100%;
@@ -1937,25 +2118,20 @@
     }
 
     .profile-col .overview-accordion-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: var(--radius-sm);
-      background: var(--color-primary-surface-low);
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-    }
-
-    .profile-col .overview-accordion-icon svg,
-    .profile-col .overview-accordion-icon img {
-      width: 16px;
-      height: 16px;
-      display: block;
+      color: var(--color-icon-low);
     }
 
     .profile-col .overview-accordion-icon svg {
-      color: var(--color-primary-text);
+      width: 24px;
+      height: 24px;
+      display: block;
+      fill: currentColor;
     }
 
     .profile-col .overview-accordion-title {
@@ -1986,7 +2162,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      padding-bottom: 8px;
+      padding-top: 12px;
     }
 
     .profile-col .overview-card-body > .btn-secondary {
@@ -2032,7 +2208,7 @@
     .profile-col .overview-contact-name {
       font-size: 16px;
       font-weight: 700;
-      color: var(--color-primary-text);
+      color: var(--color-text-high);
       letter-spacing: -0.16px;
       line-height: 1.5;
       overflow: hidden;
@@ -2057,7 +2233,7 @@
       padding: 6px;
       border: none;
       border-radius: var(--radius-sm);
-      background: var(--color-primary-surface-low);
+      background: transparent;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -2072,7 +2248,7 @@
     }
 
     .profile-col .overview-icon-btn:hover {
-      background: #8eeeff;
+      background: var(--color-primary-surface-low);
     }
 
     .profile-col .overview-divider {
@@ -2084,9 +2260,81 @@
     .profile-col .overview-section-label {
       font-size: 16px;
       font-weight: 900;
-      color: #636e7c;
+      color: var(--color-text-low);
       letter-spacing: -0.16px;
       line-height: 1.5;
+    }
+
+    /* Identificação agrupada por campo (E-mail, Telefones, CPF...) */
+    .profile-col .profile-ident-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 4px;
+    }
+
+    .profile-col .profile-ident-group-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text-high);
+      letter-spacing: -0.16px;
+      line-height: 1.5;
+    }
+
+    .profile-col .profile-ident-values {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .profile-col .profile-ident-values .overview-info-item {
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* O valor não deve esticar: estrela e bandeira ficam colados ao texto */
+    .profile-col .profile-ident-values .profile-ident-value {
+      flex: 0 1 auto;
+      color: var(--color-text-high);
+    }
+
+    .profile-col .profile-ident-flag {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .profile-col .profile-ident-flag svg {
+      width: 24px;
+      height: 16px;
+      display: block;
+      border-radius: 2px;
+    }
+
+    /* Sem país reconhecido não há bandeira: não reservar espaço */
+    .profile-col .profile-ident-flag:empty {
+      display: none;
+    }
+
+    /* No hover, o espaço dos botões vem do item */
+    .profile-col .profile-ident-values .profile-ident-item:hover {
+      padding: 0 72px 0 4px;
+      margin: 0 -4px;
+    }
+
+    .profile-col .profile-ident-values .profile-ident-item:hover span.profile-ident-value {
+      padding-right: 0;
+    }
+
+    .profile-col #profile-extra-socials {
+      display: contents;
+    }
+
+    .profile-col #profile-extra-socials:empty {
+      display: none;
     }
 
     .profile-col .overview-info-list {
@@ -2109,8 +2357,17 @@
       display: block;
     }
 
-    .profile-col .overview-info-item > svg {
-      color: var(--color-text-low);
+    .profile-col .overview-info-item .profile-social-icon {
+      width: 20px;
+      height: 20px;
+      margin: 2px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .profile-col .overview-info-item > svg,
+    .profile-col .overview-info-item .profile-social-icon {
+      color: #596B7A;
     }
 
     .profile-col .overview-info-item span {
@@ -2149,9 +2406,39 @@
       padding-right: 72px;
     }
 
+    .profile-col .overview-btn-secondary {
+      width: 100%;
+      height: 32px;
+      margin-top: 4px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: var(--color-primary-surface-low);
+      color: var(--color-primary-text);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.14px;
+      line-height: 1.4;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .profile-col .overview-btn-secondary:hover {
+      background: #66EBFF;
+      color: #005580;
+    }
+
     .profile-col .overview-avatar.profile-avatar-wrap {
       position: relative;
-      cursor: pointer;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .profile-col .overview-avatar .profile-avatar-overlay,
+    .profile-col .overview-avatar.profile-avatar-wrap:hover .profile-avatar-overlay {
+      display: none;
+      opacity: 0;
     }
 
     .profile-col .overview-avatar .profile-avatar-initials {
@@ -2256,6 +2543,190 @@
 .profile-status-dropdown-item:hover { background: var(--color-surface-low, #F5F6F7); }
 .profile-status-dropdown-item.active { color: var(--color-primary-text, #0077B2); }
 .profile-status-dropdown-item svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+
+/* More options dropdown (Tangram) */
+.profile-more-dropdown {
+  position: fixed;
+  z-index: 9600;
+  width: 220px;
+  padding: var(--sp-2);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 34, 51, 0.14);
+  overflow-y: auto;
+}
+.profile-more-dropdown-group {
+  padding: var(--sp-2) var(--sp-3);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.12px;
+  text-transform: uppercase;
+  color: var(--color-text-low);
+}
+.profile-more-dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -0.16px;
+  color: var(--color-text-high);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.profile-more-dropdown-item:hover { background: #dadee0; }
+.profile-more-dropdown-item svg,
+.profile-more-dropdown-item img {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: block;
+}
+.profile-more-dropdown-item svg { fill: currentColor; }
+.profile-more-dropdown-item--danger { color: #c20046; }
+.profile-more-dropdown-divider {
+  height: 1px;
+  margin: var(--sp-1) 0;
+  background: var(--color-border);
+}
+
+    /* ─── DELETE CONFIRMATION MODAL ─────────────────────── */
+    .delete-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 34, 51, 0.4);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s;
+    }
+    .delete-modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .delete-modal {
+      width: 100%;
+      max-width: 560px;
+      background: var(--color-surface);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 12px 24px rgba(0, 34, 51, 0.2);
+      font-family: var(--font);
+    }
+    .delete-modal-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 16px;
+    }
+    .delete-modal-title {
+      flex: 1;
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.28px;
+      color: var(--color-text-high);
+    }
+    .delete-modal-close {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 8px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--color-text-low);
+      cursor: pointer;
+    }
+    .delete-modal-close:hover { background: var(--color-surface-low); }
+    .delete-modal-close svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+    .delete-modal-body {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-high);
+    }
+    .delete-modal-body p { margin: 0 0 8px; }
+    .delete-modal-body ul { margin: 0; padding-left: 24px; }
+    .delete-modal-body li { margin-bottom: 8px; }
+    .delete-modal-body li:last-child { margin-bottom: 0; }
+    .delete-modal-body strong { font-weight: 700; }
+    .delete-modal-confirm {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding-top: 24px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .delete-modal-confirm .tg-checkbox-box { margin-top: 3px; }
+    .delete-modal-confirm-text {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-high);
+    }
+    .delete-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      padding-top: 24px;
+    }
+    .delete-modal-btn {
+      height: 40px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .delete-modal-btn-trash {
+      background: var(--color-primary-surface-low);
+      color: var(--color-primary-text);
+    }
+    .delete-modal-btn-trash:hover { background: #99ecff; }
+    .delete-modal-btn-permanent {
+      background: #edeff1;
+      color: var(--color-text-disabled);
+      cursor: not-allowed;
+    }
+    .delete-modal-btn-permanent:not(:disabled) {
+      background: #E60F57;
+      color: #FFFFFF;
+      cursor: pointer;
+    }
+    .delete-modal-btn-permanent:not(:disabled):hover { background: #c90d4a; }
+
 .profile-primary-action {
   width: 100%; height: 40px;
   padding: 8px 16px;
@@ -2316,6 +2787,9 @@
   transform: translateY(-50%);
   z-index: 1;
 }
+#profile-contact-card .profile-name-field:hover { background: transparent; }
+#profile-contact-card .profile-name-field:hover .profile-name,
+#profile-contact-card .profile-name-field:hover .profile-role { padding-right: 0; }
 .profile-name-field:hover { background: #ECEEEF; }
 .profile-name-field:hover .profile-ident-actions { right: 4px; }
 .profile-name-field:hover .profile-name,
@@ -2412,9 +2886,12 @@
 .profile-quick-btn svg { width: 24px; height: 24px; fill: var(--color-primary-text); }
 /* Section header */
 .profile-section-header {
-  font-size: 16px; font-weight: 900;
+  font-size: 12px;
+  font-weight: 900;
   color: #636e7c;
-  letter-spacing: -0.16px; line-height: 1.5;
+  letter-spacing: -0.12px;
+  line-height: 1.3;
+  text-transform: uppercase;
 }
 /* Divider */
 .profile-divider {
@@ -2590,12 +3067,48 @@
 /* Privacy */
 .profile-privacy-list { display: flex; flex-direction: column; gap: 4px; }
 .profile-privacy-item {
-  display: flex; gap: 12px; align-items: flex-start;
+  display: flex; align-items: flex-start;
 }
-.profile-privacy-item svg { width: 24px; height: 24px; flex-shrink: 0; }
-.profile-privacy-item span {
-  font-size: 16px; font-weight: 500;
-  color: #212429; letter-spacing: -0.16px; line-height: 1.5;
+.profile-privacy-item[data-field] {
+  border-radius: 8px;
+  padding: 4px;
+  margin: -4px;
+  transition: background 0.15s ease;
+  cursor: default;
+}
+.profile-privacy-item[data-field]:hover { background: #ECEEEF; }
+.profile-privacy-body { flex: 1; min-width: 0; }
+.profile-privacy-item .profile-detail-label {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+  color: #212429;
+  letter-spacing: -0.16px;
+  line-height: 1.5;
+}
+.profile-privacy-value-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+}
+.profile-privacy-item[data-field] .profile-privacy-value {
+  flex: 1;
+  min-width: 0;
+  cursor: text;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-low);
+  line-height: 1.4;
+}
+.profile-privacy-item[data-field]:hover .profile-detail-edit { opacity: 1; }
+.profile-privacy-item[data-field] .profile-detail-edit { right: 4px; }
+.profile-privacy-item[data-field].is-edit-slot-open .profile-detail-edit { display: none; }
+.profile-privacy-empty {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-low);
+  padding: 4px 0;
 }
 /* Link button */
 .profile-link-btn {
@@ -2612,29 +3125,102 @@
 .profile-link-btn:hover { background: #B2F4FF; color: #005580; }
 /* Company */
 .profile-company-item {
-  display: flex; gap: 16px; align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 8px;
+}
+.profile-company-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border-radius: 8px;
+  position: relative;
+  padding: 0 4px;
+  margin: 0 -4px;
+  transition: background 0.15s ease;
+  cursor: default;
+}
+.profile-company-head:hover,
+.profile-company-head.is-edit-slot-open {
+  background: transparent;
 }
 .profile-company-logo {
-  width: 40px; height: 40px; border-radius: var(--radius-sm);
+  width: 40px; height: 40px; border-radius: var(--radius-md);
   display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 900; color: #fff;
+  font-size: 16px; font-weight: 900;
+  background: var(--color-primary-surface-high);
+  color: var(--color-text-high);
   flex-shrink: 0; overflow: hidden;
 }
-.profile-company-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-.profile-company-header { display: flex; align-items: center; justify-content: space-between; }
+.profile-company-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  transition: padding-right 0.15s ease;
+}
 .profile-company-name {
-  font-size: 16px; font-weight: 500; color: #212429;
+  font-size: 16px; font-weight: 700;
+  color: var(--color-primary-text);
+  letter-spacing: -0.16px; line-height: 1.5;
+  cursor: text;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.profile-company-cnpj {
+  font-size: 14px; font-weight: 500;
+  color: var(--color-text-high);
+  letter-spacing: -0.14px; line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profile-company-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: visible;
+}
+.profile-company-divider {
+  margin: 4px 0;
+}
+.profile-company-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.profile-company-field-label {
+  font-size: 16px; font-weight: 700;
+  color: var(--color-text-high);
   letter-spacing: -0.16px; line-height: 1.5;
 }
-.profile-company-tag {
-  font-size: 12px; font-weight: 700;
-  color: var(--color-text-low);
-  letter-spacing: -0.12px; line-height: 1.3;
+.profile-company-field-group {
+  display: flex;
+  flex-direction: column;
 }
-.profile-company-role {
-  font-size: 14px; font-weight: 500;
+.profile-company-field-sublabel {
+  font-size: 12px;
+  font-weight: 500;
   color: var(--color-text-low);
-  letter-spacing: -0.14px; line-height: 1.4;
+  letter-spacing: -0.12px;
+  line-height: 1.3;
+}
+.profile-company-field-values {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: visible;
+}
+.profile-company-field-value {
+  font-size: 16px; font-weight: 500;
+  color: var(--color-text-high);
+  letter-spacing: -0.16px; line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 /* Tags */
 .profile-tags-list { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -2646,6 +3232,151 @@
   color: var(--color-text-high);
   letter-spacing: -0.12px; line-height: 1.3;
 }
+/* Card de tags da coluna de perfil */
+.profile-col .overview-btn-secondary {
+  width: 100%;
+  height: 32px;
+  margin-top: 4px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-surface-low);
+  color: var(--color-primary-text);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.14px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.profile-col .overview-btn-secondary:hover {
+  background: #66EBFF;
+  color: #005580;
+}
+.profile-tags-card-body { gap: 10px !important; overflow: visible; }
+.profile-tags-autocomplete { position: relative; width: 100%; }
+.profile-tags-input-shell {
+  display: flex; align-items: center; width: 100%; height: 40px;
+  padding: 8px 8px 8px 12px; border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-md); background: var(--color-surface);
+  transition: border-color .15s, box-shadow .15s;
+}
+.profile-tags-input-shell:focus-within,
+.profile-tags-input-shell.is-open {
+  border-color: var(--color-primary-border);
+  box-shadow: 0 0 0 2px rgba(0, 219, 255, .15);
+}
+.profile-tags-autocomplete-input {
+  flex: 1; min-width: 0; height: 24px; padding: 0; border: 0; outline: 0;
+  background: transparent; color: var(--color-text-high);
+  font: 500 16px/1.5 var(--font); letter-spacing: -.16px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.profile-tags-autocomplete-input::placeholder {
+  color: var(--color-text-low); opacity: 1;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.profile-tags-autocomplete-caret {
+  width: 24px; height: 24px; border: 0; border-radius: var(--radius-xs);
+  background: transparent; color: var(--color-text-low); cursor: pointer;
+  display: grid; place-items: center; flex-shrink: 0;
+}
+.profile-tags-autocomplete-caret svg {
+  width: 16px; height: 16px; display: block;
+  fill: currentColor; transition: transform .15s;
+}
+.profile-tags-input-shell.is-open .profile-tags-autocomplete-caret svg { transform: rotate(180deg); }
+.profile-tags-dropdown {
+  display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  z-index: 500; max-height: 176px; padding: 8px; overflow-y: auto;
+  border-radius: var(--radius-md); background: var(--color-surface);
+  box-shadow: 0 4px 12px rgba(0, 34, 51, .14);
+}
+.profile-tags-dropdown.open { display: block; }
+.profile-tags-option {
+  width: 100%; min-height: 40px; padding: 8px 12px; border: 0;
+  border-radius: var(--radius-sm); background: transparent; display: flex;
+  align-items: center; gap: 12px; color: var(--color-text-high);
+  font: 700 16px/1.5 var(--font); letter-spacing: -.16px;
+  text-align: left; cursor: pointer;
+}
+.profile-tags-option:hover { background: var(--color-surface-low); }
+.profile-tags-checkbox {
+  width: 18px; height: 18px; border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-xs); background: var(--color-surface);
+  display: grid; place-items: center; flex-shrink: 0;
+}
+.profile-tags-option.is-selected .profile-tags-checkbox {
+  border-color: var(--color-primary-surface-high);
+  background: var(--color-primary-surface-high);
+}
+.profile-tags-checkbox svg {
+  width: 16px; height: 16px; display: none;
+  fill: var(--color-text-high);
+}
+.profile-tags-option.is-selected .profile-tags-checkbox svg { display: block; }
+.profile-tags-dropdown-empty {
+  padding: 8px 12px; color: var(--color-text-low);
+  font: 500 14px/1.4 var(--font); letter-spacing: -.14px;
+}
+.profile-tags-create-divider { height: 1px; margin: 4px 0; background: var(--color-border); }
+.profile-tags-create {
+  width: 100%; height: 32px; padding: 6px 12px 6px 8px; border: 0;
+  border-radius: var(--radius-sm); background: transparent; display: flex;
+  align-items: center; justify-content: center; gap: 4px;
+  color: var(--color-primary-text); font: 700 14px/1.4 var(--font);
+  letter-spacing: -.14px; cursor: pointer;
+}
+.profile-tags-create:hover { background: var(--color-primary-surface-low); }
+.profile-tags-create svg {
+  width: 20px; height: 20px; display: block;
+  fill: currentColor; flex-shrink: 0;
+}
+.profile-tags-added-title {
+  display: flex; align-items: center; gap: 4px; color: var(--color-text-high);
+  font: 700 16px/1.5 var(--font); letter-spacing: -.16px;
+}
+.profile-tags-count {
+  min-width: 24px; height: 16px; padding: 0 8px; border-radius: var(--radius-pill);
+  background: #e5e8ea; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 900; line-height: 1.3; letter-spacing: -.12px;
+}
+.profile-tags-selected {
+  display: flex; flex-direction: column; width: 100%;
+}
+.profile-tags-selected:empty::after {
+  content: "Nenhuma etiqueta adicionada"; color: var(--color-text-low);
+  font: 500 14px/1.4 var(--font);
+}
+.profile-tags-product-group {
+  display: flex; flex-direction: column; gap: 8px; width: 100%;
+}
+.profile-tags-product-chips {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+}
+.profile-tags-group-divider {
+  margin: 8px 0;
+}
+.profile-tags-chip {
+  min-height: 24px; padding: 4px 8px; border-radius: var(--radius-xs);
+  background: var(--color-surface-low); display: inline-flex; align-items: center;
+  gap: 4px; color: var(--color-text-high); font: 900 12px/1.3 var(--font);
+  letter-spacing: -.12px; text-transform: uppercase;
+}
+.profile-tag-color {
+  width: 16px; height: 16px; display: block; flex-shrink: 0;
+  fill: var(--tag-color, #405466);
+}
+.profile-tag-remove {
+  width: 20px; height: 16px; margin-left: 4px; padding: 0 0 0 4px;
+  border: 0; background: transparent; color: var(--color-text-low);
+  cursor: pointer; display: grid; place-items: center;
+}
+.profile-tag-remove svg {
+  width: 16px; height: 16px; display: block; fill: currentColor;
+}
+.profile-tags-view-all { margin-top: 0 !important; }
 /* AI Summary card */
 .profile-ai-card {
   background: var(--color-surface);
@@ -2694,6 +3425,8 @@
   transition: color .15s, border-color .15s;
 }
 .profile-tabs-scroll .profile-tab:first-child { padding-left: 0; }
+.profile-tabs-scroll .profile-tab[hidden] { display: none; }
+.profile-tabs-scroll .profile-tab[data-tab="atividades"] { padding-left: 0; }
 
 .profile-tab:hover { color: var(--color-primary-text); }
 .profile-tab.active {
@@ -2703,18 +3436,15 @@
 .profile-tabs-wrapper {
   position: relative;
   flex: 1; min-width: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 .profile-tabs-scroll {
   display: flex; align-items: flex-end;
-  overflow: hidden;
+  flex-wrap: wrap;
+  overflow: visible;
 }
 .profile-tabs-fade {
-  position: absolute;
-  right: 0; top: 0; bottom: 0;
-  width: 48px;
-  background: linear-gradient(to right, rgba(255,255,255,0) 0%, #fff 100%);
-  pointer-events: none;
+  display: none;
 }
 .profile-tab-more-group {
   display: flex; gap: 4px;
@@ -3007,6 +3737,556 @@
 }
 .profile-timeline-more:hover { background: #B2F4FF; }
 /* Right column */
+.profile-company-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: visible;
+}
+.profile-company-divider {
+  margin: 4px 0;
+}
+.profile-company-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.profile-company-field-label {
+  font-size: 16px; font-weight: 700;
+  color: var(--color-text-high);
+  letter-spacing: -0.16px; line-height: 1.5;
+}
+.profile-company-field-group {
+  display: flex;
+  flex-direction: column;
+}
+.profile-company-field-sublabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-low);
+  letter-spacing: -0.12px;
+  line-height: 1.3;
+}
+.profile-company-field-values {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: visible;
+}
+.profile-company-field-value {
+  font-size: 16px; font-weight: 500;
+  color: var(--color-text-high);
+  letter-spacing: -0.16px; line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Tags */
+.profile-tags-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.profile-tag {
+  background: var(--color-surface-low);
+  padding: 4px 8px;
+  border-radius: var(--radius-xs);
+  font-size: 12px; font-weight: 900;
+  color: var(--color-text-high);
+  letter-spacing: -0.12px; line-height: 1.3;
+}
+/* Card de tags da coluna de perfil */
+.profile-tags-card-body { gap: 10px !important; overflow: visible; }
+.profile-tags-autocomplete { position: relative; width: 100%; }
+.profile-tags-input-shell {
+  display: flex; align-items: center; width: 100%; height: 40px;
+  padding: 8px 8px 8px 12px; border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-md); background: var(--color-surface);
+  transition: border-color .15s, box-shadow .15s;
+}
+.profile-tags-input-shell:focus-within,
+.profile-tags-input-shell.is-open {
+  border-color: var(--color-primary-border);
+  box-shadow: 0 0 0 2px rgba(0, 219, 255, .15);
+}
+.profile-tags-autocomplete-input {
+  flex: 1; min-width: 0; height: 24px; padding: 0; border: 0; outline: 0;
+  background: transparent; color: var(--color-text-high);
+  font: 500 16px/1.5 var(--font); letter-spacing: -.16px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.profile-tags-autocomplete-input::placeholder {
+  color: var(--color-text-low); opacity: 1;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.profile-tags-autocomplete-caret {
+  width: 24px; height: 24px; border: 0; border-radius: var(--radius-xs);
+  background: transparent; color: var(--color-text-low); cursor: pointer;
+  display: grid; place-items: center; flex-shrink: 0;
+}
+.profile-tags-autocomplete-caret svg {
+  width: 16px; height: 16px; display: block;
+  fill: currentColor; transition: transform .15s;
+}
+.profile-tags-input-shell.is-open .profile-tags-autocomplete-caret svg { transform: rotate(180deg); }
+.profile-tags-dropdown {
+  display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  z-index: 500; max-height: 176px; padding: 8px; overflow-y: auto;
+  border-radius: var(--radius-md); background: var(--color-surface);
+  box-shadow: 0 4px 12px rgba(0, 34, 51, .14);
+}
+.profile-tags-dropdown.open { display: block; }
+.profile-tags-option {
+  width: 100%; min-height: 40px; padding: 8px 12px; border: 0;
+  border-radius: var(--radius-sm); background: transparent; display: flex;
+  align-items: center; gap: 12px; color: var(--color-text-high);
+  font: 700 16px/1.5 var(--font); letter-spacing: -.16px;
+  text-align: left; cursor: pointer;
+}
+.profile-tags-option:hover { background: var(--color-surface-low); }
+.profile-tags-checkbox {
+  width: 18px; height: 18px; border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-xs); background: var(--color-surface);
+  display: grid; place-items: center; flex-shrink: 0;
+}
+.profile-tags-option.is-selected .profile-tags-checkbox {
+  border-color: var(--color-primary-surface-high);
+  background: var(--color-primary-surface-high);
+}
+.profile-tags-checkbox svg {
+  width: 16px; height: 16px; display: none;
+  fill: var(--color-text-high);
+}
+.profile-tags-option.is-selected .profile-tags-checkbox svg { display: block; }
+.profile-tags-dropdown-empty {
+  padding: 8px 12px; color: var(--color-text-low);
+  font: 500 14px/1.4 var(--font); letter-spacing: -.14px;
+}
+.profile-tags-create-divider { height: 1px; margin: 4px 0; background: var(--color-border); }
+.profile-tags-create {
+  width: 100%; height: 32px; padding: 6px 12px 6px 8px; border: 0;
+  border-radius: var(--radius-sm); background: transparent; display: flex;
+  align-items: center; justify-content: center; gap: 4px;
+  color: var(--color-primary-text); font: 700 14px/1.4 var(--font);
+  letter-spacing: -.14px; cursor: pointer;
+}
+.profile-tags-create:hover { background: var(--color-primary-surface-low); }
+.profile-tags-create svg {
+  width: 20px; height: 20px; display: block;
+  fill: currentColor; flex-shrink: 0;
+}
+.profile-tags-added-title {
+  display: flex; align-items: center; gap: 4px; color: var(--color-text-high);
+  font: 700 16px/1.5 var(--font); letter-spacing: -.16px;
+}
+.profile-tags-count {
+  min-width: 24px; height: 16px; padding: 0 8px; border-radius: var(--radius-pill);
+  background: #e5e8ea; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 900; line-height: 1.3; letter-spacing: -.12px;
+}
+.profile-tags-selected {
+  display: flex; flex-direction: column; width: 100%;
+}
+.profile-tags-selected:empty::after {
+  content: "Nenhuma etiqueta adicionada"; color: var(--color-text-low);
+  font: 500 14px/1.4 var(--font);
+}
+.profile-tags-product-group {
+  display: flex; flex-direction: column; gap: 8px; width: 100%;
+}
+.profile-tags-product-chips {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+}
+.profile-tags-group-divider {
+  margin: 8px 0;
+}
+.profile-tags-chip {
+  min-height: 24px; padding: 4px 8px; border-radius: var(--radius-xs);
+  background: var(--color-surface-low); display: inline-flex; align-items: center;
+  gap: 4px; color: var(--color-text-high); font: 900 12px/1.3 var(--font);
+  letter-spacing: -.12px; text-transform: uppercase;
+}
+.profile-tag-color {
+  width: 16px; height: 16px; display: block; flex-shrink: 0;
+  fill: var(--tag-color, #405466);
+}
+.profile-tag-remove {
+  width: 20px; height: 16px; margin-left: 4px; padding: 0 0 0 4px;
+  border: 0; background: transparent; color: var(--color-text-low);
+  cursor: pointer; display: grid; place-items: center;
+}
+.profile-tag-remove svg {
+  width: 16px; height: 16px; display: block; fill: currentColor;
+}
+.profile-tags-view-all { margin-top: 0 !important; }
+/* Tabs card */
+.profile-card-tabs {
+  padding: 24px;
+  gap: 16px;
+}
+/* ── Tabs nav ── */
+.profile-tabs-nav {
+  display: flex; align-items: flex-end;
+  padding: 0;
+  border-bottom: 2px solid var(--color-border);
+  gap: 0;
+}
+.profile-tab {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font);
+  font-size: 16px; font-weight: 700;
+  color: var(--color-text-low);
+  padding: 8px 16px 14px;
+  border-bottom: 4px solid transparent;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  line-height: 24px;
+  transition: color .15s, border-color .15s;
+}
+.profile-tabs-scroll .profile-tab:first-child { padding-left: 0; }
+.profile-tabs-scroll .profile-tab[hidden] { display: none; }
+.profile-tabs-scroll .profile-tab[data-tab="atividades"] { padding-left: 0; }
+
+.profile-tab:hover { color: var(--color-primary-text); }
+.profile-tab.active {
+  color: var(--color-primary-text);
+  border-bottom-color: #00DBFF;
+}
+.profile-tabs-wrapper {
+  position: relative;
+  flex: 1; min-width: 0;
+  overflow: visible;
+}
+.profile-tabs-scroll {
+  display: flex; align-items: flex-end;
+  flex-wrap: wrap;
+  overflow: visible;
+}
+.profile-tabs-fade {
+  display: none;
+}
+.profile-tab-more-group {
+  display: none;
+  gap: 4px;
+  align-self: flex-start; margin-top: 4px;
+  flex-shrink: 0;
+  background: #fff;
+}
+.profile-tab-more {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font);
+  color: var(--color-primary-text);
+  padding: 6px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: background .15s;
+  position: relative;
+}
+.profile-tab-more:hover { background: #B2F4FF; }
+.profile-tab-more:hover .profile-tooltip { opacity: 1; }
+/* ── Tab panels ── */
+.profile-tab-panel { display: none; flex-direction: column; gap: 16px; }
+.profile-tab-panel.active { display: flex; }
+.vg-stat { display: flex; flex-direction: column; gap: 0; flex: 1; min-width: 0; overflow: hidden; }
+.vg-stat-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 700; line-height: 1.4; letter-spacing: -0.14px;
+  color: var(--color-text-low); white-space: nowrap; overflow: hidden;
+}
+.vg-stat-label .material-symbols-rounded { font-size: 18px; color: #596B7A; flex-shrink: 0; }
+.vg-stat-value { display: flex; align-items: flex-end; }
+.vg-stat-main {
+  font-size: 36px; font-weight: 900; line-height: 46px; letter-spacing: -0.72px;
+  color: var(--color-text-high); white-space: nowrap;
+}
+.vg-stat-affix {
+  font-size: 16px; font-weight: 500; line-height: 24px; letter-spacing: -0.16px;
+  color: var(--color-text-high); padding-bottom: 4px; white-space: nowrap;
+}
+/* ── Pré-vendas ── */
+.pv-stats-row { display: flex; flex-wrap: wrap; gap: 16px; }
+.pv-stat-card {
+  flex: 1; min-width: 0; padding: 12px; border-radius: 16px;
+  display: flex; flex-direction: column; gap: 2px; overflow: hidden;
+}
+.pv-stat-card--blue    { background: #B2F4FF; }
+.pv-stat-card--green   { background: #D6FAE8; }
+.pv-stat-card--red     { background: #FFD6E4; }
+.pv-stat-card--neutral { background: #ECEEEF; }
+.pv-stat-card .vg-stat-label { font-size: 14px; font-weight: 700; line-height: 19.6px; color: #405466; display: flex; align-items: center; gap: 8px; }
+.pv-stat-card .vg-stat-label svg { flex-shrink: 0; }
+.pv-stat-card .vg-stat-value { display: flex; align-items: flex-end; }
+.pv-stat-card .vg-stat-main  { font-size: 36px; font-weight: 900; line-height: 46px; color: #002233; }
+.pv-stat-card .vg-stat-affix { font-size: 16px; font-weight: 500; line-height: 24px; color: #002233; padding-bottom: 4px; }
+.pv-toolbar {
+  display: flex; align-items: center; gap: 8px; padding: 10px 0;
+}
+.pv-search {
+  flex: 1; display: flex; align-items: center; gap: 4px;
+  padding: 4px 4px 4px 12px; border-radius: 12px;
+  border: 1px solid #B2BCC1; background: white; height: 40px;
+}
+.pv-search input {
+  flex: 1; border: none; outline: none; font-size: 16px; font-weight: 500;
+  color: #405466; font-family: var(--font); line-height: 24px; background: none;
+}
+.pv-search-btn {
+  width: 32px; height: 32px; border: none; background: none;
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: #596B7A; flex-shrink: 0;
+}
+.pv-search-btn:hover { background: #ECEEEF; }
+.pv-btn-link {
+  height: 40px; padding: 8px 12px; border: none; background: none;
+  border-radius: 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 16px; font-weight: 700; color: #0077B2; font-family: var(--font);
+  cursor: pointer; white-space: nowrap;
+}
+.pv-btn-link:hover { background: #B2F4FF; }
+.pv-btn-link svg { flex-shrink: 0; }
+/* Table */
+.pv-table-wrap { display: flex; overflow: hidden; }
+.pv-col { display: flex; flex-direction: column; }
+.pv-col--deal   { width: 199px; flex-shrink: 0; }
+.pv-col--status { width: 181px; flex-shrink: 0; }
+.pv-col--resp   { flex: 1; }
+.pv-col--value  { width: 151px; flex-shrink: 0; }
+.pv-th {
+  padding: 17px 16px; border-bottom: 2px solid rgba(0,34,51,0.34);
+  font-size: 12px; font-weight: 800; text-transform: uppercase;
+  color: rgba(0,34,51,0.70); line-height: 15.6px;
+  display: flex; align-items: center; gap: 12px; background: white;
+  height: 58px;
+}
+.pv-th-sort { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: rgba(0,34,51,0.60); }
+.pv-th-center { justify-content: center; }
+.pv-td {
+  padding: 16px; border-bottom: 1px solid var(--color-border); background: white;
+  display: flex; align-items: center; gap: 12px; flex: 1;
+}
+.pv-td--center { justify-content: center; }
+.pv-tr-alt .pv-td { background: white; }
+.pv-deal-name { font-size: 16px; font-weight: 700; line-height: 24px; color: #0077B2; }
+.pv-deal-aux  { font-size: 14px; font-weight: 500; line-height: 19.6px; color: #405466; }
+.pv-badge {
+  display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px;
+  background: #ECEEEF; border-radius: 999px; font-size: 12px; font-weight: 500;
+  line-height: 15.6px; color: #002233; white-space: nowrap; width: 100%;
+}
+.pv-badge-icon { width: 16px; height: 16px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.pv-badge-caret { margin-left: auto; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pv-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
+.pv-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.pv-value { font-size: 16px; font-weight: 700; line-height: 24px; color: #002233; }
+/* Pagination */
+.pv-pagination { display: flex; justify-content: flex-end; align-items: center; padding: 16px; }
+.pv-page-btn {
+  height: 40px; padding: 8px 16px; border: none; background: none;
+  border-radius: 12px; font-size: 16px; font-weight: 700; font-family: var(--font);
+  color: #0077B2; cursor: pointer;
+}
+.pv-page-btn:hover { background: #B2F4FF; }
+.pv-page-btn:disabled { color: #7F8D99; cursor: default; }
+.pv-page-btn:disabled:hover { background: none; }
+/* ── Activities bar ── */
+.profile-activities-bar {
+  display: flex; gap: 8px; align-items: center;
+  padding: 0;
+}
+.profile-search-wrap {
+  display: flex; align-items: center;
+  border: 1px solid var(--color-border-interactive);
+  border-radius: var(--radius-md);
+  padding: 4px 4px 4px 12px;
+  gap: 8px; flex: 1;
+  background: var(--color-surface);
+}
+.profile-search-wrap input {
+  border: none; outline: none; flex: 1;
+  font-family: var(--font); font-size: 16px; font-weight: 500;
+  color: var(--color-text-low); letter-spacing: -0.16px;
+  background: transparent;
+}
+.profile-search-icon {
+  height: 32px; width: 32px; padding: 6px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; overflow: hidden;
+}
+.profile-search-icon svg { width: 20px; height: 20px; fill: #596B7A; }
+.profile-bar-btn {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font);
+  font-size: 16px; font-weight: 700;
+  color: var(--color-primary-text);
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px 8px 12px; border-radius: var(--radius-md);
+  white-space: nowrap; line-height: 24px;
+  transition: background .15s, color .15s;
+}
+.profile-bar-btn.sort { padding: 8px 12px 8px 16px; }
+.profile-bar-btn:hover { background: #B2F4FF; color: #005580; }
+.profile-bar-btn:hover svg { fill: #005580; }
+.profile-bar-btn svg { width: 24px; height: 24px; fill: var(--color-primary-text); transition: fill .15s; }
+/* ── Timeline (overview structure) ── */
+.overview-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.overview-timeline-item {
+  display: flex;
+  align-items: stretch;
+}
+
+.overview-timeline-rail {
+  width: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-top: 4px;
+  flex-shrink: 0;
+}
+
+.overview-timeline-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.overview-timeline-dot--mint {
+  background: #CCFCF1;
+}
+
+.overview-timeline-dot--primary {
+  background: #B2F4FF;
+}
+
+.overview-timeline-dot--pink {
+  background: #FDD6EA;
+}
+
+.overview-timeline-dot--load-more {
+  background: var(--color-primary-surface-low);
+}
+
+.overview-timeline-dot svg,
+.overview-timeline-dot img {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.overview-timeline-dot svg {
+  fill: #fff;
+}
+
+.overview-timeline-dot--load-more svg {
+  fill: var(--color-primary-text);
+}
+
+.overview-timeline-line {
+  flex: 1;
+  width: 4px;
+  min-height: 8px;
+  background: var(--color-border);
+}
+
+.overview-timeline-content {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 0 32px 12px;
+}
+
+.overview-timeline-item:last-child .overview-timeline-content {
+  padding: 0 0 0 12px;
+}
+
+.overview-timeline-item:last-child .overview-timeline-rail {
+  padding-top: 0;
+}
+
+.overview-timeline-item:last-child {
+  align-items: center;
+}
+
+.overview-timeline-item--load-more {
+  padding-top: 4px;
+}
+
+.overview-timeline-item:last-child .overview-timeline-line {
+  display: none;
+}
+
+.overview-timeline-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #212429;
+  letter-spacing: -0.16px;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.overview-timeline-meta {
+  font-size: 14px;
+  color: #636e7c;
+  letter-spacing: -0.14px;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.overview-timeline-details {
+  font-size: 14px;
+  color: var(--color-text-high);
+  letter-spacing: -0.14px;
+  line-height: 1.4;
+}
+
+.overview-timeline-details strong {
+  font-weight: 700;
+}
+
+.overview-timeline-action {
+  margin-top: 12px;
+  height: 40px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-surface-low);
+  color: var(--color-primary-text);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.overview-timeline-action:hover {
+  background: #66EBFF;
+  color: #005580;
+}
+
+.overview-load-more {
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+}
+
+.overview-load-more .overview-timeline-action {
+  margin-top: 0;
+}
+/* Right column */
+.profile-responsible-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+.profile-responsible-list:empty::after {
+  content: "Nenhum responsável atribuído";
+  color: var(--color-text-low);
+  font: 500 14px/1.4 var(--font);
+}
 .profile-responsible-item {
   display: flex; gap: 12px; align-items: center;
 }
@@ -3015,7 +4295,8 @@
   flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center;
   font-size: 13px; font-weight: 900; color: #fff;
 }
-.profile-resp-info { display: flex; flex-direction: column; }
+.profile-resp-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.profile-resp-info { display: flex; flex-direction: column; min-width: 0; }
 .profile-resp-role {
   font-size: 12px; font-weight: 500;
   color: var(--color-text-low); letter-spacing: -0.12px; line-height: 1.3;
@@ -3023,6 +4304,149 @@
 .profile-resp-name {
   font-size: 14px; font-weight: 700;
   color: var(--color-primary-text); letter-spacing: -0.14px; line-height: 1.4;
+}
+.resp-autocomplete { position: relative; width: 100%; }
+.resp-autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 400;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.resp-autocomplete-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font);
+}
+.resp-autocomplete-item:hover,
+.resp-autocomplete-item:focus-visible,
+.resp-autocomplete-item.is-active {
+  background: var(--color-surface-low);
+  outline: none;
+}
+.resp-autocomplete-item.is-selected {
+  background: var(--color-primary-surface-low);
+}
+.resp-autocomplete-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.resp-autocomplete-item-main {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-high);
+  letter-spacing: -0.14px;
+}
+.resp-autocomplete-item-sub {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-low);
+  letter-spacing: -0.13px;
+}
+.resp-autocomplete-empty {
+  padding: 12px 14px;
+  font: 500 14px/1.4 var(--font);
+  color: var(--color-text-low);
+}
+.resp-selected-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.resp-selected-list:empty::after {
+  content: "Nenhum responsável selecionado";
+  color: var(--color-text-low);
+  font: 500 14px/1.4 var(--font);
+}
+.resp-selected-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  margin: 0 -8px;
+  border-radius: var(--radius-sm);
+}
+.resp-selected-item .profile-resp-info { flex: 1; }
+.resp-selected-remove {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--color-text-low);
+  display: grid;
+  place-items: center;
+}
+.resp-selected-remove:hover {
+  background: var(--color-surface-low);
+  color: var(--color-text-high);
+}
+.resp-selected-remove svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+.empresa-autocomplete { position: relative; width: 100%; }
+.empresa-autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 400;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.empresa-autocomplete-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font);
+}
+.empresa-autocomplete-item:hover,
+.empresa-autocomplete-item:focus-visible {
+  background: var(--color-surface-low);
+  outline: none;
+}
+.empresa-autocomplete-item-main {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-high);
+  letter-spacing: -0.14px;
+}
+.empresa-autocomplete-item-sub {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-low);
+  letter-spacing: -0.13px;
 }
 .profile-ongoing-item {
   display: flex; gap: 8px; align-items: center;
@@ -3169,6 +4593,8 @@
 
   <!-- ── CONTENT ─────────────────────────────────────── -->
   <main class="content">
+    <div class="content-split">
+    <div class="content-main">
     <header class="page-header">
       <div class="page-header-inner">
         <div class="page-header-title-row">
@@ -3178,7 +4604,7 @@
           <h1 class="page-header-title skeleton" id="page-header-title">—</h1>
         </div>
         <div class="header-actions">
-          <button class="btn-icon btn-icon-sm" type="button" title="Mais opções" aria-label="Mais opções">
+          <button class="btn-icon btn-icon-sm" type="button" id="page-header-more-btn" title="Mais opções" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10.2687 8.06443C11.3386 8.06443 12.2042 8.93003 12.2042 9.99992C12.2042 11.0698 11.3386 11.9354 10.2687 11.9354C9.19884 11.9354 8.33325 11.0698 8.33325 9.99992C8.33325 8.93003 9.19884 8.06443 10.2687 8.06443ZM8.33325 5.26874C8.33325 6.33863 9.19884 7.20422 10.2687 7.20422C11.3386 7.20422 12.2042 6.33863 12.2042 5.26874C12.2042 4.19884 11.3386 3.33325 10.2687 3.33325C9.19884 3.33325 8.33325 4.19884 8.33325 5.26874ZM8.33325 14.7311C8.33325 15.801 9.19884 16.6666 10.2687 16.6666C11.3386 16.6666 12.2042 15.801 12.2042 14.7311C12.2042 13.6612 11.3386 12.7956 10.2687 12.7956C9.19884 12.7956 8.33325 13.6612 8.33325 14.7311Z" fill="var(--color-primary-text)"/></svg>
           </button>
           <button class="btn-secondary btn-secondary-sm" type="button" id="page-header-secondary-action">
@@ -3193,20 +4619,19 @@
       </div>
     </header>
 
-    <div class="content-split">
     <div class="content-body">
     <div class="profile-layout">
 
       <!-- ─── LEFT COLUMN ─────────────────────────────── -->
       <div class="profile-col">
 
-        <!-- Dados do contato (accordion) -->
-        <section class="overview-card" data-accordion>
+        <!-- Contato (accordion) -->
+        <section class="overview-card" data-accordion id="profile-contact-card">
           <button type="button" class="overview-accordion-head" aria-expanded="true">
             <span class="overview-accordion-icon" aria-hidden="true">
-              <img src="../contatos/painel-visao/person.svg" width="16" height="16" alt="">
+              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8.00008 8C9.68341 8 11.0477 6.65703 11.0477 5C11.0477 3.34297 9.68341 2 8.00008 2C6.31675 2 4.95246 3.34297 4.95246 5C4.95246 6.65703 6.31675 8 8.00008 8ZM10.1334 8.75H9.7358C9.20722 8.98906 8.61913 9.125 8.00008 9.125C7.38103 9.125 6.79532 8.98906 6.26437 8.75H5.86675C4.10008 8.75 2.66675 10.1609 2.66675 11.9V12.875C2.66675 13.4961 3.17865 14 3.80961 14H12.1906C12.8215 14 13.3334 13.4961 13.3334 12.875V11.9C13.3334 10.1609 11.9001 8.75 10.1334 8.75Z"/></svg>
             </span>
-            <span class="overview-accordion-title">Dados do contato</span>
+            <span class="overview-accordion-title">Contato</span>
             <img class="overview-accordion-chevron" src="../contatos/painel-visao/chevron-up.svg" width="24" height="24" alt="">
           </button>
           <div class="overview-card-body">
@@ -3219,49 +4644,14 @@
             <input type="file" id="profile-avatar-input" accept="image/*" style="display:none">
               </div>
               <div class="overview-contact-text">
-            <div class="profile-name-field" data-field="nome">
+            <div class="profile-name-field">
               <div class="profile-name overview-contact-name" id="profile-name">—</div>
-              <div class="profile-ident-actions">
-                <button class="profile-ident-edit">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9048 5.76122L14.2387 9.09513L6.99924 16.3346L4.02679 16.6627C3.62887 16.7067 3.29266 16.3702 3.33694 15.9723L3.66767 12.9978L10.9048 5.76122V5.76122ZM16.3007 5.26486L14.7353 3.69947C14.247 3.21118 13.4551 3.21118 12.9668 3.69947L11.4941 5.17215L14.828 8.50606L16.3007 7.03338C16.789 6.54483 16.789 5.75315 16.3007 5.26486V5.26486Z" fill="currentColor"/></svg>
-                  <div class="profile-tooltip">
-                    <div class="profile-tooltip-arrow"></div>
-                    <div class="profile-tooltip-box">Editar</div>
-                  </div>
-                </button>
-                <button class="profile-ident-copy">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5002 15.625V16.6667C12.5002 17.0833 12.0835 17.5 11.6668 17.5H4.5835C3.75016 17.5 3.3335 17.0833 3.3335 16.25V5.83333C3.3335 5.41667 3.75016 5 4.16683 5H6.19064V13.9844C6.19064 14.889 6.93829 15.625 7.85731 15.625H12.5002ZM12.8573 5.54687V2.5H7.85731C7.46281 2.5 7.14302 2.81479 7.14302 3.20312V13.9844C7.14302 14.3727 7.46281 14.6875 7.85731 14.6875H15.9525C16.347 14.6875 16.6668 14.3727 16.6668 13.9844V6.25H13.5716C13.1787 6.25 12.8573 5.93359 12.8573 5.54687ZM16.4576 4.63782L14.4951 2.70593C14.3611 2.57407 14.1794 2.5 13.99 2.5H13.8097V5.3125H16.6668V5.13499C16.6668 4.94852 16.5916 4.76968 16.4576 4.63782Z" fill="currentColor"/></svg>
-                  <div class="profile-tooltip">
-                    <div class="profile-tooltip-arrow"></div>
-                    <div class="profile-tooltip-box">Copiar</div>
-                  </div>
-                </button>
-              </div>
             </div>
-            <div class="profile-name-field" data-field="cargo">
+            <div class="profile-name-field">
               <div class="profile-role overview-contact-role" id="profile-role">—</div>
-              <div class="profile-ident-actions">
-                <button class="profile-ident-edit">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9048 5.76122L14.2387 9.09513L6.99924 16.3346L4.02679 16.6627C3.62887 16.7067 3.29266 16.3702 3.33694 15.9723L3.66767 12.9978L10.9048 5.76122V5.76122ZM16.3007 5.26486L14.7353 3.69947C14.247 3.21118 13.4551 3.21118 12.9668 3.69947L11.4941 5.17215L14.828 8.50606L16.3007 7.03338C16.789 6.54483 16.789 5.75315 16.3007 5.26486V5.26486Z" fill="currentColor"/></svg>
-                  <div class="profile-tooltip">
-                    <div class="profile-tooltip-arrow"></div>
-                    <div class="profile-tooltip-box">Editar</div>
-                  </div>
-                </button>
-                <button class="profile-ident-copy">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5002 15.625V16.6667C12.5002 17.0833 12.0835 17.5 11.6668 17.5H4.5835C3.75016 17.5 3.3335 17.0833 3.3335 16.25V5.83333C3.3335 5.41667 3.75016 5 4.16683 5H6.19064V13.9844C6.19064 14.889 6.93829 15.625 7.85731 15.625H12.5002ZM12.8573 5.54687V2.5H7.85731C7.46281 2.5 7.14302 2.81479 7.14302 3.20312V13.9844C7.14302 14.3727 7.46281 14.6875 7.85731 14.6875H15.9525C16.347 14.6875 16.6668 14.3727 16.6668 13.9844V6.25H13.5716C13.1787 6.25 12.8573 5.93359 12.8573 5.54687ZM16.4576 4.63782L14.4951 2.70593C14.3611 2.57407 14.1794 2.5 13.99 2.5H13.8097V5.3125H16.6668V5.13499C16.6668 4.94852 16.5916 4.76968 16.4576 4.63782Z" fill="currentColor"/></svg>
-                  <div class="profile-tooltip">
-                    <div class="profile-tooltip-arrow"></div>
-                    <div class="profile-tooltip-box">Copiar</div>
-                  </div>
-                </button>
-              </div>
             </div>
               </div>
-              <button type="button" class="overview-icon-btn" id="profile-whatsapp-btn" title="WhatsApp" aria-label="WhatsApp">
-                <img src="../contatos/painel-visao/whatsapp.svg" width="20" height="20" alt="">
-              </button>
-              <button type="button" class="overview-icon-btn" id="profile-overview-more-btn" title="Mais opções" aria-label="Mais opções">
+              <button type="button" class="overview-icon-btn" id="profile-overview-more-btn" title="Mais opções" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false">
                 <img src="../contatos/painel-visao/elipsis-v.svg" width="20" height="20" alt="">
               </button>
             </div>
@@ -3312,7 +4702,7 @@
               </div>
             </div>
             <div class="profile-quick-wrap">
-              <button class="profile-quick-btn">
+              <button class="profile-quick-btn" type="button" id="profile-quick-more-btn" aria-haspopup="menu" aria-expanded="false">
                 <svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
               </button>
               <div class="profile-tooltip">
@@ -3325,64 +4715,77 @@
           <div class="overview-divider"></div>
           <div class="overview-section-label">Identificação do contato</div>
           <div class="overview-info-list profile-ident-list">
-            <div class="overview-info-item profile-ident-item" data-field="email">
-              <img src="../contatos/painel-visao/mail.svg" width="24" height="24" alt="">
-              <span></span>
-              <div class="profile-ident-actions">
-                <button class="profile-ident-edit">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9048 5.76122L14.2387 9.09513L6.99924 16.3346L4.02679 16.6627C3.62887 16.7067 3.29266 16.3702 3.33694 15.9723L3.66767 12.9978L10.9048 5.76122V5.76122ZM16.3007 5.26486L14.7353 3.69947C14.247 3.21118 13.4551 3.21118 12.9668 3.69947L11.4941 5.17215L14.828 8.50606L16.3007 7.03338C16.789 6.54483 16.789 5.75315 16.3007 5.26486V5.26486Z" fill="currentColor"/></svg>
-                  <div class="profile-tooltip">
-                    <div class="profile-tooltip-arrow"></div>
-                    <div class="profile-tooltip-box">Editar</div>
+            <div class="profile-ident-group" id="profile-group-email">
+              <div class="profile-ident-group-label">E-mail</div>
+              <div class="profile-ident-values" id="profile-email-values">
+                <div class="overview-info-item profile-ident-item" data-field="email">
+                  <span class="profile-ident-value"></span>
+                  <div class="profile-ident-actions">
+                    <button class="profile-ident-edit">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9048 5.76122L14.2387 9.09513L6.99924 16.3346L4.02679 16.6627C3.62887 16.7067 3.29266 16.3702 3.33694 15.9723L3.66767 12.9978L10.9048 5.76122V5.76122ZM16.3007 5.26486L14.7353 3.69947C14.247 3.21118 13.4551 3.21118 12.9668 3.69947L11.4941 5.17215L14.828 8.50606L16.3007 7.03338C16.789 6.54483 16.789 5.75315 16.3007 5.26486V5.26486Z" fill="currentColor"/></svg>
+                      <div class="profile-tooltip">
+                        <div class="profile-tooltip-arrow"></div>
+                        <div class="profile-tooltip-box">Editar</div>
+                      </div>
+                    </button>
+                    <button class="profile-ident-copy">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5002 15.625V16.6667C12.5002 17.0833 12.0835 17.5 11.6668 17.5H4.5835C3.75016 17.5 3.3335 17.0833 3.3335 16.25V5.83333C3.3335 5.41667 3.75016 5 4.16683 5H6.19064V13.9844C6.19064 14.889 6.93829 15.625 7.85731 15.625H12.5002ZM12.8573 5.54687V2.5H7.85731C7.46281 2.5 7.14302 2.81479 7.14302 3.20312V13.9844C7.14302 14.3727 7.46281 14.6875 7.85731 14.6875H15.9525C16.347 14.6875 16.6668 14.3727 16.6668 13.9844V6.25H13.5716C13.1787 6.25 12.8573 5.93359 12.8573 5.54687ZM16.4576 4.63782L14.4951 2.70593C14.3611 2.57407 14.1794 2.5 13.99 2.5H13.8097V5.3125H16.6668V5.13499C16.6668 4.94852 16.5916 4.76968 16.4576 4.63782Z" fill="currentColor"/></svg>
+                      <div class="profile-tooltip">
+                        <div class="profile-tooltip-arrow"></div>
+                        <div class="profile-tooltip-box">Copiar</div>
+                      </div>
+                    </button>
                   </div>
-                </button>
-                <button class="profile-ident-copy">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5002 15.625V16.6667C12.5002 17.0833 12.0835 17.5 11.6668 17.5H4.5835C3.75016 17.5 3.3335 17.0833 3.3335 16.25V5.83333C3.3335 5.41667 3.75016 5 4.16683 5H6.19064V13.9844C6.19064 14.889 6.93829 15.625 7.85731 15.625H12.5002ZM12.8573 5.54687V2.5H7.85731C7.46281 2.5 7.14302 2.81479 7.14302 3.20312V13.9844C7.14302 14.3727 7.46281 14.6875 7.85731 14.6875H15.9525C16.347 14.6875 16.6668 14.3727 16.6668 13.9844V6.25H13.5716C13.1787 6.25 12.8573 5.93359 12.8573 5.54687ZM16.4576 4.63782L14.4951 2.70593C14.3611 2.57407 14.1794 2.5 13.99 2.5H13.8097V5.3125H16.6668V5.13499C16.6668 4.94852 16.5916 4.76968 16.4576 4.63782Z" fill="currentColor"/></svg>
-                  <div class="profile-tooltip">
-                    <div class="profile-tooltip-arrow"></div>
-                    <div class="profile-tooltip-box">Copiar</div>
-                  </div>
-                </button>
+                </div>
               </div>
             </div>
-            <div class="overview-info-item profile-ident-item" data-field="telefone">
-              <img src="../contatos/painel-visao/phone.svg" width="24" height="24" alt="">
-              <span></span>
-              <div class="profile-ident-actions">
-                <button class="profile-ident-edit">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9048 5.76122L14.2387 9.09513L6.99924 16.3346L4.02679 16.6627C3.62887 16.7067 3.29266 16.3702 3.33694 15.9723L3.66767 12.9978L10.9048 5.76122V5.76122ZM16.3007 5.26486L14.7353 3.69947C14.247 3.21118 13.4551 3.21118 12.9668 3.69947L11.4941 5.17215L14.828 8.50606L16.3007 7.03338C16.789 6.54483 16.789 5.75315 16.3007 5.26486V5.26486Z" fill="currentColor"/></svg>
-                  <div class="profile-tooltip">
-                    <div class="profile-tooltip-arrow"></div>
-                    <div class="profile-tooltip-box">Editar</div>
+            <div class="profile-ident-group" id="profile-group-telefone">
+              <div class="profile-ident-group-label">Telefones</div>
+              <div class="profile-ident-values" id="profile-phone-values">
+                <div class="overview-info-item profile-ident-item" data-field="telefone" data-inline-type="phone">
+                  <div class="profile-ident-flag" id="profile-phone-flag" aria-hidden="true"></div>
+                  <span class="profile-ident-value"></span>
+                  <div class="profile-ident-actions">
+                    <button class="profile-ident-edit">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9048 5.76122L14.2387 9.09513L6.99924 16.3346L4.02679 16.6627C3.62887 16.7067 3.29266 16.3702 3.33694 15.9723L3.66767 12.9978L10.9048 5.76122V5.76122ZM16.3007 5.26486L14.7353 3.69947C14.247 3.21118 13.4551 3.21118 12.9668 3.69947L11.4941 5.17215L14.828 8.50606L16.3007 7.03338C16.789 6.54483 16.789 5.75315 16.3007 5.26486V5.26486Z" fill="currentColor"/></svg>
+                      <div class="profile-tooltip">
+                        <div class="profile-tooltip-arrow"></div>
+                        <div class="profile-tooltip-box">Editar</div>
+                      </div>
+                    </button>
+                    <button class="profile-ident-copy">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5002 15.625V16.6667C12.5002 17.0833 12.0835 17.5 11.6668 17.5H4.5835C3.75016 17.5 3.3335 17.0833 3.3335 16.25V5.83333C3.3335 5.41667 3.75016 5 4.16683 5H6.19064V13.9844C6.19064 14.889 6.93829 15.625 7.85731 15.625H12.5002ZM12.8573 5.54687V2.5H7.85731C7.46281 2.5 7.14302 2.81479 7.14302 3.20312V13.9844C7.14302 14.3727 7.46281 14.6875 7.85731 14.6875H15.9525C16.347 14.6875 16.6668 14.3727 16.6668 13.9844V6.25H13.5716C13.1787 6.25 12.8573 5.93359 12.8573 5.54687ZM16.4576 4.63782L14.4951 2.70593C14.3611 2.57407 14.1794 2.5 13.99 2.5H13.8097V5.3125H16.6668V5.13499C16.6668 4.94852 16.5916 4.76968 16.4576 4.63782Z" fill="currentColor"/></svg>
+                      <div class="profile-tooltip">
+                        <div class="profile-tooltip-arrow"></div>
+                        <div class="profile-tooltip-box">Copiar</div>
+                      </div>
+                    </button>
                   </div>
-                </button>
-                <button class="profile-ident-copy">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5002 15.625V16.6667C12.5002 17.0833 12.0835 17.5 11.6668 17.5H4.5835C3.75016 17.5 3.3335 17.0833 3.3335 16.25V5.83333C3.3335 5.41667 3.75016 5 4.16683 5H6.19064V13.9844C6.19064 14.889 6.93829 15.625 7.85731 15.625H12.5002ZM12.8573 5.54687V2.5H7.85731C7.46281 2.5 7.14302 2.81479 7.14302 3.20312V13.9844C7.14302 14.3727 7.46281 14.6875 7.85731 14.6875H15.9525C16.347 14.6875 16.6668 14.3727 16.6668 13.9844V6.25H13.5716C13.1787 6.25 12.8573 5.93359 12.8573 5.54687ZM16.4576 4.63782L14.4951 2.70593C14.3611 2.57407 14.1794 2.5 13.99 2.5H13.8097V5.3125H16.6668V5.13499C16.6668 4.94852 16.5916 4.76968 16.4576 4.63782Z" fill="currentColor"/></svg>
-                  <div class="profile-tooltip">
-                    <div class="profile-tooltip-arrow"></div>
-                    <div class="profile-tooltip-box">Copiar</div>
-                  </div>
-                </button>
+                </div>
               </div>
             </div>
-            <div class="overview-info-item profile-ident-item" data-field="rede_social_usuario">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.9288 7.20998C9.37432 7.20998 7.31385 9.27045 7.31385 11.825C7.31385 14.3795 9.37432 16.4399 11.9288 16.4399C14.4833 16.4399 16.5438 14.3795 16.5438 11.825C16.5438 9.27045 14.4833 7.20998 11.9288 7.20998ZM11.9288 14.8253C10.278 14.8253 8.92849 13.4798 8.92849 11.825C8.92849 10.1701 10.274 8.82462 11.9288 8.82462C13.5836 8.82462 14.9292 10.1701 14.9292 11.825C14.9292 13.4798 13.5796 14.8253 11.9288 14.8253V14.8253ZM17.809 7.0212C17.809 7.61966 17.327 8.09763 16.7326 8.09763C16.1341 8.09763 15.6561 7.61565 15.6561 7.0212C15.6561 6.42676 16.1381 5.94478 16.7326 5.94478C17.327 5.94478 17.809 6.42676 17.809 7.0212ZM20.8656 8.11369C20.7973 6.67177 20.4679 5.39451 19.4116 4.34219C18.3593 3.28986 17.082 2.96051 15.6401 2.88821C14.154 2.80386 9.69966 2.80386 8.21355 2.88821C6.77564 2.95649 5.49838 3.28585 4.44204 4.33817C3.3857 5.3905 3.06036 6.66775 2.98806 8.10968C2.90372 9.59579 2.90372 14.0501 2.98806 15.5362C3.05635 16.9781 3.3857 18.2554 4.44204 19.3077C5.49838 20.36 6.77162 20.6894 8.21355 20.7617C9.69966 20.846 14.154 20.846 15.6401 20.7617C17.082 20.6934 18.3593 20.3641 19.4116 19.3077C20.4639 18.2554 20.7933 16.9781 20.8656 15.5362C20.9499 14.0501 20.9499 9.5998 20.8656 8.11369V8.11369ZM18.9457 17.1308C18.6324 17.918 18.0259 18.5245 17.2346 18.8418C16.0498 19.3117 13.2382 19.2033 11.9288 19.2033C10.6194 19.2033 7.80386 19.3077 6.62301 18.8418C5.83577 18.5285 5.22928 17.922 4.91197 17.1308C4.44204 15.9459 4.55049 13.1343 4.55049 11.825C4.55049 10.5156 4.44606 7.69999 4.91197 6.51914C5.22526 5.7319 5.83176 5.12541 6.62301 4.8081C7.80788 4.33817 10.6194 4.44662 11.9288 4.44662C13.2382 4.44662 16.0538 4.34219 17.2346 4.8081C18.0219 5.12139 18.6284 5.72789 18.9457 6.51914C19.4156 7.70401 19.3072 10.5156 19.3072 11.825C19.3072 13.1343 19.4156 15.9499 18.9457 17.1308Z" fill="currentColor"/></svg>
-              <span></span>
-              <div class="profile-ident-actions">
-                <button class="profile-ident-edit">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9048 5.76122L14.2387 9.09513L6.99924 16.3346L4.02679 16.6627C3.62887 16.7067 3.29266 16.3702 3.33694 15.9723L3.66767 12.9978L10.9048 5.76122V5.76122ZM16.3007 5.26486L14.7353 3.69947C14.247 3.21118 13.4551 3.21118 12.9668 3.69947L11.4941 5.17215L14.828 8.50606L16.3007 7.03338C16.789 6.54483 16.789 5.75315 16.3007 5.26486V5.26486Z" fill="currentColor"/></svg>
-                  <div class="profile-tooltip">
-                    <div class="profile-tooltip-arrow"></div>
-                    <div class="profile-tooltip-box">Editar</div>
+            <div class="profile-ident-group" id="profile-group-cpf">
+              <div class="profile-ident-group-label">CPF</div>
+              <div class="profile-ident-values">
+                <div class="overview-info-item profile-ident-item" data-field="cpf">
+                  <span class="profile-ident-value"></span>
+                  <div class="profile-ident-actions">
+                    <button class="profile-ident-edit">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9048 5.76122L14.2387 9.09513L6.99924 16.3346L4.02679 16.6627C3.62887 16.7067 3.29266 16.3702 3.33694 15.9723L3.66767 12.9978L10.9048 5.76122V5.76122ZM16.3007 5.26486L14.7353 3.69947C14.247 3.21118 13.4551 3.21118 12.9668 3.69947L11.4941 5.17215L14.828 8.50606L16.3007 7.03338C16.789 6.54483 16.789 5.75315 16.3007 5.26486V5.26486Z" fill="currentColor"/></svg>
+                      <div class="profile-tooltip">
+                        <div class="profile-tooltip-arrow"></div>
+                        <div class="profile-tooltip-box">Editar</div>
+                      </div>
+                    </button>
+                    <button class="profile-ident-copy">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5002 15.625V16.6667C12.5002 17.0833 12.0835 17.5 11.6668 17.5H4.5835C3.75016 17.5 3.3335 17.0833 3.3335 16.25V5.83333C3.3335 5.41667 3.75016 5 4.16683 5H6.19064V13.9844C6.19064 14.889 6.93829 15.625 7.85731 15.625H12.5002ZM12.8573 5.54687V2.5H7.85731C7.46281 2.5 7.14302 2.81479 7.14302 3.20312V13.9844C7.14302 14.3727 7.46281 14.6875 7.85731 14.6875H15.9525C16.347 14.6875 16.6668 14.3727 16.6668 13.9844V6.25H13.5716C13.1787 6.25 12.8573 5.93359 12.8573 5.54687ZM16.4576 4.63782L14.4951 2.70593C14.3611 2.57407 14.1794 2.5 13.99 2.5H13.8097V5.3125H16.6668V5.13499C16.6668 4.94852 16.5916 4.76968 16.4576 4.63782Z" fill="currentColor"/></svg>
+                      <div class="profile-tooltip">
+                        <div class="profile-tooltip-arrow"></div>
+                        <div class="profile-tooltip-box">Copiar</div>
+                      </div>
+                    </button>
                   </div>
-                </button>
-                <button class="profile-ident-copy">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5002 15.625V16.6667C12.5002 17.0833 12.0835 17.5 11.6668 17.5H4.5835C3.75016 17.5 3.3335 17.0833 3.3335 16.25V5.83333C3.3335 5.41667 3.75016 5 4.16683 5H6.19064V13.9844C6.19064 14.889 6.93829 15.625 7.85731 15.625H12.5002ZM12.8573 5.54687V2.5H7.85731C7.46281 2.5 7.14302 2.81479 7.14302 3.20312V13.9844C7.14302 14.3727 7.46281 14.6875 7.85731 14.6875H15.9525C16.347 14.6875 16.6668 14.3727 16.6668 13.9844V6.25H13.5716C13.1787 6.25 12.8573 5.93359 12.8573 5.54687ZM16.4576 4.63782L14.4951 2.70593C14.3611 2.57407 14.1794 2.5 13.99 2.5H13.8097V5.3125H16.6668V5.13499C16.6668 4.94852 16.5916 4.76968 16.4576 4.63782Z" fill="currentColor"/></svg>
-                  <div class="profile-tooltip">
-                    <div class="profile-tooltip-arrow"></div>
-                    <div class="profile-tooltip-box">Copiar</div>
-                  </div>
-                </button>
+                </div>
               </div>
             </div>
           </div>
@@ -3390,12 +4793,12 @@
         </section>
 
         <!-- Info card: Informações + Endereço + Privacidade -->
-        <section class="overview-card" data-accordion>
+        <section class="overview-card" data-accordion id="profile-more-info-card">
           <button type="button" class="overview-accordion-head" aria-expanded="true">
             <span class="overview-accordion-icon" aria-hidden="true">
-              <img src="icons/file.svg" width="16" height="16" alt="">
+              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8.88921 4.875V1.33333H3.33366C2.96421 1.33333 2.66699 1.61198 2.66699 1.95833V14.0417C2.66699 14.388 2.96421 14.6667 3.33366 14.6667H12.667C13.0364 14.6667 13.3337 14.388 13.3337 14.0417V5.5H9.55588C9.18921 5.5 8.88921 5.21875 8.88921 4.875ZM10.667 11.0208C10.667 11.1927 10.517 11.3333 10.3337 11.3333H5.66699C5.48366 11.3333 5.33366 11.1927 5.33366 11.0208V10.8125C5.33366 10.6406 5.48366 10.5 5.66699 10.5H10.3337C10.517 10.5 10.667 10.6406 10.667 10.8125V11.0208ZM10.667 9.35417C10.667 9.52604 10.517 9.66667 10.3337 9.66667H5.66699C5.48366 9.66667 5.33366 9.52604 5.33366 9.35417V9.14583C5.33366 8.97396 5.48366 8.83333 5.66699 8.83333H10.3337C10.517 8.83333 10.667 8.97396 10.667 9.14583V9.35417ZM10.667 7.47917V7.6875C10.667 7.85937 10.517 8 10.3337 8H5.66699C5.48366 8 5.33366 7.85937 5.33366 7.6875V7.47917C5.33366 7.30729 5.48366 7.16667 5.66699 7.16667H10.3337C10.517 7.16667 10.667 7.30729 10.667 7.47917ZM13.3337 4.50781V4.66667H9.7781V1.33333H9.94755C10.1253 1.33333 10.2948 1.39844 10.4198 1.51562L13.1392 4.06771C13.2642 4.1849 13.3337 4.34375 13.3337 4.50781Z"/></svg>
             </span>
-            <span class="overview-accordion-title">Informações de Contato</span>
+            <span class="overview-accordion-title">Mais informações</span>
             <img class="overview-accordion-chevron" src="../contatos/painel-visao/chevron-up.svg" width="24" height="24" alt="">
           </button>
           <div class="overview-card-body">
@@ -3406,7 +4809,28 @@
             <div class="profile-detail-item" id="pi-outros-fones">
               <span class="profile-detail-label">Outros telefones</span>
             </div>
-            <div class="profile-detail-item" id="pi-nascimento" data-field="data_nascimento">
+            <div id="profile-extra-socials"></div>
+            <div class="profile-detail-item profile-facebook-social" id="pi-facebook" data-field="rede_social_usuario" data-social-index="0" style="display:none">
+              <span class="profile-detail-label">Facebook</span>
+              <div class="profile-detail-value-row">
+                <span class="profile-detail-value" id="pi-facebook-val">—</span>
+                <button class="profile-detail-edit">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9048 5.76122L14.2387 9.09513L6.99924 16.3346L4.02679 16.6627C3.62887 16.7067 3.29266 16.3702 3.33694 15.9723L3.66767 12.9978L10.9048 5.76122V5.76122ZM16.3007 5.26486L14.7353 3.69947C14.247 3.21118 13.4551 3.21118 12.9668 3.69947L11.4941 5.17215L14.828 8.50606L16.3007 7.03338C16.789 6.54483 16.789 5.75315 16.3007 5.26486V5.26486Z" fill="currentColor"/></svg>
+                  <div class="profile-tooltip">
+                    <div class="profile-tooltip-arrow"></div>
+                    <div class="profile-tooltip-box">Editar</div>
+                  </div>
+                </button>
+                <button class="profile-detail-copy" title="Copiar">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5002 15.625V16.6667C12.5002 17.0833 12.0835 17.5 11.6668 17.5H4.5835C3.75016 17.5 3.3335 17.0833 3.3335 16.25V5.83333C3.3335 5.41667 3.75016 5 4.16683 5H6.19064V13.9844C6.19064 14.889 6.93829 15.625 7.85731 15.625H12.5002ZM12.8573 5.54687V2.5H7.85731C7.46281 2.5 7.14302 2.81479 7.14302 3.20312V13.9844C7.14302 14.3727 7.46281 14.6875 7.85731 14.6875H15.9525C16.347 14.6875 16.6668 14.3727 16.6668 13.9844V6.25H13.5716C13.1787 6.25 12.8573 5.93359 12.8573 5.54687ZM16.4576 4.63782L14.4951 2.70593C14.3611 2.57407 14.1794 2.5 13.99 2.5H13.8097V5.3125H16.6668V5.13499C16.6668 4.94852 16.5916 4.76968 16.4576 4.63782Z" fill="currentColor"/></svg>
+                  <div class="profile-tooltip">
+                    <div class="profile-tooltip-arrow"></div>
+                    <div class="profile-tooltip-box">Copiar</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+            <div class="profile-detail-item" id="pi-nascimento" data-field="data_nascimento" data-inline-type="date">
               <span class="profile-detail-label">Data de nascimento</span>
               <div class="profile-detail-value-row">
                 <span class="profile-detail-value" id="pi-nascimento-val">—</span>
@@ -3466,10 +4890,24 @@
                 </button>
               </div>
             </div>
+            <div class="profile-detail-item" id="pi-categoria-interesse" data-field="categoria_interesse" data-inline-type="select">
+              <span class="profile-detail-label">Categoria de interesse</span>
+              <div class="profile-detail-value-row">
+                <span class="profile-detail-value">SUV</span>
+                <button class="profile-detail-copy" title="Copiar">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5002 15.625V16.6667C12.5002 17.0833 12.0835 17.5 11.6668 17.5H4.5835C3.75016 17.5 3.3335 17.0833 3.3335 16.25V5.83333C3.3335 5.41667 3.75016 5 4.16683 5H6.19064V13.9844C6.19064 14.889 6.93829 15.625 7.85731 15.625H12.5002ZM12.8573 5.54687V2.5H7.85731C7.46281 2.5 7.14302 2.81479 7.14302 3.20312V13.9844C7.14302 14.3727 7.46281 14.6875 7.85731 14.6875H15.9525C16.347 14.6875 16.6668 14.3727 16.6668 13.9844V6.25H13.5716C13.1787 6.25 12.8573 5.93359 12.8573 5.54687ZM16.4576 4.63782L14.4951 2.70593C14.3611 2.57407 14.1794 2.5 13.99 2.5H13.8097V5.3125H16.6668V5.13499C16.6668 4.94852 16.5916 4.76968 16.4576 4.63782Z" fill="currentColor"/></svg>
+                  <div class="profile-tooltip">
+                    <div class="profile-tooltip-arrow"></div>
+                    <div class="profile-tooltip-box">Copiar</div>
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="profile-divider"></div>
-          <div class="profile-section-header" id="pi-addr-header" style="display:none">Endereço do Contato</div>
-          <div class="profile-detail-list" id="profile-addr-list" style="display:none">
+          <div id="profile-addr-extra">
+          <div class="profile-divider" id="pi-addr-divider"></div>
+          <div class="profile-section-header" id="pi-addr-header">Endereço</div>
+          <div class="profile-detail-list" id="profile-addr-list">
             <div class="profile-detail-item" id="pi-rua" data-field="rua">
               <span class="profile-detail-label">Endereço</span>
               <div class="profile-detail-value-row">
@@ -3550,7 +4988,7 @@
                 </button>
               </div>
             </div>
-            <div class="profile-detail-item" id="pi-estado" data-field="estado">
+            <div class="profile-detail-item" id="pi-estado" data-field="estado" data-inline-type="select">
               <span class="profile-detail-label">Estado</span>
               <div class="profile-detail-value-row">
                 <span class="profile-detail-value" id="pi-estado-val">—</span>
@@ -3590,93 +5028,52 @@
                 </button>
               </div>
             </div>
+            <div class="profile-detail-item" id="pi-pais" data-field="pais" data-inline-type="autocomplete">
+              <span class="profile-detail-label">País</span>
+              <div class="profile-detail-value-row">
+                <span class="profile-detail-value" id="pi-pais-val">—</span>
+                <button class="profile-detail-edit">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9048 5.76122L14.2387 9.09513L6.99924 16.3346L4.02679 16.6627C3.62887 16.7067 3.29266 16.3702 3.33694 15.9723L3.66767 12.9978L10.9048 5.76122V5.76122ZM16.3007 5.26486L14.7353 3.69947C14.247 3.21118 13.4551 3.21118 12.9668 3.69947L11.4941 5.17215L14.828 8.50606L16.3007 7.03338C16.789 6.54483 16.789 5.75315 16.3007 5.26486V5.26486Z" fill="currentColor"/></svg>
+                  <div class="profile-tooltip">
+                    <div class="profile-tooltip-arrow"></div>
+                    <div class="profile-tooltip-box">Editar</div>
+                  </div>
+                </button>
+                <button class="profile-detail-copy" title="Copiar">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5002 15.625V16.6667C12.5002 17.0833 12.0835 17.5 11.6668 17.5H4.5835C3.75016 17.5 3.3335 17.0833 3.3335 16.25V5.83333C3.3335 5.41667 3.75016 5 4.16683 5H6.19064V13.9844C6.19064 14.889 6.93829 15.625 7.85731 15.625H12.5002ZM12.8573 5.54687V2.5H7.85731C7.46281 2.5 7.14302 2.81479 7.14302 3.20312V13.9844C7.14302 14.3727 7.46281 14.6875 7.85731 14.6875H15.9525C16.347 14.6875 16.6668 14.3727 16.6668 13.9844V6.25H13.5716C13.1787 6.25 12.8573 5.93359 12.8573 5.54687ZM16.4576 4.63782L14.4951 2.70593C14.3611 2.57407 14.1794 2.5 13.99 2.5H13.8097V5.3125H16.6668V5.13499C16.6668 4.94852 16.5916 4.76968 16.4576 4.63782Z" fill="currentColor"/></svg>
+                  <div class="profile-tooltip">
+                    <div class="profile-tooltip-arrow"></div>
+                    <div class="profile-tooltip-box">Copiar</div>
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="profile-divider" id="pi-addr-divider" style="display:none"></div>
+          </div>
+          <div class="profile-divider"></div>
           <div class="profile-section-header">Privacidade de Dados</div>
-          <div class="profile-privacy-list">
-            <div class="profile-privacy-item">
-              <svg viewBox="0 0 24 24" fill="#00693e"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-              <span>Envio de comunicação</span>
-            </div>
-            <div class="profile-privacy-item">
-              <svg viewBox="0 0 24 24" fill="#00693e"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-              <span>Consentimento</span>
-            </div>
-          </div>
-          <button class="btn-secondary btn-secondary-sm" type="button" id="profile-addr-btn">Ver todos os campos</button>
+          <div class="profile-privacy-list" id="profile-privacy-list"></div>
+          <button type="button" class="overview-btn-secondary" id="profile-open-contact-edit">Editar campos</button>
           </div>
         </section>
 
         <!-- Empresa card -->
-        <section class="overview-card" data-accordion>
+        <section class="overview-card" data-accordion id="profile-company-card">
           <button type="button" class="overview-accordion-head" aria-expanded="true">
             <span class="overview-accordion-icon" aria-hidden="true">
-              <img src="../contatos/painel-visao/building.svg" width="16" height="16" alt="">
+              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M13.0477 13.25H12.5715V2.5625C12.5715 2.25184 12.3157 2 12.0001 2H4.00008C3.68449 2 3.42865 2.25184 3.42865 2.5625V13.25H2.95246C2.79468 13.25 2.66675 13.3759 2.66675 13.5312V14H13.3334V13.5312C13.3334 13.3759 13.2055 13.25 13.0477 13.25ZM5.71437 3.78125C5.71437 3.62593 5.8423 3.5 6.00008 3.5H6.95246C7.11025 3.5 7.23818 3.62593 7.23818 3.78125V4.71875C7.23818 4.87407 7.11025 5 6.95246 5H6.00008C5.8423 5 5.71437 4.87407 5.71437 4.71875V3.78125ZM5.71437 6.03125C5.71437 5.87593 5.8423 5.75 6.00008 5.75H6.95246C7.11025 5.75 7.23818 5.87593 7.23818 6.03125V6.96875C7.23818 7.12407 7.11025 7.25 6.95246 7.25H6.00008C5.8423 7.25 5.71437 7.12407 5.71437 6.96875V6.03125ZM6.95246 9.5H6.00008C5.8423 9.5 5.71437 9.37407 5.71437 9.21875V8.28125C5.71437 8.12593 5.8423 8 6.00008 8H6.95246C7.11025 8 7.23818 8.12593 7.23818 8.28125V9.21875C7.23818 9.37407 7.11025 9.5 6.95246 9.5ZM8.76199 13.25H7.23818V11.2812C7.23818 11.1259 7.36611 11 7.52389 11H8.47627C8.63406 11 8.76199 11.1259 8.76199 11.2812V13.25ZM10.2858 9.21875C10.2858 9.37407 10.1579 9.5 10.0001 9.5H9.0477C8.88991 9.5 8.76199 9.37407 8.76199 9.21875V8.28125C8.76199 8.12593 8.88991 8 9.0477 8H10.0001C10.1579 8 10.2858 8.12593 10.2858 8.28125V9.21875ZM10.2858 6.96875C10.2858 7.12407 10.1579 7.25 10.0001 7.25H9.0477C8.88991 7.25 8.76199 7.12407 8.76199 6.96875V6.03125C8.76199 5.87593 8.88991 5.75 9.0477 5.75H10.0001C10.1579 5.75 10.2858 5.87593 10.2858 6.03125V6.96875ZM10.2858 4.71875C10.2858 4.87407 10.1579 5 10.0001 5H9.0477C8.88991 5 8.76199 4.87407 8.76199 4.71875V3.78125C8.76199 3.62593 8.88991 3.5 9.0477 3.5H10.0001C10.1579 3.5 10.2858 3.62593 10.2858 3.78125V4.71875Z"/></svg>
             </span>
             <span class="overview-accordion-title">Empresa</span>
             <img class="overview-accordion-chevron" src="../contatos/painel-visao/chevron-up.svg" width="24" height="24" alt="">
           </button>
           <div class="overview-card-body">
-          <div class="profile-company-item">
-            <div class="profile-company-logo"><img src="brand-itau.png" alt="Itaú BBA" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);"></div>
-            <div class="profile-company-info">
-              <div class="profile-company-header">
-                <span class="profile-company-name">Itaú BBA</span>
-                <span class="profile-company-tag">Principal</span>
-              </div>
-              <span class="profile-company-role">Diretora financeira</span>
-            </div>
-          </div>
-          <div class="profile-company-item">
-            <div class="profile-company-logo"><img src="brand-ion.png" alt="Íon" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);"></div>
-            <div class="profile-company-info">
-              <div class="profile-company-header">
-                <span class="profile-company-name">Íon</span>
-              </div>
-              <span class="profile-company-role">Membro do conselho</span>
-            </div>
-          </div>
-          <button class="btn-secondary btn-secondary-sm" type="button">Adicionar empresa</button>
-          </div>
-        </section>
-
-        <!-- Tags card -->
-        <section class="overview-card" data-accordion>
-          <button type="button" class="overview-accordion-head" aria-expanded="true">
-            <span class="overview-accordion-icon" aria-hidden="true">
-              <img src="icons/tags.svg" width="16" height="16" alt="">
-            </span>
-            <span class="overview-accordion-title">Tags</span>
-            <img class="overview-accordion-chevron" src="../contatos/painel-visao/chevron-up.svg" width="24" height="24" alt="">
-          </button>
-          <div class="overview-card-body">
-          <div class="profile-tags-list" id="profile-tags-list"></div>
-          <button class="btn-secondary btn-secondary-sm" type="button" id="profile-edit-tags-btn">Editar tags</button>
-          </div>
-        </section>
-
-        <!-- Campos personalizados card -->
-        <section class="overview-card" data-accordion>
-          <button type="button" class="overview-accordion-head" aria-expanded="true">
-            <span class="overview-accordion-icon" aria-hidden="true">
-              <img src="icons/grid-plus.svg" width="16" height="16" alt="">
-            </span>
-            <span class="overview-accordion-title">Campos personalizados</span>
-            <img class="overview-accordion-chevron" src="../contatos/painel-visao/chevron-up.svg" width="24" height="24" alt="">
-          </button>
-          <div class="overview-card-body">
-          <div class="profile-detail-list">
-            <div class="profile-detail-item">
-              <span class="profile-detail-label">Categoria de interesse</span>
-              <span class="profile-detail-value">SUV</span>
-            </div>
-          </div>
-          <button class="btn-secondary btn-secondary-sm" type="button">Editar campos personalizados</button>
+          <div id="profile-companies-list"></div>
+          <button type="button" class="overview-btn-secondary" id="profile-add-company-btn">Editar empresa</button>
           </div>
         </section>
 
         <!-- Responsável pelo contato -->
-        <section class="overview-card" data-accordion>
+        <section class="overview-card" data-accordion id="profile-responsible-card">
           <button type="button" class="overview-accordion-head" aria-expanded="true">
             <span class="overview-accordion-icon" aria-hidden="true">
               <img src="../contatos/painel-visao/person.svg" width="16" height="16" alt="">
@@ -3685,6 +5082,7 @@
             <img class="overview-accordion-chevron" src="../contatos/painel-visao/chevron-up.svg" width="24" height="24" alt="">
           </button>
           <div class="overview-card-body">
+          <div class="profile-responsible-list" id="profile-responsible-list">
           <div class="profile-responsible-item">
             <div class="profile-resp-avatar"><img src="Avatar-Renata.png" alt="Renata" style="width:100%;height:100%;object-fit:cover;"></div>
             <div class="profile-resp-info">
@@ -3695,7 +5093,7 @@
           <div class="profile-responsible-item">
             <div class="profile-resp-avatar"><img src="Avatar-Victor.png" alt="Victor" style="width:100%;height:100%;object-fit:cover;"></div>
             <div class="profile-resp-info">
-              <span class="profile-resp-role">Responsável de Atendimento</span>
+              <span class="profile-resp-role">Responsável por Atendimento</span>
               <span class="profile-resp-name">Victor Felipe</span>
             </div>
           </div>
@@ -3707,63 +5105,42 @@
             </div>
           </div>
           </div>
-        </section>
-
-        <!-- Em andamento -->
-        <section class="overview-card" data-accordion>
-          <button type="button" class="overview-accordion-head" aria-expanded="true">
-            <span class="overview-accordion-icon" aria-hidden="true">
-              <img src="../contatos/painel-visao/clock.svg" width="16" height="16" alt="">
-            </span>
-            <span class="overview-accordion-title">Em andamento</span>
-            <img class="overview-accordion-chevron" src="../contatos/painel-visao/chevron-up.svg" width="24" height="24" alt="">
-          </button>
-          <div class="overview-card-body">
-          <div class="profile-ongoing-item profile-ongoing-item--bordered" style="--ongoing-border:#0AAF54;">
-            <div class="profile-ongoing-icon" style="background:#25d366;">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
-            </div>
-            <div class="profile-ongoing-info">
-              <span class="profile-ongoing-title">WhatsApp Ativo</span>
-              <span class="profile-ongoing-sub">Última mensagem há 2 horas</span>
-            </div>
-          </div>
-          <div class="profile-ongoing-item profile-ongoing-item--bordered" style="--ongoing-border:#00DBFF;">
-            <div class="profile-ongoing-icon" style="background:#0077b2;">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
-            </div>
-            <div class="profile-ongoing-info">
-              <span class="profile-ongoing-title">Ticket aberto #1234</span>
-              <span class="profile-ongoing-sub">Aguardando resposta</span>
-            </div>
-          </div>
+            <button type="button" class="overview-btn-secondary" id="profile-edit-responsible-btn">Editar responsável</button>
           </div>
         </section>
 
-        <!-- Integrações -->
-        <section class="overview-card" data-accordion>
+        <!-- Tags do contato -->
+        <section class="overview-card" data-accordion id="profile-tags-card">
           <button type="button" class="overview-accordion-head" aria-expanded="true">
             <span class="overview-accordion-icon" aria-hidden="true">
-              <img src="../contatos/painel-visao/exchange.svg" width="16" height="16" alt="">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11.8787V5.5C4 4.67156 4.67156 4 5.5 4H11.8787C12.2765 4 12.658 4.15804 12.9393 4.43934L19.5607 11.0607C20.1464 11.6464 20.1464 12.5962 19.5607 13.182L13.182 19.5607C12.5962 20.1464 11.6464 20.1464 11.0607 19.5607L4.43934 12.9393C4.15804 12.658 4 12.2765 4 11.8787V11.8787ZM7.5 6C6.67156 6 6 6.67156 6 7.5C6 8.32844 6.67156 9 7.5 9C8.32844 9 9 8.32844 9 7.5C9 6.67156 8.32844 6 7.5 6Z"/></svg>
             </span>
-            <span class="overview-accordion-title">Integrações</span>
+            <span class="overview-accordion-title">Etiquetas</span>
             <img class="overview-accordion-chevron" src="../contatos/painel-visao/chevron-up.svg" width="24" height="24" alt="">
           </button>
-          <div class="overview-card-body">
-          <div class="profile-integration-item">
-            <div class="profile-integration-logo"><img src="logo-totvs-integracao.png" alt="TOTVS RM" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);"></div>
-            <div class="profile-integration-info">
-              <span class="profile-integration-name">TOTVS RM</span>
-              <span class="profile-integration-detail">Quantidade de contratos: 03</span>
+          <div class="overview-card-body profile-tags-card-body">
+            <div class="profile-tags-autocomplete" id="profile-tags-autocomplete">
+              <div class="profile-tags-input-shell" id="profile-tags-input-shell">
+                <input
+                  class="profile-tags-autocomplete-input"
+                  id="profile-tags-input"
+                  type="text"
+                  placeholder="Selecione ou crie uma etiqueta"
+                  autocomplete="off"
+                  role="combobox"
+                  aria-autocomplete="list"
+                  aria-controls="profile-tags-dropdown"
+                  aria-expanded="false"
+                >
+                <button class="profile-tags-autocomplete-caret" id="profile-tags-caret" type="button" aria-label="Abrir lista de etiquetas" tabindex="-1">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M11.5337 15.0892L6.19317 9.74874C5.93561 9.49117 5.93561 9.07359 6.19317 8.81605L6.81605 8.19317C7.07318 7.93604 7.48991 7.93555 7.74764 8.19207L12 12.4245L16.2524 8.19207C16.5101 7.93555 16.9268 7.93604 17.1839 8.19317L17.8068 8.81605C18.0644 9.07362 18.0644 9.4912 17.8068 9.74874L12.4663 15.0892C12.2088 15.3468 11.7912 15.3468 11.5337 15.0892Z"/></svg>
+                </button>
+              </div>
+              <div class="profile-tags-dropdown" id="profile-tags-dropdown" role="listbox" aria-label="Etiquetas disponíveis"></div>
             </div>
-          </div>
-          <div class="profile-integration-item">
-            <div class="profile-integration-logo"><img src="logo-shopify-integracao.png" alt="Shopify" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);"></div>
-            <div class="profile-integration-info">
-              <span class="profile-integration-name">Shopify</span>
-              <span class="profile-integration-detail">Quantidade de pedidos: 14</span>
-            </div>
-          </div>
+            <div class="profile-tags-added-title">Últimas etiquetas adicionadas</div>
+            <div class="profile-tags-selected" id="profile-tags-selected" aria-live="polite"></div>
+            <button type="button" class="overview-btn-secondary profile-tags-view-all" id="profile-tags-view-all">Ver todas as etiquetas</button>
           </div>
         </section>
 
@@ -3786,11 +5163,12 @@
           <div class="profile-tabs-nav">
             <div class="profile-tabs-wrapper">
               <div class="profile-tabs-scroll">
-                <button class="profile-tab active" data-tab="visao-geral">Visão geral</button>
-                <button class="profile-tab" data-tab="atividades">Atividades</button>
+                <button class="profile-tab" data-tab="visao-geral" hidden>Visão geral</button>
+                <button class="profile-tab active" data-tab="atividades">Histórico</button>
                 <button class="profile-tab" data-tab="pre-vendas">Pré-vendas</button>
                 <button class="profile-tab" data-tab="negociacoes">Negociações</button>
                 <button class="profile-tab" data-tab="atendimentos">Atendimentos</button>
+                <button class="profile-tab" data-tab="tickets">Tickets</button>
               </div>
               <div class="profile-tabs-fade"></div>
             </div>
@@ -3801,7 +5179,7 @@
             </div>
           </div>
           <!-- ── Painel: Visão geral ── -->
-          <div class="profile-tab-panel active" data-tab-panel="visao-geral">
+          <div class="profile-tab-panel" data-tab-panel="visao-geral">
 
             <!-- Resumo do contato -->
             <div class="vg-section vg-section--first">
@@ -3950,8 +5328,8 @@
 
           </div><!-- /painel visao-geral -->
 
-          <!-- ── Painel: Atividades ── -->
-          <div class="profile-tab-panel" data-tab-panel="atividades">
+          <!-- ── Painel: Histórico ── -->
+          <div class="profile-tab-panel active" data-tab-panel="atividades">
           <div class="profile-activities-bar">
             <div class="profile-search-wrap">
               <input type="text" placeholder="Buscar atividade" />
@@ -3968,108 +5346,125 @@
               <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg>
             </button>
           </div>
-          <div class="profile-timeline">
+          <div class="overview-timeline">
 
             <!-- 1. Contrato assinado — hoje -->
-            <div class="profile-timeline-item">
-              <div class="profile-timeline-left">
-                <div class="profile-timeline-avatar" style="background:#0AAF54;"><span class="material-symbols-rounded">draw</span></div>
-                <div class="profile-timeline-line"></div>
-              </div>
-              <div class="profile-timeline-content">
-                <div class="profile-timeline-header">
-                  <div class="profile-timeline-title">Contrato assinado</div>
-                  <div class="profile-timeline-meta">Hoje, 10h14</div>
+            <div class="overview-timeline-item">
+              <div class="overview-timeline-rail">
+                <div class="overview-timeline-dot overview-timeline-dot--mint">
+                  <img src="../contatos/painel-visao/case.svg" width="24" height="24" alt="">
                 </div>
-                <div class="profile-timeline-desc">Contrato do plano Enterprise (R$ 18.500/mês) assinado. Pagamento via boleto com vencimento dia 10.</div>
-                <span class="profile-timeline-tag">VENDA</span>
+                <div class="overview-timeline-line"></div>
               </div>
-              <button class="profile-timeline-more"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
+              <div class="overview-timeline-content">
+                <div class="overview-timeline-title">Contrato assinado</div>
+                <div class="overview-timeline-meta">Hoje, 10h14</div>
+                <div class="overview-timeline-details">
+                  Contrato do plano Enterprise (R$ 18.500/mês) assinado. Pagamento via boleto com vencimento dia 10.<br>
+                  <strong>Categoria:</strong> VENDA
+                </div>
+              </div>
             </div>
 
             <!-- 2. Proposta enviada — 3 dias atrás -->
-            <div class="profile-timeline-item">
-              <div class="profile-timeline-left">
-                <div class="profile-timeline-avatar" style="background:#0066CC;"><span class="material-symbols-rounded">request_quote</span></div>
-                <div class="profile-timeline-line"></div>
-              </div>
-              <div class="profile-timeline-content">
-                <div class="profile-timeline-header">
-                  <div class="profile-timeline-title">Proposta comercial enviada</div>
-                  <div class="profile-timeline-meta">19/04/2026, 15h32</div>
+            <div class="overview-timeline-item">
+              <div class="overview-timeline-rail">
+                <div class="overview-timeline-dot overview-timeline-dot--primary">
+                  <img src="../contatos/painel-visao/mail.svg" width="24" height="24" alt="">
                 </div>
-                <div class="profile-timeline-desc">Proposta para plano Enterprise enviada por e-mail com validade de 7 dias.</div>
-                <span class="profile-timeline-tag">NEGOCIAÇÃO</span>
+                <div class="overview-timeline-line"></div>
               </div>
-              <button class="profile-timeline-more"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
+              <div class="overview-timeline-content">
+                <div class="overview-timeline-title">Proposta comercial enviada</div>
+                <div class="overview-timeline-meta">19/04/2026, 15h32</div>
+                <div class="overview-timeline-details">
+                  Proposta para plano Enterprise enviada por e-mail com validade de 7 dias.<br>
+                  <strong>Categoria:</strong> NEGOCIAÇÃO
+                </div>
+              </div>
             </div>
 
             <!-- 3. Reunião de demo — 1 semana atrás -->
-            <div class="profile-timeline-item">
-              <div class="profile-timeline-left">
-                <div class="profile-timeline-avatar" style="background:#8800f7;"><span class="material-symbols-rounded">videocam</span></div>
-                <div class="profile-timeline-line"></div>
-              </div>
-              <div class="profile-timeline-content">
-                <div class="profile-timeline-header">
-                  <div class="profile-timeline-title">Reunião de demo realizada</div>
-                  <div class="profile-timeline-meta">18/04/2026, 14h00</div>
+            <div class="overview-timeline-item">
+              <div class="overview-timeline-rail">
+                <div class="overview-timeline-dot overview-timeline-dot--pink">
+                  <img src="../contatos/painel-visao/click.svg" width="24" height="24" alt="">
                 </div>
-                <div class="profile-timeline-desc">Apresentação via Google Meet com duração de 52 min. Alta intenção de compra identificada — proposta solicitada ao final da call.</div>
-                <span class="profile-timeline-tag">REUNIÃO</span>
+                <div class="overview-timeline-line"></div>
               </div>
-              <button class="profile-timeline-more"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
+              <div class="overview-timeline-content">
+                <div class="overview-timeline-title">Reunião de demo realizada</div>
+                <div class="overview-timeline-meta">18/04/2026, 14h00</div>
+                <div class="overview-timeline-details">
+                  Apresentação via Google Meet com duração de 52 min. Alta intenção de compra identificada — proposta solicitada ao final da call.<br>
+                  <strong>Categoria:</strong> REUNIÃO
+                </div>
+              </div>
             </div>
 
             <!-- 4. E-mail de agendamento — 10 dias atrás -->
-            <div class="profile-timeline-item">
-              <div class="profile-timeline-left">
-                <div class="profile-timeline-avatar" style="background:#0077B2;"><span class="material-symbols-rounded">mail</span></div>
-                <div class="profile-timeline-line"></div>
-              </div>
-              <div class="profile-timeline-content">
-                <div class="profile-timeline-header">
-                  <div class="profile-timeline-title">E-mail de agendamento enviado</div>
-                  <div class="profile-timeline-meta">12/04/2026, 09h47</div>
+            <div class="overview-timeline-item">
+              <div class="overview-timeline-rail">
+                <div class="overview-timeline-dot overview-timeline-dot--primary">
+                  <img src="../contatos/painel-visao/mail.svg" width="24" height="24" alt="">
                 </div>
-                <div class="profile-timeline-desc">Convite de demo enviado com link do Google Meet para 18/04 às 14h. Presença confirmada em menos de 1 hora.</div>
-                <span class="profile-timeline-tag">E-MAIL</span>
+                <div class="overview-timeline-line"></div>
               </div>
-              <button class="profile-timeline-more"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
+              <div class="overview-timeline-content">
+                <div class="overview-timeline-title">E-mail de agendamento enviado</div>
+                <div class="overview-timeline-meta">12/04/2026, 09h47</div>
+                <div class="overview-timeline-details">
+                  Convite de demo enviado com link do Google Meet para 18/04 às 14h. Presença confirmada em menos de 1 hora.<br>
+                  <strong>Categoria:</strong> E-MAIL
+                </div>
+              </div>
             </div>
 
             <!-- 5. WhatsApp — 2 semanas atrás -->
-            <div class="profile-timeline-item">
-              <div class="profile-timeline-left">
-                <div class="profile-timeline-avatar" style="background:#25D366;"><span class="material-symbols-rounded">chat</span></div>
-                <div class="profile-timeline-line"></div>
-              </div>
-              <div class="profile-timeline-content">
-                <div class="profile-timeline-header">
-                  <div class="profile-timeline-title">Mensagem via WhatsApp</div>
-                  <div class="profile-timeline-meta">08/04/2026, 11h22</div>
+            <div class="overview-timeline-item">
+              <div class="overview-timeline-rail">
+                <div class="overview-timeline-dot overview-timeline-dot--mint">
+                  <img src="../contatos/painel-visao/whatsapp.svg" width="24" height="24" alt="">
                 </div>
-                <div class="profile-timeline-desc">Pergunta sobre preços e planos disponíveis. Interesse demonstrado no plano Enterprise com pedido de detalhes sobre integrações.</div>
-                <span class="profile-timeline-tag">WHATSAPP</span>
+                <div class="overview-timeline-line"></div>
               </div>
-              <button class="profile-timeline-more"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
+              <div class="overview-timeline-content">
+                <div class="overview-timeline-title">Mensagem via WhatsApp</div>
+                <div class="overview-timeline-meta">08/04/2026, 11h22</div>
+                <div class="overview-timeline-details">
+                  Pergunta sobre preços e planos disponíveis. Interesse demonstrado no plano Enterprise com pedido de detalhes sobre integrações.<br>
+                  <strong>Categoria:</strong> WHATSAPP
+                </div>
+              </div>
             </div>
 
             <!-- 6. Lead convertido — 3 semanas atrás -->
-            <div class="profile-timeline-item">
-              <div class="profile-timeline-left">
-                <div class="profile-timeline-avatar" style="background:#6B7280;"><span class="material-symbols-rounded">person_add</span></div>
-                <div class="profile-timeline-line"></div>
-              </div>
-              <div class="profile-timeline-content">
-                <div class="profile-timeline-header">
-                  <div class="profile-timeline-title">Lead convertido</div>
-                  <div class="profile-timeline-meta">01/04/2026, 16h05</div>
+            <div class="overview-timeline-item">
+              <div class="overview-timeline-rail">
+                <div class="overview-timeline-dot overview-timeline-dot--pink">
+                  <img src="../contatos/painel-visao/person.svg" width="24" height="24" alt="">
                 </div>
-                <div class="profile-timeline-desc">Formulário "Quero conhecer o RD Station CRM" preenchido no site institucional. Origem: Google Ads — campanha Enterprise Q2.</div>
-                <span class="profile-timeline-tag">CONVERSÃO</span>
+                <div class="overview-timeline-line"></div>
               </div>
-              <button class="profile-timeline-more"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
+              <div class="overview-timeline-content">
+                <div class="overview-timeline-title">Lead convertido</div>
+                <div class="overview-timeline-meta">01/04/2026, 16h05</div>
+                <div class="overview-timeline-details">
+                  Formulário "Quero conhecer o RD Station CRM" preenchido no site institucional. Origem: Google Ads — campanha Enterprise Q2.<br>
+                  <strong>Categoria:</strong> CONVERSÃO
+                </div>
+              </div>
+            </div>
+
+            <div class="overview-timeline-item overview-timeline-item--load-more">
+              <div class="overview-timeline-rail">
+                <div class="overview-timeline-dot overview-timeline-dot--load-more">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                </div>
+              </div>
+              <div class="overview-timeline-content overview-load-more">
+                <button type="button" class="overview-timeline-action">Carregar mais 10 itens</button>
+              </div>
             </div>
 
           </div>
@@ -4404,58 +5799,452 @@
           <!-- ── Painel: Atendimentos ── -->
           <div class="profile-tab-panel" data-tab-panel="atendimentos"></div>
 
+          <!-- ── Painel: Tickets ── -->
+          <div class="profile-tab-panel" data-tab-panel="tickets"></div>
+
         </div>
 
       </div><!-- /profile-focus -->
 
     </div><!-- /profile-layout -->
     </div><!-- /content-body -->
+    </div><!-- /content-main -->
 
-    <aside class="detail-panel" id="detail-panel" aria-hidden="true" aria-label="Editar tags"></aside>
+    <aside class="detail-panel" id="detail-panel" aria-hidden="true" aria-label="Editar contato"></aside>
     </div><!-- /content-split -->
   </main>
 
 </div>
 
 <!-- ─── PAINEL: EDITAR TAGS ─────────────────────────── -->
-<div class="drawer" id="drawer-add-contact" role="dialog" aria-modal="false" aria-label="Editar tags">
+<div class="drawer" id="drawer-edit-tags" role="dialog" aria-modal="false" aria-label="Editar etiquetas">
   <div class="drawer-header">
-    <span class="drawer-title" id="drawer-title">Editar tags</span>
-    <button class="drawer-close" id="drawer-close-btn" title="Fechar" type="button">
+    <span class="drawer-title" id="tags-drawer-title">Editar etiquetas</span>
+    <button class="drawer-close" id="tags-drawer-close-btn" title="Fechar" type="button">
       <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
     </button>
   </div>
   <div class="drawer-body">
     <div class="drawer-field" id="dc-tags-field">
-      <label class="drawer-label" for="dc-tag-input">Tags</label>
+      <label class="drawer-label" for="dc-tag-input">Etiquetas</label>
       <div class="tag-picker" id="dc-tag-picker">
-        <div class="tag-picker-chips" id="dc-tag-chips"></div>
         <div class="tag-picker-input-wrap">
-          <div class="tag-picker-search">
-            <input class="tag-picker-input" id="dc-tag-input" type="text" placeholder="Buscar ou criar tag..." autocomplete="off">
-            <span class="tag-picker-search-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            </span>
+          <div class="profile-tags-input-shell" id="dc-tag-input-shell">
+            <input
+              class="profile-tags-autocomplete-input"
+              id="dc-tag-input"
+              type="text"
+              placeholder="Selecione ou crie uma etiqueta"
+              autocomplete="off"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-controls="dc-tag-dropdown"
+              aria-expanded="false"
+            >
+            <button class="profile-tags-autocomplete-caret" id="dc-tag-caret" type="button" aria-label="Abrir lista de etiquetas" tabindex="-1">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M11.5337 15.0892L6.19317 9.74874C5.93561 9.49117 5.93561 9.07359 6.19317 8.81605L6.81605 8.19317C7.07318 7.93604 7.48991 7.93555 7.74764 8.19207L12 12.4245L16.2524 8.19207C16.5101 7.93555 16.9268 7.93604 17.1839 8.19317L17.8068 8.81605C18.0644 9.07362 18.0644 9.4912 17.8068 9.74874L12.4663 15.0892C12.2088 15.3468 11.7912 15.3468 11.5337 15.0892Z"/></svg>
+            </button>
           </div>
-          <div class="tag-picker-dropdown" id="dc-tag-dropdown">
-            <button type="button" class="tag-picker-create" id="dc-tag-create-btn">Criar nova tag</button>
-            <div class="tag-picker-divider"></div>
-            <div class="tag-picker-options" id="dc-tag-options"></div>
-          </div>
+          <div class="tag-picker-dropdown" id="dc-tag-dropdown" role="listbox" aria-label="Etiquetas disponíveis"></div>
         </div>
+        <div class="tag-picker-chips" id="dc-tag-chips"></div>
       </div>
     </div>
-    <div id="drawer-form-error" class="drawer-error" style="display:none"></div>
+    <div id="tags-drawer-form-error" class="drawer-error" style="display:none"></div>
   </div>
   <div class="drawer-footer">
     <div class="drawer-actions">
-      <button class="drawer-btn-cancel" id="drawer-cancel-btn" type="button">Cancelar</button>
-      <button class="drawer-btn-save" id="drawer-save-btn" type="button">Salvar tags</button>
+      <button class="drawer-btn-cancel" id="tags-drawer-cancel-btn" type="button">Cancelar</button>
+      <button class="drawer-btn-save" id="tags-drawer-save-btn" type="button">Salvar etiquetas</button>
     </div>
   </div>
 </div>
 
-<script src="../contatos/tag-picker.js"></script>
+<!-- ─── PAINEL: EDITAR CONTATO ───────────── -->
+<div class="drawer" id="drawer-add-contact" role="dialog" aria-modal="false" aria-label="Detalhes do contato">
+  <div class="drawer-header">
+    <button type="button" class="drawer-close drawer-back" id="drawer-back-btn" hidden title="Voltar" aria-label="Voltar">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <span class="drawer-title" id="drawer-title">Adicionar contato</span>
+    <button class="drawer-close" id="drawer-close-btn" title="Fechar">
+      <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+
+  <div class="drawer-body">
+    <form id="add-contact-form" novalidate>
+
+      <!-- IDENTIFICAÇÃO DO CONTATO -->
+      <div class="drawer-section-title">Identificação do contato</div>
+
+      <!-- Avatar upload -->
+      <div class="drawer-avatar-field">
+        <div class="drawer-avatar-wrap" id="dc-avatar-wrap">
+          <div class="drawer-avatar-preview" id="dc-avatar-preview"></div>
+        </div>
+        <div class="drawer-avatar-info">
+          <span class="drawer-avatar-label">Foto de perfil</span>
+          <button type="button" class="drawer-avatar-btn" id="dc-avatar-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.1 9.56094C15.1961 9.31016 15.25 9.03594 15.25 8.75C15.25 7.50781 14.2422 6.5 13 6.5C12.5383 6.5 12.107 6.64062 11.7508 6.87969C11.1016 5.75469 9.88984 5 8.5 5C6.42812 5 4.75 6.67812 4.75 8.75C4.75 8.81328 4.75234 8.87656 4.75469 8.93984C3.44219 9.40156 2.5 10.6531 2.5 12.125C2.5 13.9883 4.01172 15.5 5.875 15.5H14.5C16.157 15.5 17.5 14.157 17.5 12.5C17.5 11.0492 16.4687 9.8375 15.1 9.56094ZM11.8211 11.0539L11.568 11.307C11.343 11.532 10.9773 11.525 10.7594 11.2953L10 10.4867V13.4375C10 13.7492 9.74922 14 9.4375 14H9.0625C8.75078 14 8.5 13.7492 8.5 13.4375V10.4867L7.74063 11.2953C7.52266 11.5273 7.15703 11.532 6.93203 11.307L6.67891 11.0539C6.45859 10.8336 6.45859 10.4773 6.67891 10.2594L8.85156 8.08672C9.07187 7.86641 9.42812 7.86641 9.64609 8.08672L11.8188 10.2594C12.0391 10.4797 12.0391 10.8359 11.8211 11.0539V11.0539Z" fill="currentColor"/></svg>
+            Selecionar arquivo
+          </button>
+        </div>
+        <input type="file" id="dc-avatar-input" accept="image/*" style="display:none">
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-nome">Nome completo <span style="color:var(--color-danger)">*</span></label>
+        <input class="drawer-input" id="dc-nome" name="nome" type="text" placeholder="Digite um nome" required>
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label">E-mail</label>
+        <div class="multi-field-container" id="dc-emails-container">
+          <div class="multi-field-row">
+            <input class="drawer-input" id="dc-email" name="email" type="email" placeholder="Digite um e-mail">
+          </div>
+        </div>
+        <button type="button" class="add-field-btn" id="dc-add-email-btn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          Adicionar e-mail
+        </button>
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label">Rede social do contato</label>
+        <div class="multi-field-container" id="dc-socials-container">
+          <div class="multi-field-row social-field">
+            <div class="social-selector">
+              <button class="social-trigger" id="dc-social-trigger" type="button" aria-label="Selecionar rede social">
+                <svg class="social-icon" id="dc-social-icon" viewBox="0 0 24 24" width="20" height="20" fill="#E1306C">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+                <svg class="caret" viewBox="0 0 24 24" width="16" height="16" fill="#405466"><path d="M7 10l5 5 5-5z"/></svg>
+              </button>
+              <div class="social-dropdown" id="dc-social-dropdown"></div>
+            </div>
+            <input class="drawer-input" id="dc-social-usuario" name="rede_social_usuario" type="text" placeholder="Nome na rede social" style="flex:1">
+          </div>
+        </div>
+        <button type="button" class="add-field-btn" id="dc-add-social-btn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          Adicionar outra rede social
+        </button>
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label">Telefone</label>
+        <div class="multi-field-container" id="dc-phones-container">
+          <div class="multi-field-row">
+            <div class="phone-field" id="dc-phone-field" style="flex:1">
+              <div class="phone-field-prefix">
+                <button class="phone-country-trigger" id="dc-country-trigger" type="button" aria-label="Selecionar país" aria-expanded="false">
+                  <div class="phone-flag" id="dc-flag">
+                    <!-- Brazil flag default -->
+                    <svg viewBox="0 0 513 342" xmlns="http://www.w3.org/2000/svg"><path fill="#009b3a" d="M0 0h513v342H0z"/><path fill="#fedf00" d="M256.5 19.3l204.9 151.4L256.5 322 50.6 170.7z"/><circle fill="#FFF" cx="256.5" cy="171" r="80.4"/><path fill="#002776" d="M215.9 165.7c-13.9 0-27.4 2.1-40.1 6 .6 43.9 36.3 79.3 80.3 79.3 27.2 0 51.3-13.6 65.8-34.3-24.9-31-63.2-51-106-51zm119 20.3c.9-5 1.5-10.1 1.5-15.4 0-44.4-36-80.4-80.4-80.4-33.1 0-61.5 20.1-73.9 48.6 10.9-2.2 22.1-3.4 33.6-3.4 46.8.1 89 19.5 119.2 50.6z"/></svg>
+                  </div>
+                  <svg class="phone-caret" viewBox="0 0 24 24"><path d="M8.54 10h6.92c.48 0 .72.639.381 1.012l-3.46 3.814a.504.504 0 01-.761 0l-3.461-3.814c-.34-.373-.1-1.012.38-1.012z"/></svg>
+                </button>
+                <span class="phone-calling-code" id="dc-calling-code">+55</span>
+              </div>
+              <div class="phone-divider"></div>
+              <input class="phone-input" id="dc-telefone" name="telefone" type="tel" placeholder="(99) 9999-9999" autocomplete="tel">
+              <!-- Country Dropdown -->
+              <div class="phone-dropdown" id="dc-phone-dropdown" role="listbox" aria-label="Selecionar país">
+                <div class="phone-dropdown-search">
+                  <input type="text" id="dc-country-search" placeholder="Buscar país..." aria-label="Buscar país">
+                </div>
+                <div id="dc-country-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="add-field-btn" id="dc-add-phone-btn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          Adicionar telefone
+        </button>
+      </div>
+
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-status">Status</label>
+        <select class="drawer-select" id="dc-status" name="status">
+          <option value="Lead">Lead</option>
+          <option value="Visitante">Visitante</option>
+          <option value="Lead qualificado - MQL">Lead qualificado - MQL</option>
+          <option value="Lead qualificado - SQL">Lead qualificado - SQL</option>
+          <option value="Oportunidade">Oportunidade</option>
+          <option value="Cliente">Cliente</option>
+          <option value="Cliente promotor">Cliente promotor</option>
+        </select>
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label">Base legal</label>
+        <div class="multi-field-container" id="dc-legal-basis-container"></div>
+        <button type="button" class="add-field-btn" id="dc-add-legal-basis-btn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          Adicionar outro canal
+        </button>
+      </div>
+
+      <!-- INFORMAÇÕES DO CONTATO -->
+      <div class="drawer-section-title">Informações do contato</div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-cargo">Cargo</label>
+        <input class="drawer-input" id="dc-cargo" name="cargo" type="text" placeholder="Digite o cargo">
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-cpf">CPF</label>
+        <input class="drawer-input" id="dc-cpf" name="cpf" type="text" placeholder="000.000.000-00">
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-rg">RG</label>
+        <input class="drawer-input" id="dc-rg" name="rg" type="text" placeholder="Digite um RG">
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-nascimento">Data de nascimento</label>
+        <input class="drawer-input" id="dc-nascimento" name="data_nascimento" type="date">
+      </div>
+
+      <!-- ENDEREÇO DO CONTATO -->
+      <div class="drawer-section-title">Endereço do contato</div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-cep">CEP</label>
+        <input class="drawer-input" id="dc-cep" name="cep" type="text" placeholder="00000-000">
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-rua">Rua</label>
+        <input class="drawer-input" id="dc-rua" name="rua" type="text" placeholder="Digite o nome da rua">
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-complemento">Complemento</label>
+        <input class="drawer-input" id="dc-complemento" name="complemento" type="text" placeholder="Digite um complemento">
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-bairro">Bairro</label>
+        <input class="drawer-input" id="dc-bairro" name="bairro" type="text" placeholder="Digite o nome do bairro">
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-cidade">Cidade</label>
+        <input class="drawer-input" id="dc-cidade" name="cidade" type="text" placeholder="Digite a cidade">
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-estado">Estado</label>
+        <input class="drawer-input" id="dc-estado" name="estado" type="text" placeholder="Digite o estado">
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-pais">País</label>
+        <input class="drawer-input" id="dc-pais" name="pais" type="text" placeholder="Brasil" value="Brasil">
+      </div>
+
+      <!-- INFORMAÇÕES DA EMPRESA -->
+      <div class="drawer-section-title">Informações da empresa</div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-empresa-nome">Nome da empresa</label>
+        <div class="empresa-autocomplete">
+          <input class="drawer-input" id="dc-empresa-nome" name="empresa_nome" type="text" placeholder="Digite o nome da empresa" autocomplete="off">
+          <div class="empresa-autocomplete-dropdown" id="dc-empresa-nome-dropdown" role="listbox" hidden></div>
+        </div>
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="dc-empresa-cnpj">CNPJ</label>
+        <div class="empresa-autocomplete">
+          <input class="drawer-input" id="dc-empresa-cnpj" name="empresa_cnpj" type="text" placeholder="00.000.000/0000-00" autocomplete="off">
+          <div class="empresa-autocomplete-dropdown" id="dc-empresa-cnpj-dropdown" role="listbox" hidden></div>
+        </div>
+      </div>
+
+      <div id="drawer-form-error" class="drawer-error" style="display:none"></div>
+    </form>
+  </div>
+
+  <div class="drawer-footer">
+    <div class="drawer-actions">
+      <button class="drawer-btn-cancel" id="drawer-cancel-btn" type="button">Cancelar</button>
+      <button class="drawer-btn-save" id="drawer-save-btn" type="button">Salvar contato</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── PAINEL: EDITAR EMPRESA ───────────── -->
+<div class="drawer" id="drawer-edit-company" role="dialog" aria-modal="false" aria-label="Editar empresa">
+  <div class="drawer-header">
+    <span class="drawer-title" id="company-drawer-title">Editar empresa</span>
+    <button class="drawer-close" id="company-drawer-close-btn" title="Fechar" type="button">
+      <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+
+  <div class="drawer-body">
+    <form id="edit-company-form" novalidate>
+
+      <div class="drawer-section-title">Identificação da empresa</div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="ce-nome">Nome da empresa <span style="color:var(--color-danger)">*</span></label>
+        <div class="empresa-autocomplete">
+          <input class="drawer-input" id="ce-nome" name="empresa_nome" type="text" placeholder="Digite o nome da empresa" autocomplete="off">
+          <div class="empresa-autocomplete-dropdown" id="ce-nome-dropdown" role="listbox" hidden></div>
+        </div>
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="ce-cnpj">CNPJ</label>
+        <div class="empresa-autocomplete">
+          <input class="drawer-input" id="ce-cnpj" name="empresa_cnpj" type="text" placeholder="00.000.000/0000-00" autocomplete="off">
+          <div class="empresa-autocomplete-dropdown" id="ce-cnpj-dropdown" role="listbox" hidden></div>
+        </div>
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="ce-segmento">Segmento</label>
+        <input class="drawer-input" id="ce-segmento" name="segmento" type="text" placeholder="Digite o segmento">
+      </div>
+
+      <div class="drawer-section-title">Informações da empresa</div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="ce-site">Site</label>
+        <input class="drawer-input" id="ce-site" name="site" type="text" placeholder="www.empresa.com.br">
+      </div>
+
+      <div class="drawer-field">
+        <label class="drawer-label" for="ce-telefone">Telefone</label>
+        <select class="drawer-select" id="ce-telefone-tipo" name="telefone_tipo" aria-label="Tipo de telefone">
+          <option value="Comercial">Comercial</option>
+          <option value="Celular">Celular</option>
+          <option value="Financeiro">Financeiro</option>
+          <option value="Outro">Outro</option>
+        </select>
+        <div class="phone-field" id="ce-phone-field">
+          <div class="phone-field-prefix">
+            <button class="phone-country-trigger" type="button" aria-label="Selecionar país" aria-expanded="false">
+              <div class="phone-flag"></div>
+              <svg class="phone-caret" viewBox="0 0 24 24"><path d="M8.54 10h6.92c.48 0 .72.639.381 1.012l-3.46 3.814a.504.504 0 01-.761 0l-3.461-3.814c-.34-.373-.1-1.012.38-1.012z"/></svg>
+            </button>
+            <span class="phone-calling-code">+55</span>
+          </div>
+          <div class="phone-divider"></div>
+          <input class="phone-input" id="ce-telefone" name="telefone" type="tel" placeholder="(99) 99999-9999" autocomplete="tel">
+          <div class="phone-dropdown" role="listbox" aria-label="Selecionar país">
+            <div class="phone-dropdown-search">
+              <input type="text" placeholder="Buscar país..." aria-label="Buscar país">
+            </div>
+            <div class="phone-country-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="company-drawer-form-error" class="drawer-error" style="display:none"></div>
+    </form>
+  </div>
+
+  <div class="drawer-footer">
+    <div class="drawer-actions">
+      <button class="drawer-btn-cancel" id="company-drawer-cancel-btn" type="button">Cancelar</button>
+      <button class="drawer-btn-save" id="company-drawer-save-btn" type="button">Salvar empresa</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── PAINEL: EDITAR RESPONSÁVEL ───────────── -->
+<div class="drawer" id="drawer-edit-responsible" role="dialog" aria-modal="false" aria-label="Editar responsável">
+  <div class="drawer-header">
+    <span class="drawer-title" id="responsible-drawer-title">Editar responsável</span>
+    <button class="drawer-close" id="responsible-drawer-close-btn" title="Fechar" type="button">
+      <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+
+  <div class="drawer-body">
+    <div class="drawer-field">
+      <label class="drawer-label" for="re-search">Buscar responsável</label>
+      <div class="resp-autocomplete">
+        <input
+          class="drawer-input"
+          id="re-search"
+          type="text"
+          placeholder="Digite um nome ou e-mail"
+          autocomplete="off"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-controls="re-search-dropdown"
+          aria-expanded="false"
+        >
+        <div class="resp-autocomplete-dropdown" id="re-search-dropdown" role="listbox" aria-label="Responsáveis disponíveis" hidden></div>
+      </div>
+    </div>
+
+    <div class="drawer-section-title">Responsáveis selecionados</div>
+    <div class="resp-selected-list" id="re-selected-list" aria-live="polite"></div>
+  </div>
+
+  <div class="drawer-footer">
+    <div class="drawer-actions">
+      <button class="drawer-btn-cancel" id="responsible-drawer-cancel-btn" type="button">Cancelar</button>
+      <button class="drawer-btn-save" id="responsible-drawer-save-btn" type="button">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MODAL: EXCLUIR CONTATOS ─────────────────────────── -->
+<div class="delete-modal-overlay" id="delete-modal-overlay" aria-hidden="true">
+  <div class="delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+    <div class="delete-modal-header">
+      <h2 class="delete-modal-title" id="delete-modal-title">Tem certeza que deseja excluir?</h2>
+      <button type="button" class="delete-modal-close" id="delete-modal-close" aria-label="Fechar">
+        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+
+    <div class="delete-modal-body">
+      <p>Você selecionou <strong id="delete-modal-count">0</strong> contato(s) para exclusão. Escolha o que deseja fazer:</p>
+      <ul>
+        <li><strong>Enviar para a lixeira:</strong> os contatos saem da sua lista, mas um administrador poderá recuperá-los ou excluí-los definitivamente mais tarde.</li>
+        <li><strong>Excluir permanentemente:</strong> todos os dados e históricos serão apagados para sempre, sem chance de recuperação.</li>
+      </ul>
+    </div>
+
+    <label class="delete-modal-confirm" for="delete-modal-confirm">
+      <input class="tg-checkbox-input" type="checkbox" id="delete-modal-confirm">
+      <span class="tg-checkbox-box">
+        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </span>
+      <span class="delete-modal-confirm-text">Entendo que não conseguirei reverter a ação</span>
+    </label>
+
+    <div class="delete-modal-footer">
+      <button type="button" class="delete-modal-btn delete-modal-btn-trash" id="delete-modal-trash-btn">Enviar para lixeira</button>
+      <button type="button" class="delete-modal-btn delete-modal-btn-permanent" id="delete-modal-permanent-btn" disabled>Excluir permanentemente</button>
+    </div>
+  </div>
+</div>
+
+<script src="../contatos/empresa-autocomplete.js"></script>
+<script src="../contatos/legal-basis-picker.js"></script>
+<script src="../../shared/inline-edit.js?v=20260831-tooltip-3"></script>
+<script src="profile-contact-edit.js"></script>
+<script src="profile-company-edit.js"></script>
+<script src="profile-responsible-edit.js"></script>
+<script src="../../shared/contact-delete-modal.js"></script>
+<script src="profile-more-menu.js?v=20260901-menu-3"></script>
+<script src="../../contatos/tag-picker.js"></script>
+<script src="../../shared/profile-tags-card.js"></script>
 <script>
   // ─── TABLE COLUMNS STATE ─────────────────────────────────
   window.__tableColumns = [
@@ -5037,13 +6826,13 @@
 
   // ─── PAINEL: EDITAR TAGS ──────────────────────────────────
   (function() { try {
-    const drawer      = document.getElementById('drawer-add-contact');
+    const drawer      = document.getElementById('drawer-edit-tags');
     const content     = document.querySelector('.content');
     const detailPanel = document.getElementById('detail-panel');
-    const closeBtn    = document.getElementById('drawer-close-btn');
-    const cancelBtn   = document.getElementById('drawer-cancel-btn');
-    const saveBtn     = document.getElementById('drawer-save-btn');
-    const errorEl     = document.getElementById('drawer-form-error');
+    const closeBtn    = document.getElementById('tags-drawer-close-btn');
+    const cancelBtn   = document.getElementById('tags-drawer-cancel-btn');
+    const saveBtn     = document.getElementById('tags-drawer-save-btn');
+    const errorEl     = document.getElementById('tags-drawer-form-error');
     if (!drawer || !detailPanel) return;
 
     const db = window.__sbClient;
@@ -5051,12 +6840,16 @@
 
     let editContactId = null;
 
+    drawer.classList.remove('open');
+    detailPanel.appendChild(drawer);
+
     function getProfileContactId() {
       return window.__profileContactId || new URLSearchParams(window.location.search).get('id');
     }
 
     async function openTagsPanel(contactId) {
       if (!contactId) return;
+      if (content?.classList.contains('detail-edit')) return;
       editContactId = contactId;
       errorEl.style.display = 'none';
       window.__tagPicker.reset();
@@ -5068,7 +6861,6 @@
       saveBtn.disabled = true;
       await window.__tagPicker.loadForContact(contactId);
       saveBtn.disabled = false;
-      document.getElementById('dc-tag-input')?.focus();
     }
 
     function closeTagsPanel() {
@@ -5103,15 +6895,16 @@
       const savedTags = window.__tagPicker.getSelectedTags ? window.__tagPicker.getSelectedTags() : [];
       const tagError = await window.__tagPicker.saveForContact(savedContactId);
       saveBtn.disabled = false;
-      saveBtn.textContent = 'Salvar tags';
+      saveBtn.textContent = 'Salvar etiquetas';
       if (tagError) {
-        errorEl.textContent = 'Erro ao salvar tags: ' + tagError.message;
+        errorEl.textContent = 'Erro ao salvar etiquetas: ' + tagError.message;
         errorEl.style.display = 'block';
         return;
       }
       if (window.__renderProfileTagsList) window.__renderProfileTagsList(savedTags);
       closeTagsPanel();
       if (window.__refreshProfileTags) await window.__refreshProfileTags(savedContactId);
+      if (window.__refreshProfileTagCard) await window.__refreshProfileTagCard();
     });
   } catch(e) { console.error('[Tags panel] Erro:', e.message, e.stack); }
   })();
@@ -5235,8 +7028,8 @@
     syncInput();
   })();
 
-  // Inline edit on profile-ident-item
-  document.querySelectorAll('.profile-ident-item[data-field]').forEach(item => {
+  // Inline edit on profile-ident-item (legado; InlineField assume se existir)
+  if (!window.InlineField) document.querySelectorAll('.profile-ident-item[data-field]').forEach(item => {
     const span = item.querySelector('span');
     if (!span) return;
 
@@ -5474,13 +7267,10 @@
   (function() {
     const primaryBtn = document.getElementById('page-header-primary-action');
     const secondaryBtn = document.getElementById('page-header-secondary-action');
-    const moreBtn = document.querySelector('.page-header .btn-icon-sm');
     const profilePrimary = document.getElementById('profile-primary-action');
     const emailBtn = document.querySelector('.profile-quick-actions .profile-quick-wrap:first-child .profile-quick-btn');
     const phoneBtn = document.querySelector('.profile-quick-actions .profile-quick-wrap:nth-child(2) .profile-quick-btn');
-    const moreProfileBtn = document.querySelector('.profile-quick-actions .profile-quick-wrap:last-child .profile-quick-btn');
     const whatsappBtn = document.getElementById('profile-whatsapp-btn');
-    const overviewMoreBtn = document.getElementById('profile-overview-more-btn');
 
     if (primaryBtn && profilePrimary) {
       primaryBtn.addEventListener('click', () => profilePrimary.click());
@@ -5488,14 +7278,8 @@
     if (secondaryBtn && emailBtn) {
       secondaryBtn.addEventListener('click', () => emailBtn.click());
     }
-    if (moreBtn && moreProfileBtn) {
-      moreBtn.addEventListener('click', () => moreProfileBtn.click());
-    }
     if (whatsappBtn && phoneBtn) {
       whatsappBtn.addEventListener('click', () => phoneBtn.click());
-    }
-    if (overviewMoreBtn && moreProfileBtn) {
-      overviewMoreBtn.addEventListener('click', () => moreProfileBtn.click());
     }
   })();
 
@@ -5559,8 +7343,8 @@
     });
   })();
 
-  // Inline edit on profile-detail-item
-  document.querySelectorAll('.profile-detail-item[data-field]').forEach(item => {
+  // Inline edit on profile-detail-item (legado)
+  if (!window.InlineField) document.querySelectorAll('.profile-detail-item[data-field]').forEach(item => {
     const span = item.querySelector('.profile-detail-value');
     if (!span) return;
     span.addEventListener('click', () => startDetailEdit(item, span));
@@ -5674,6 +7458,198 @@
       return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    function renderCompanyLogo(nome) {
+      const gi = window.__getInitials || (n => String(n || '?').trim().charAt(0).toUpperCase());
+      return escTagHtml(gi(nome));
+    }
+
+    const identCopyIcon = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5002 15.625V16.6667C12.5002 17.0833 12.0835 17.5 11.6668 17.5H4.5835C3.75016 17.5 3.3335 17.0833 3.3335 16.25V5.83333C3.3335 5.41667 3.75016 5 4.16683 5H6.19064V13.9844C6.19064 14.889 6.93829 15.625 7.85731 15.625H12.5002ZM12.8573 5.54687V2.5H7.85731C7.46281 2.5 7.14302 2.81479 7.14302 3.20312V13.9844C7.14302 14.3727 7.46281 14.6875 7.85731 14.6875H15.9525C16.347 14.6875 16.6668 14.3727 16.6668 13.9844V6.25H13.5716C13.1787 6.25 12.8573 5.93359 12.8573 5.54687ZM16.4576 4.63782L14.4951 2.70593C14.3611 2.57407 14.1794 2.5 13.99 2.5H13.8097V5.3125H16.6668V5.13499C16.6668 4.94852 16.5916 4.76968 16.4576 4.63782Z" fill="currentColor"/></svg>`;
+    const identEditIcon = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9048 5.76122L14.2387 9.09513L6.99924 16.3346L4.02679 16.6627C3.62887 16.7067 3.29266 16.3702 3.33694 15.9723L3.66767 12.9978L10.9048 5.76122V5.76122ZM16.3007 5.26486L14.7353 3.69947C14.247 3.21118 13.4551 3.21118 12.9668 3.69947L11.4941 5.17215L14.828 8.50606L16.3007 7.03338C16.789 6.54483 16.789 5.75315 16.3007 5.26486V5.26486Z" fill="currentColor"/></svg>`;
+
+    function buildSocialList(c) {
+      if (Array.isArray(c.redes_sociais) && c.redes_sociais.length) {
+        return c.redes_sociais.filter(s => s && (s.usuario || s.rede));
+      }
+      if (c.rede_social_usuario || c.rede_social) {
+        return [{ rede: c.rede_social || 'instagram', usuario: c.rede_social_usuario || '' }];
+      }
+      return [];
+    }
+    function getSocialNet(rede) {
+      const nets = window.__socialNetworks || [];
+      return nets.find(n => n.key === (rede || 'instagram')) || nets[0];
+    }
+    function socialIconHtml(rede) {
+      const net = getSocialNet(rede);
+      if (!net) return '';
+      return `<svg class="profile-social-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${net.svg}</svg>`;
+    }
+    function formatSocialUser(usuario) {
+      if (!usuario) return '';
+      return usuario.startsWith('@') ? usuario : '@' + usuario;
+    }
+    function renderSocialIntoItem(item, social, index) {
+      if (!item) return;
+      if (!social?.usuario) { item.style.display = 'none'; return; }
+      item.style.display = '';
+      item.dataset.socialIndex = String(index);
+      const span = item.querySelector('.profile-detail-value') || item.querySelector('span:not(.profile-detail-label)');
+      if (span) { span.textContent = formatSocialUser(social.usuario); span.classList.remove('skeleton'); }
+    }
+
+    function renderProfileSocials(c) {
+      const socials = buildSocialList(c);
+      const indexed = socials.map((s, index) => ({ ...s, index }));
+      const nonFacebook = indexed.filter(s => (s.rede || 'instagram') !== 'facebook' && s.usuario);
+      const facebookEntry = indexed.find(s => s.rede === 'facebook' && s.usuario);
+
+      const identExtrasEl = document.getElementById('profile-extra-socials');
+      const facebookItem = document.querySelector('.profile-facebook-social');
+
+      if (identExtrasEl) {
+        identExtrasEl.innerHTML = nonFacebook.map(s => {
+          const net = getSocialNet(s.rede);
+          const label = net?.label || 'Rede social';
+          return `
+          <div class="profile-detail-item profile-ident-item--extra-social" data-field="rede_social_usuario" data-social-index="${s.index}">
+            <span class="profile-detail-label">${escTagHtml(label)}</span>
+            <div class="profile-detail-value-row">
+              <span class="profile-detail-value">${escTagHtml(formatSocialUser(s.usuario))}</span>
+              <button class="profile-detail-edit" type="button" aria-label="Editar rede social">
+                ${identEditIcon}
+                <div class="profile-tooltip"><div class="profile-tooltip-arrow"></div><div class="profile-tooltip-box">Editar</div></div>
+              </button>
+              <button class="profile-detail-copy" type="button" title="Copiar" aria-label="Copiar rede social">
+                ${identCopyIcon}
+                <div class="profile-tooltip"><div class="profile-tooltip-arrow"></div><div class="profile-tooltip-box">Copiar</div></div>
+              </button>
+            </div>
+          </div>`;
+        }).join('');
+        identExtrasEl.querySelectorAll('.profile-ident-item--extra-social').forEach(item => {
+          window.__bindProfileSocialItem?.(item);
+        });
+      }
+
+      renderSocialIntoItem(facebookItem, facebookEntry, facebookEntry?.index ?? 0);
+    }
+
+    window.__refreshProfileSocials = () => {
+      const raw = window.__profileFieldRaw || {};
+      const socials = [...(window.__profileContactSocials || [])];
+      if (socials.length) {
+        socials[0] = { rede: raw.rede_social || socials[0].rede || 'instagram', usuario: raw.rede_social_usuario || '' };
+      } else if (raw.rede_social_usuario) {
+        socials.push({ rede: raw.rede_social || 'instagram', usuario: raw.rede_social_usuario });
+      }
+      renderProfileSocials({ rede_social: raw.rede_social, rede_social_usuario: raw.rede_social_usuario, redes_sociais: socials });
+    };
+
+    async function renderProfilePrivacy(contactId) {
+      const listEl = document.getElementById('profile-privacy-list');
+      if (!listEl) return;
+
+      const CHANNELS = window.__legalBasisPicker?.CHANNELS || [];
+      const OPTIONS = window.__legalBasisPicker?.OPTIONS || [];
+
+      const { data, error } = await db
+        .from('claude_contato_bases_legais')
+        .select('canal, base_legal')
+        .eq('contato_id', contactId)
+        .eq('status', 'opt_in');
+
+      if (error || !data?.length) {
+        listEl.innerHTML = '<div class="profile-privacy-empty">Nenhuma base legal cadastrada</div>';
+        return;
+      }
+
+      const items = data.filter(r => r.canal && r.base_legal);
+      if (!items.length) {
+        listEl.innerHTML = '<div class="profile-privacy-empty">Nenhuma base legal cadastrada</div>';
+        return;
+      }
+
+      const editIcon = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9048 5.76122L14.2387 9.09513L6.99924 16.3346L4.02679 16.6627C3.62887 16.7067 3.29266 16.3702 3.33694 15.9723L3.66767 12.9978L10.9048 5.76122V5.76122ZM16.3007 5.26486L14.7353 3.69947C14.247 3.21118 13.4551 3.21118 12.9668 3.69947L11.4941 5.17215L14.828 8.50606L16.3007 7.03338C16.789 6.54483 16.789 5.75315 16.3007 5.26486V5.26486Z" fill="currentColor"/></svg>`;
+
+      listEl.innerHTML = items.map(row => {
+        const canalLabel = CHANNELS.find(ch => ch.key === row.canal)?.label || row.canal;
+        const basisLabel = OPTIONS.find(opt => opt.key === row.base_legal)?.label || row.base_legal;
+        return `<div class="profile-privacy-item" data-field="base_legal" data-canal="${escTagHtml(row.canal)}" data-base-legal="${escTagHtml(row.base_legal)}">
+          <div class="profile-privacy-body">
+            <span class="profile-detail-label">${escTagHtml(canalLabel)}</span>
+            <div class="profile-privacy-value-row">
+              <span class="profile-privacy-value">${escTagHtml(basisLabel)}</span>
+              <button type="button" class="profile-detail-edit" aria-label="Editar base legal">
+                ${editIcon}
+                <div class="profile-tooltip">
+                  <div class="profile-tooltip-arrow"></div>
+                  <div class="profile-tooltip-box">Editar</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+
+      listEl.querySelectorAll('.profile-privacy-item[data-field]').forEach(item => {
+        window.__bindProfilePrivacyItem?.(item);
+      });
+    }
+
+    function renderProfileCompanies(contact) {
+      const listEl = document.getElementById('profile-companies-list');
+      if (!listEl) return;
+
+      if (!contact?.empresa_nome) {
+        listEl.innerHTML = '';
+        return;
+      }
+
+      const siteValue = contact.empresa_site || '—';
+      const phoneRaw = contact.empresa_telefone || '';
+      const phoneValue = formatPhone(phoneRaw) || '—';
+      const phoneTipo = contact.empresa_telefone_tipo || 'Comercial';
+
+      const fieldsHtml = `
+          <div class="profile-company-fields">
+            <div class="profile-divider profile-company-divider"></div>
+            <div class="profile-company-field">
+              <div class="profile-detail-item" data-field="empresa_site">
+                <span class="profile-detail-label">Site</span>
+                <div class="profile-detail-value-row">
+                  <span class="profile-detail-value${siteValue === '—' ? ' is-empty' : ''}">${escTagHtml(siteValue)}</span>
+                </div>
+              </div>
+            </div>
+            <div class="profile-company-field">
+              <div class="profile-company-field-label">Telefone</div>
+              <div class="profile-company-field-group">
+                <div class="profile-company-field-sublabel">${escTagHtml(phoneTipo)}</div>
+                <div class="profile-ident-item" data-field="empresa_telefone" data-inline-type="phone">
+                  <span class="profile-ident-value${phoneValue === '—' ? ' is-empty' : ''}">${escTagHtml(phoneValue)}</span>
+                </div>
+              </div>
+            </div>
+          </div>`;
+
+      listEl.innerHTML = `
+        <div class="profile-company-item" data-field="empresa">
+          <div class="profile-company-head">
+            <div class="profile-company-logo">${renderCompanyLogo(contact.empresa_nome)}</div>
+            <div class="profile-company-info">
+              <span class="profile-company-name">${escTagHtml(contact.empresa_nome)}</span>
+              ${contact.empresa_cnpj ? `<span class="profile-company-cnpj">CNPJ: ${escTagHtml(contact.empresa_cnpj)}</span>` : ''}
+            </div>
+          </div>
+          ${fieldsHtml}
+        </div>
+      `;
+
+      window.InlineField?.mountCard('#profile-company-card');
+    }
+
+    window.__renderProfileCompanies = renderProfileCompanies;
+
     function renderProfileTagsList(tags) {
       const listEl = document.getElementById('profile-tags-list');
       if (!listEl) return;
@@ -5729,7 +7705,7 @@
     // ── Carregar contato ────────────────────────────────────────────────────
     const { data: c, error } = await db
       .from('claude_contatos')
-      .select('id,nome,cargo,status,email,emails,telefone,telefones,foto_perfil,cpf,rg,data_nascimento,cep,rua,complemento,bairro,cidade,estado,pais,rede_social,rede_social_usuario,redes_sociais')
+      .select('id,nome,cargo,status,email,emails,telefone,telefones,foto_perfil,cpf,rg,data_nascimento,cep,rua,complemento,bairro,cidade,estado,pais,rede_social,rede_social_usuario,redes_sociais,empresa_id,empresa_nome,empresa_cnpj')
       .eq('id', contactId)
       .single();
 
@@ -5812,7 +7788,9 @@
     // ── Identificação ────────────────────────────────────────────────────────
     const emailPrimary  = (Array.isArray(c.emails) && c.emails.length ? c.emails[0] : c.email) || '';
     const fonePrimary   = (Array.isArray(c.telefones) && c.telefones.length ? c.telefones[0] : c.telefone) || '';
-    const socialUsuario = c.rede_social_usuario || '';
+    const socialUsuario = (buildSocialList(c)[0]?.usuario) || c.rede_social_usuario || '';
+    const socialRede    = (buildSocialList(c)[0]?.rede) || c.rede_social || 'instagram';
+    window.__profileContactSocials = buildSocialList(c);
 
     // ── Formatação de telefone brasileiro ────────────────────────────────────
     function formatPhone(raw) {
@@ -5843,16 +7821,100 @@
     function setIdentSpan(field, value) {
       const item = document.querySelector(`.profile-ident-item[data-field="${field}"]`);
       if (!item) return;
-      const span = item.querySelector('span');
+      const span = item.querySelector('.inline-field__value, .profile-ident-value') || item.querySelector('span');
       if (span) {
         span.textContent = value || '—';
         span.classList.remove('skeleton');
+        span.classList.toggle('is-empty', !value);
       }
-      if (!value) item.style.display = 'none';
+      item.style.display = '';
     }
-    setIdentSpan('email',               emailPrimary);
-    setIdentSpan('telefone',            formatPhone(fonePrimary));
-    setIdentSpan('rede_social_usuario', socialUsuario);
+    window.__formatProfilePhone = formatPhone;
+    window.__profileFieldRaw = {
+      nome: c.nome || '',
+      cargo: c.cargo || '',
+      email: emailPrimary,
+      telefone: fonePrimary,
+      rede_social: socialRede,
+      rede_social_usuario: socialUsuario,
+      data_nascimento: c.data_nascimento || '',
+      rg: c.rg || '',
+      cpf: c.cpf || '',
+      rua: c.rua || '',
+      complemento: c.complemento || '',
+      bairro: c.bairro || '',
+      cidade: c.cidade || '',
+      estado: c.estado || '',
+      cep: c.cep || '',
+      pais: c.pais || '',
+      empresa_id: c.empresa_id || '',
+      empresa_nome: c.empresa_nome || '',
+      empresa_cnpj: c.empresa_cnpj || '',
+      empresa_site: c.empresa_site || '',
+      empresa_telefone: c.empresa_telefone || '',
+      empresa_telefone_tipo: c.empresa_telefone_tipo || '',
+    };
+    window.__profileIdentRaw = window.__profileFieldRaw;
+
+    // ── Identificação: grupos E-mail / Telefones / CPF ───────────────────────
+    function countryForPhone(raw) {
+      const list = window.__countries || [];
+      if (!raw || !list.length) return null;
+      const sorted = [...list].sort((a, b) => b.dial.length - a.dial.length);
+      return sorted.find(country => raw.startsWith(country.dial)) || null;
+    }
+
+    function flagHtml(raw) {
+      const country = countryForPhone(raw);
+      return `<div class="profile-ident-flag" aria-hidden="true">${country ? country.flag : ''}</div>`;
+    }
+
+    // Valores não-principais: só cópia, pois a edição inline grava sempre o principal
+    function appendSecondaryValue(container, text, phoneRaw) {
+      if (!container || !text) return;
+      const row = document.createElement('div');
+      row.className = 'overview-info-item profile-ident-item';
+      row.innerHTML = `
+        ${phoneRaw ? flagHtml(phoneRaw) : ''}
+        <span class="profile-ident-value">${escTagHtml(text)}</span>
+        <div class="profile-ident-actions">
+          <button class="profile-ident-copy" type="button" aria-label="Copiar">
+            ${identCopyIcon}
+            <div class="profile-tooltip"><div class="profile-tooltip-arrow"></div><div class="profile-tooltip-box">Copiar</div></div>
+          </button>
+        </div>`;
+      container.appendChild(row);
+    }
+
+    function toggleIdentGroup(id, visible) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = visible ? '' : 'none';
+    }
+
+    const allEmails = (Array.isArray(c.emails) && c.emails.length ? c.emails : [c.email]).filter(Boolean);
+    const allPhones = (Array.isArray(c.telefones) && c.telefones.length ? c.telefones : [c.telefone]).filter(Boolean);
+
+    setIdentSpan('email', emailPrimary);
+    toggleIdentGroup('profile-group-email', true);
+    allEmails.slice(1).forEach(email => {
+      appendSecondaryValue(document.getElementById('profile-email-values'), email, null);
+    });
+
+    setIdentSpan('telefone', formatPhone(fonePrimary));
+    toggleIdentGroup('profile-group-telefone', true);
+    const phoneFlagHost = document.getElementById('profile-phone-flag');
+    if (phoneFlagHost) {
+      const country = countryForPhone(fonePrimary);
+      phoneFlagHost.innerHTML = country ? country.flag : '';
+    }
+    allPhones.slice(1).forEach(phone => {
+      appendSecondaryValue(document.getElementById('profile-phone-values'), formatPhone(phone), phone);
+    });
+
+    setIdentSpan('cpf', c.cpf);
+    toggleIdentGroup('profile-group-cpf', true);
+
+    renderProfileSocials(c);
 
     // ── Outros e-mails ───────────────────────────────────────────────────────
     const extraEmails = Array.isArray(c.emails) && c.emails.length > 1 ? c.emails.slice(1) : [];
@@ -5907,12 +7969,40 @@
     setText('pi-cidade-val',      c.cidade);
     setText('pi-estado-val',      c.estado);
     setText('pi-cep-val',         c.cep);
+    setText('pi-pais-val',        c.pais);
     hideIfEmpty('pi-rua',         c.rua);
     hideIfEmpty('pi-complemento', c.complemento);
     hideIfEmpty('pi-bairro',      c.bairro);
     hideIfEmpty('pi-cidade',      c.cidade);
     hideIfEmpty('pi-estado',      c.estado);
     hideIfEmpty('pi-cep',         c.cep);
+    hideIfEmpty('pi-pais',        c.pais);
+
+    const addrExtra = document.getElementById('profile-addr-extra');
+    if (addrExtra) addrExtra.style.display = '';
+
+    // ── Empresa ──────────────────────────────────────────────────────────────
+    if (c.empresa_id) {
+      const { data: emp, error: empErr } = await db
+        .from('claude_empresas')
+        .select('site,telefone,telefone_tipo')
+        .eq('id', c.empresa_id)
+        .maybeSingle();
+      if (empErr) console.error('[Perfil] Erro ao carregar empresa:', empErr.message);
+      window.__profileFieldRaw.empresa_id             = c.empresa_id || '';
+      window.__profileFieldRaw.empresa_site           = emp?.site || '';
+      window.__profileFieldRaw.empresa_telefone       = emp?.telefone || '';
+      window.__profileFieldRaw.empresa_telefone_tipo  = emp?.telefone_tipo || '';
+    }
+    renderProfileCompanies({ ...c, ...window.__profileFieldRaw });
+
+    // ── Privacidade de dados ─────────────────────────────────────────────────
+    await renderProfilePrivacy(contactId);
+    window.__profileContactId = contactId;
+    window.__profileDb        = db;
+    window.InlineField?.mountCard('#profile-more-info-card');
+    window.InlineField?.mountCard('#profile-contact-card');
+    window.InlineField?.mountCard('#profile-company-card');
 
     // ── Tags do contato ──────────────────────────────────────────────────────
     await renderProfileTags(contactId);

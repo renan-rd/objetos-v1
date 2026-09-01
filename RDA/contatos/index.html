@@ -2,6 +2,9 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Template de Lista — RD Station</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
@@ -26,7 +29,9 @@
       --color-text-low:             #405466;
       --color-text-disabled:        #7f8d99;
       --color-primary-border:       #00dbff;
+      --color-icon-low:             #596B7A;
       --color-primary-surface-low:  #b2f4ff;
+      --color-primary-surface-high: #00dbff;
       --color-primary-text:         #0077b2;
       --color-primary-text-on:      #00dbff;
       --color-primary-inverse:      #003d5c;
@@ -36,6 +41,7 @@
       --radius-xs:  4px;
       --radius-sm:  8px;
       --radius-md:  12px;
+      --radius-lg:  16px;
       --radius-pill: 999px;
       --sp-1: 4px;
       --sp-2: 8px;
@@ -424,7 +430,7 @@
       width: 100%;
       height: 100%;
       min-height: 0;
-      background: var(--color-surface-low);
+      background: var(--color-surface);
     }
 
     .content.detail-open.detail-preview .detail-panel-preview {
@@ -433,17 +439,21 @@
 
     .overview-header {
       display: flex;
-      align-items: center;
-      gap: 24px;
-      padding: 16px 24px;
+      align-items: flex-start;
+      gap: 8px;
+      min-height: 56px;
+      padding: 16px 24px 8px;
       background: var(--color-surface);
-      border-bottom: 1px solid var(--color-border);
+      border-bottom: none;
       flex-shrink: 0;
     }
 
     .overview-title {
       flex: 1;
-      padding-top: 4px;
+      display: flex;
+      align-items: center;
+      min-height: 32px;
+      padding-top: 0;
       font-size: 16px;
       font-weight: 700;
       color: var(--color-text-high);
@@ -451,10 +461,23 @@
       line-height: 1.5;
     }
 
+    .overview-header .drawer-close {
+      width: 32px;
+      height: 32px;
+      padding: 6px;
+      border-radius: var(--radius-sm);
+    }
+
+    .overview-header .drawer-close svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--color-icon-low);
+    }
+
     .overview-body {
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
+      padding: 0 16px 16px;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -464,15 +487,15 @@
     .overview-card {
       background: var(--color-surface);
       border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      padding: 4px 16px;
+      border-radius: var(--radius-lg);
+      padding: 16px;
     }
 
     .overview-accordion-head {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 0;
+      padding: 0;
       cursor: pointer;
       user-select: none;
       width: 100%;
@@ -483,25 +506,24 @@
     }
 
     .overview-accordion-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: var(--radius-sm);
-      background: var(--color-primary-surface-low);
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      color: var(--color-icon-low);
     }
 
     .overview-accordion-icon svg,
     .overview-accordion-icon img {
-      width: 16px;
-      height: 16px;
+      width: 24px;
+      height: 24px;
       display: block;
     }
 
     .overview-accordion-icon svg {
-      fill: var(--color-primary-text);
+      fill: currentColor;
     }
 
     .overview-accordion-title {
@@ -532,7 +554,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      padding-bottom: 8px;
+      padding-top: 12px;
     }
 
     .overview-card-body > .btn-secondary {
@@ -563,20 +585,27 @@
 
     .profile-company-item {
       display: flex;
-      gap: 16px;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .profile-company-head {
+      display: flex;
+      gap: 8px;
       align-items: center;
     }
 
     .profile-company-logo {
       width: 40px;
       height: 40px;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 16px;
       font-weight: 900;
-      color: #fff;
+      background: var(--color-primary-surface-high);
+      color: var(--color-text-high);
       flex-shrink: 0;
       overflow: hidden;
     }
@@ -588,17 +617,10 @@
       min-width: 0;
     }
 
-    .profile-company-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
     .profile-company-name {
       font-size: 16px;
-      font-weight: 500;
-      color: #212429;
+      font-weight: 700;
+      color: var(--color-primary-text);
       letter-spacing: -0.16px;
       line-height: 1.5;
       overflow: hidden;
@@ -606,21 +628,46 @@
       white-space: nowrap;
     }
 
-    .profile-company-tag {
+    .profile-company-cnpj {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-high);
+      letter-spacing: -0.14px;
+      line-height: 1.4;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .profile-company-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .profile-company-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .profile-company-field-sublabel {
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 500;
       color: var(--color-text-low);
       letter-spacing: -0.12px;
       line-height: 1.3;
-      flex-shrink: 0;
     }
 
-    .profile-company-role {
-      font-size: 14px;
+    .profile-company-field-value {
+      font-size: 16px;
       font-weight: 500;
-      color: var(--color-text-low);
-      letter-spacing: -0.14px;
-      line-height: 1.4;
+      color: var(--color-text-high);
+      letter-spacing: -0.16px;
+      line-height: 1.5;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .overview-deals-list {
@@ -701,7 +748,7 @@
     .overview-contact-name {
       font-size: 16px;
       font-weight: 700;
-      color: var(--color-primary-text);
+      color: var(--color-text-high);
       letter-spacing: -0.16px;
       line-height: 1.5;
       overflow: hidden;
@@ -726,7 +773,7 @@
       padding: 6px;
       border: none;
       border-radius: var(--radius-sm);
-      background: var(--color-primary-surface-low);
+      background: transparent;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -761,6 +808,37 @@
       color: #636e7c;
       letter-spacing: -0.16px;
       line-height: 1.5;
+    }
+
+    .profile-ident-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 4px;
+    }
+
+    .profile-ident-group-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text-high);
+      letter-spacing: -0.16px;
+      line-height: 1.5;
+    }
+
+    .profile-ident-values {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .profile-ident-values .overview-info-item {
+      gap: 8px;
+      align-items: center;
+    }
+
+    .profile-ident-values .profile-ident-value {
+      flex: 0 1 auto;
+      color: var(--color-text-high);
     }
 
     .overview-info-list {
@@ -2776,8 +2854,8 @@
 
     .tag-picker-chips {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      flex-direction: column;
+      gap: 12px;
       margin-bottom: 8px;
     }
 
@@ -2811,6 +2889,39 @@
       line-height: 1;
       font-size: 16px;
       color: var(--color-text-low);
+    }
+
+    .tag-picker-product-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tag-picker-product-title {
+      color: var(--color-text-low);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 19.6px;
+      overflow-wrap: break-word;
+    }
+
+    .tag-picker-product-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag-picker-product-divider {
+      width: 100%;
+      height: 1px;
+      background: var(--color-border);
+    }
+
+    .tag-picker-product-empty {
+      color: var(--color-text-low);
+      font: 500 14px/1.4 var(--font);
+      letter-spacing: -.14px;
     }
 
     .tag-picker-dropdown {
@@ -3310,77 +3421,6 @@
     .account-dropdown-item.danger svg { fill: #d93025; }
     .account-dropdown-divider { height: 1px; background: #e5e8ea; margin: 4px 0; }
 
-    /* ─── LOGIN OVERLAY ──────────────────────────────────── */
-    .login-overlay {
-      position: fixed; inset: 0; z-index: 9000;
-      background: #F2F4F7;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .login-overlay.hidden { display: none; }
-    body:not(.is-authenticated) .navbar { display: none !important; }
-    #set-password-panel { display: none; }
-    .login-overlay.set-password-mode #login-card { display: none; }
-    .login-overlay.set-password-mode #set-password-panel { display: flex; }
-    .login-card {
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 4px 32px rgba(0,34,51,0.10);
-      width: 400px;
-      padding: 40px;
-      display: flex; flex-direction: column; align-items: center; gap: 28px;
-    }
-    .login-logo { display: flex; align-items: center; gap: 10px; }
-    .login-heading {
-      text-align: center;
-    }
-    .login-heading h1 {
-      font-size: 22px; font-weight: 700; color: #002233;
-      margin: 0 0 6px; letter-spacing: -0.3px;
-    }
-    .login-heading p {
-      font-size: 14px; color: #596B7A; margin: 0;
-    }
-    .login-form { width: 100%; display: flex; flex-direction: column; gap: 16px; }
-    .login-field { display: flex; flex-direction: column; gap: 6px; }
-    .login-field label {
-      font-size: 13px; font-weight: 600; color: #002233; letter-spacing: -0.1px;
-    }
-    .login-input-wrap { position: relative; }
-    .login-input {
-      width: 100%; box-sizing: border-box;
-      height: 44px; padding: 0 12px;
-      border: 1.5px solid #b2bcc1; border-radius: 10px;
-      font-size: 15px; font-family: 'DM Sans', sans-serif; color: #002233;
-      background: #fff; outline: none;
-      transition: border-color .15s;
-    }
-    .login-input:focus { border-color: #0077B2; }
-    .login-input.has-toggle { padding-right: 44px; }
-    .login-toggle-pw {
-      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; cursor: pointer; padding: 4px;
-      display: flex; align-items: center; color: #596B7A;
-    }
-    .login-toggle-pw svg { width: 18px; height: 18px; fill: #596B7A; }
-    .login-error {
-      background: #FFD6E4; border: 1px solid #C20046; border-radius: 8px;
-      padding: 10px 14px; font-size: 13px; color: #C20046;
-      display: none;
-    }
-    .login-btn {
-      width: 100%; height: 48px; border-radius: 12px; border: none;
-      background: #003D5C; color: #00DBFF;
-      font-size: 16px; font-weight: 700; font-family: 'DM Sans', sans-serif;
-      line-height: 24px; cursor: pointer;
-      transition: background .15s;
-    }
-    .login-btn:hover { background: #005A87; color: #66E9FF; }
-    .login-btn:disabled { background: #b2bcc1; color: #fff; cursor: not-allowed; }
-    .login-btn:disabled { background: #b2bcc1; cursor: not-allowed; }
-    .login-lang {
-      font-size: 12px; color: #7f8d99;
-    }
   </style>
 </head>
 <body>
@@ -3711,13 +3751,13 @@
         </div>
 
         <div class="overview-body">
-          <!-- Dados do contato -->
+          <!-- Contato -->
           <section class="overview-card" data-accordion>
             <button type="button" class="overview-accordion-head" aria-expanded="true">
               <span class="overview-accordion-icon" aria-hidden="true">
-                <img src="./painel-visao/person.svg" width="16" height="16" alt="">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8.00008 8C9.68341 8 11.0477 6.65703 11.0477 5C11.0477 3.34297 9.68341 2 8.00008 2C6.31675 2 4.95246 3.34297 4.95246 5C4.95246 6.65703 6.31675 8 8.00008 8ZM10.1334 8.75H9.7358C9.20722 8.98906 8.61913 9.125 8.00008 9.125C7.38103 9.125 6.79532 8.98906 6.26437 8.75H5.86675C4.10008 8.75 2.66675 10.1609 2.66675 11.9V12.875C2.66675 13.4961 3.17865 14 3.80961 14H12.1906C12.8215 14 13.3334 13.4961 13.3334 12.875V11.9C13.3334 10.1609 11.9001 8.75 10.1334 8.75Z"/></svg>
               </span>
-              <span class="overview-accordion-title">Dados do contato</span>
+              <span class="overview-accordion-title">Contato</span>
               <img class="overview-accordion-chevron" src="./painel-visao/chevron-up.svg" width="24" height="24" alt="">
             </button>
             <div class="overview-card-body">
@@ -3727,23 +3767,36 @@
                   <div class="overview-contact-name" id="overview-name">—</div>
                   <div class="overview-contact-role" id="overview-role">—</div>
                 </div>
-                <button type="button" class="overview-icon-btn" title="WhatsApp" aria-label="WhatsApp">
-                  <img src="./painel-visao/whatsapp.svg" width="20" height="20" alt="">
-                </button>
                 <button type="button" class="overview-icon-btn" id="detail-panel-more-btn" title="Mais opções" aria-label="Mais opções">
                   <img src="./painel-visao/elipsis-v.svg" width="20" height="20" alt="">
                 </button>
               </div>
               <div class="overview-divider"></div>
               <div class="overview-section-label">Identificação do contato</div>
-              <div class="overview-info-list">
-                <div class="overview-info-item">
-                  <img src="./painel-visao/mail.svg" width="24" height="24" alt="">
-                  <span id="overview-email">—</span>
+              <div class="overview-info-list profile-ident-list">
+                <div class="profile-ident-group" id="overview-group-email">
+                  <div class="profile-ident-group-label">E-mail</div>
+                  <div class="profile-ident-values" id="overview-email-values">
+                    <div class="overview-info-item profile-ident-item">
+                      <span class="profile-ident-value" id="overview-email"></span>
+                    </div>
+                  </div>
                 </div>
-                <div class="overview-info-item">
-                  <img src="./painel-visao/phone.svg" width="24" height="24" alt="">
-                  <span id="overview-phone">—</span>
+                <div class="profile-ident-group" id="overview-group-telefone">
+                  <div class="profile-ident-group-label">Telefones</div>
+                  <div class="profile-ident-values" id="overview-phone-values">
+                    <div class="overview-info-item profile-ident-item">
+                      <span class="profile-ident-value" id="overview-phone"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="profile-ident-group" id="overview-group-cpf">
+                  <div class="profile-ident-group-label">CPF</div>
+                  <div class="profile-ident-values">
+                    <div class="overview-info-item profile-ident-item">
+                      <span class="profile-ident-value" id="overview-cpf"></span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <button type="button" class="overview-btn-secondary" id="detail-panel-open-edit">Editar dados do contato</button>
@@ -3754,7 +3807,7 @@
           <section class="overview-card" data-accordion>
             <button type="button" class="overview-accordion-head" aria-expanded="true">
               <span class="overview-accordion-icon" aria-hidden="true">
-                <img src="./painel-visao/clock.svg" width="16" height="16" alt="">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C7.02823 3 3 7.02823 3 12C3 16.9718 7.02823 21 12 21C16.9718 21 21 16.9718 21 12C21 7.02823 16.9718 3 12 3ZM14.0722 15.7052L10.8714 13.379C10.7589 13.2956 10.6935 13.1649 10.6935 13.027V6.91935C10.6935 6.67984 10.8895 6.48387 11.129 6.48387H12.871C13.1105 6.48387 13.3065 6.67984 13.3065 6.91935V11.9165L15.6109 13.5931C15.8069 13.7347 15.8468 14.0069 15.7052 14.2028L14.6819 15.6109C14.5403 15.8032 14.2681 15.8468 14.0722 15.7052Z"/></svg>
               </span>
               <span class="overview-accordion-title">Histórico</span>
               <img class="overview-accordion-chevron" src="./painel-visao/chevron-up.svg" width="24" height="24" alt="">
@@ -3836,7 +3889,7 @@
           <section class="overview-card is-collapsed" data-accordion>
             <button type="button" class="overview-accordion-head" aria-expanded="false">
               <span class="overview-accordion-icon" aria-hidden="true">
-                <img src="./painel-visao/case.svg" width="16" height="16" alt="">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 9.7915C9.5 9.99869 9.33219 10.1665 9.125 10.1665H6.875C6.66781 10.1665 6.5 9.99869 6.5 9.7915V8.6665H2V12.0415C2 12.6415 2.525 13.1665 3.125 13.1665H12.875C13.475 13.1665 14 12.6415 14 12.0415V8.6665H9.5V9.7915ZM12.875 4.9165H11V3.7915C11 3.1915 10.475 2.6665 9.875 2.6665H6.125C5.525 2.6665 5 3.1915 5 3.7915V4.9165H3.125C2.525 4.9165 2 5.4415 2 6.0415V7.9165H14V6.0415C14 5.4415 13.475 4.9165 12.875 4.9165ZM9.5 4.9165H6.5V4.1665H9.5V4.9165Z"/></svg>
               </span>
               <span class="overview-accordion-title">Negociações</span>
               <img class="overview-accordion-chevron" src="./painel-visao/chevron-up.svg" width="24" height="24" alt="">
@@ -3921,13 +3974,14 @@
           <section class="overview-card is-collapsed" data-accordion>
             <button type="button" class="overview-accordion-head" aria-expanded="false">
               <span class="overview-accordion-icon" aria-hidden="true">
-                <img src="./painel-visao/building.svg" width="16" height="16" alt="">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M13.0477 13.25H12.5715V2.5625C12.5715 2.25184 12.3157 2 12.0001 2H4.00008C3.68449 2 3.42865 2.25184 3.42865 2.5625V13.25H2.95246C2.79468 13.25 2.66675 13.3759 2.66675 13.5312V14H13.3334V13.5312C13.3334 13.3759 13.2055 13.25 13.0477 13.25ZM5.71437 3.78125C5.71437 3.62593 5.8423 3.5 6.00008 3.5H6.95246C7.11025 3.5 7.23818 3.62593 7.23818 3.78125V4.71875C7.23818 4.87407 7.11025 5 6.95246 5H6.00008C5.8423 5 5.71437 4.87407 5.71437 4.71875V3.78125ZM5.71437 6.03125C5.71437 5.87593 5.8423 5.75 6.00008 5.75H6.95246C7.11025 5.75 7.23818 5.87593 7.23818 6.03125V6.96875C7.23818 7.12407 7.11025 7.25 6.95246 7.25H6.00008C5.8423 7.25 5.71437 7.12407 5.71437 6.96875V6.03125ZM6.95246 9.5H6.00008C5.8423 9.5 5.71437 9.37407 5.71437 9.21875V8.28125C5.71437 8.12593 5.8423 8 6.00008 8H6.95246C7.11025 8 7.23818 8.12593 7.23818 8.28125V9.21875C7.23818 9.37407 7.11025 9.5 6.95246 9.5ZM8.76199 13.25H7.23818V11.2812C7.23818 11.1259 7.36611 11 7.52389 11H8.47627C8.63406 11 8.76199 11.1259 8.76199 11.2812V13.25ZM10.2858 9.21875C10.2858 9.37407 10.1579 9.5 10.0001 9.5H9.0477C8.88991 9.5 8.76199 9.37407 8.76199 9.21875V8.28125C8.76199 8.12593 8.88991 8 9.0477 8H10.0001C10.1579 8 10.2858 8.12593 10.2858 8.28125V9.21875ZM10.2858 6.96875C10.2858 7.12407 10.1579 7.25 10.0001 7.25H9.0477C8.88991 7.25 8.76199 7.12407 8.76199 6.96875V6.03125C8.76199 5.87593 8.88991 5.75 9.0477 5.75H10.0001C10.1579 5.75 10.2858 5.87593 10.2858 6.03125V6.96875ZM10.2858 4.71875C10.2858 4.87407 10.1579 5 10.0001 5H9.0477C8.88991 5 8.76199 4.87407 8.76199 4.71875V3.78125C8.76199 3.62593 8.88991 3.5 9.0477 3.5H10.0001C10.1579 3.5 10.2858 3.62593 10.2858 3.78125V4.71875Z"/></svg>
               </span>
               <span class="overview-accordion-title">Empresa</span>
               <img class="overview-accordion-chevron" src="./painel-visao/chevron-up.svg" width="24" height="24" alt="">
             </button>
             <div class="overview-card-body">
               <div id="overview-companies-list"></div>
+              <button type="button" class="overview-btn-secondary" id="detail-panel-open-company-edit">Editar empresa</button>
             </div>
           </section>
         </div>
@@ -4341,7 +4395,7 @@
 <script src="tag-picker.js"></script>
 <script src="empresa-autocomplete.js"></script>
 <script src="../../shared/contact-delete-modal.js"></script>
-<script src="../perfil/profile-more-menu.js"></script>
+<script src="../perfil/profile-more-menu.js?v=20260901-menu-3"></script>
 <script>
   // ─── SHARED SOCIAL NETWORKS DATA ─────────────────────────
   window.__socialNetworks = [
@@ -5019,6 +5073,7 @@
     window.__contactsLoading = false;
     window.__contactsReloadQueued = false;
     window.__contactsReload = () => { currentPage = 1; loadPage(); };
+    loadPage();
     window.addEventListener('resize', adjustTableWidth);
 
     // ─── STATUS DROPDOWN ──────────────────────────────────────
@@ -5112,6 +5167,7 @@
 
     const previewClose   = document.getElementById('detail-preview-close');
     const previewOpenBtn = document.getElementById('detail-panel-open-edit');
+    document.getElementById('detail-panel-open-company-edit')?.addEventListener('click', () => previewOpenBtn?.click());
 
     function placeDrawerModal() {
       document.body.appendChild(drawer);
@@ -5282,45 +5338,59 @@
 
     function renderCompanyLogo(nome) {
       const gi = window.__getInitials || (n => String(n || '?').trim().charAt(0).toUpperCase());
-      const gc = window.__getColor || (() => '#6c63ff');
-      const label = gi(nome);
-      const color = gc(nome || label);
-      return `<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:${color};font-size:14px;font-weight:700;color:#fff;letter-spacing:-0.14px;">${escHtml(label)}</span>`;
+      return escHtml(gi(nome));
     }
 
     function renderPreviewCompanies(data) {
       const listEl = document.getElementById('overview-companies-list');
       if (!listEl) return;
 
-      const companies = [];
-      if (data && data.empresa_nome) {
-        companies.push({
-          nome: data.empresa_nome,
-          cargo: data.cargo || '',
-          principal: true,
-          logo: null,
-        });
-      }
-
-      if (!companies.length) {
+      if (!data?.empresa_nome) {
         listEl.innerHTML = '';
         return;
       }
 
-      listEl.innerHTML = companies.map(company => `
+      const formatPhone = window.__formatPhone || (raw => raw || '');
+      const siteValue = data.empresa_site || '—';
+      const phoneValue = formatPhone(data.empresa_telefone || '') || '—';
+      const phoneTipo = data.empresa_telefone_tipo || 'Comercial';
+
+      listEl.innerHTML = `
         <div class="profile-company-item">
-          <div class="profile-company-logo">${company.logo
-            ? `<img src="${escHtml(company.logo)}" alt="${escHtml(company.nome)}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);">`
-            : renderCompanyLogo(company.nome)}</div>
-          <div class="profile-company-info">
-            <div class="profile-company-header">
-              <span class="profile-company-name">${escHtml(company.nome)}</span>
-              ${company.principal ? '<span class="profile-company-tag">Principal</span>' : ''}
+          <div class="profile-company-head">
+            <div class="profile-company-logo">${renderCompanyLogo(data.empresa_nome)}</div>
+            <div class="profile-company-info">
+              <span class="profile-company-name">${escHtml(data.empresa_nome)}</span>
+              ${data.empresa_cnpj ? `<span class="profile-company-cnpj">CNPJ: ${escHtml(data.empresa_cnpj)}</span>` : ''}
             </div>
-            ${company.cargo ? `<span class="profile-company-role">${escHtml(company.cargo)}</span>` : ''}
+          </div>
+          <div class="profile-company-fields">
+            <div class="overview-divider profile-company-divider"></div>
+            <div class="profile-company-field">
+              <div class="profile-ident-group-label">Site</div>
+              <span class="profile-company-field-value">${escHtml(siteValue)}</span>
+            </div>
+            <div class="profile-company-field">
+              <div class="profile-ident-group-label">Telefone</div>
+              <div class="profile-company-field-sublabel">${escHtml(phoneTipo)}</div>
+              <span class="profile-company-field-value">${escHtml(phoneValue)}</span>
+            </div>
           </div>
         </div>
-      `).join('');
+      `;
+    }
+
+    function clearPreviewIdentExtras() {
+      document.querySelectorAll('#overview-email-values .overview-ident-extra, #overview-phone-values .overview-ident-extra').forEach(el => el.remove());
+    }
+
+    function appendPreviewIdentValue(hostId, value) {
+      const host = document.getElementById(hostId);
+      if (!host || !value) return;
+      const item = document.createElement('div');
+      item.className = 'overview-info-item profile-ident-item overview-ident-extra';
+      item.innerHTML = `<span class="profile-ident-value">${escHtml(value)}</span>`;
+      host.appendChild(item);
     }
 
     async function loadPreviewContact(contactId) {
@@ -5328,34 +5398,52 @@
       const roleEl  = document.getElementById('overview-role');
       const emailEl = document.getElementById('overview-email');
       const phoneEl = document.getElementById('overview-phone');
+      const cpfEl   = document.getElementById('overview-cpf');
       if (!nameEl) return;
 
       nameEl.textContent = 'Carregando...';
       roleEl.textContent = '';
-      emailEl.textContent = '—';
-      phoneEl.textContent = '—';
+      if (emailEl) emailEl.textContent = '—';
+      if (phoneEl) phoneEl.textContent = '—';
+      if (cpfEl) cpfEl.textContent = '—';
+      clearPreviewIdentExtras();
       renderPreviewAvatar('', null);
       renderPreviewCompanies(null);
 
       const { data, error } = await db
         .from('claude_contatos')
-        .select('nome, cargo, email, emails, telefone, telefones, foto_perfil, empresa_nome, empresa_cnpj')
+        .select('nome, cargo, email, emails, telefone, telefones, foto_perfil, cpf, empresa_id, empresa_nome, empresa_cnpj')
         .eq('id', contactId)
         .single();
 
       if (error || !data) {
+        console.error('[Preview] Erro ao carregar contato:', error?.message);
         nameEl.textContent = 'Contato não encontrado';
         renderPreviewCompanies(null);
         return;
       }
 
+      if (data.empresa_id) {
+        const { data: emp } = await db
+          .from('claude_empresas')
+          .select('site,telefone,telefone_tipo')
+          .eq('id', data.empresa_id)
+          .maybeSingle();
+        data.empresa_site = emp?.site || '';
+        data.empresa_telefone = emp?.telefone || '';
+        data.empresa_telefone_tipo = emp?.telefone_tipo || '';
+      }
+
       nameEl.textContent = data.nome || '—';
       roleEl.textContent = data.cargo || '—';
       const emailsArr = Array.isArray(data.emails) && data.emails.length ? data.emails : (data.email ? [data.email] : []);
-      emailEl.textContent = emailsArr[0] || '—';
+      if (emailEl) emailEl.textContent = emailsArr[0] || '—';
+      emailsArr.slice(1).forEach(email => appendPreviewIdentValue('overview-email-values', email));
       const phonesArr = Array.isArray(data.telefones) && data.telefones.length ? data.telefones : (data.telefone ? [data.telefone] : []);
       const formatPhone = window.__formatPhone || (raw => raw || '');
-      phoneEl.textContent = formatPhone(phonesArr[0]) || '—';
+      if (phoneEl) phoneEl.textContent = formatPhone(phonesArr[0]) || '—';
+      phonesArr.slice(1).forEach(phone => appendPreviewIdentValue('overview-phone-values', formatPhone(phone)));
+      if (cpfEl) cpfEl.textContent = data.cpf || '—';
       renderPreviewAvatar(data.nome, data.foto_perfil);
       renderPreviewCompanies(data);
     }
@@ -6556,301 +6644,6 @@
   })();
 </script>
 
-<!-- ── LOGIN OVERLAY ───────────────────────────────────── -->
-<div class="login-overlay" id="login-overlay">
-  <div class="login-card" id="login-card">
-    <div class="login-logo">
-      <img src="logo-rd.svg" alt="RD Station" style="height:40px;">
-    </div>
-
-    <div class="login-heading">
-      <h1>Bem-vindo de volta</h1>
-      <p>Entre com suas credenciais para continuar</p>
-    </div>
-
-    <div class="login-form">
-      <div id="login-error" class="login-error"></div>
-
-      <div class="login-field">
-        <label for="login-email">E-mail</label>
-        <div class="login-input-wrap">
-          <input class="login-input" type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
-        </div>
-      </div>
-
-      <div class="login-field">
-        <label for="login-password">Senha</label>
-        <div class="login-input-wrap">
-          <input class="login-input has-toggle" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
-          <button class="login-toggle-pw" type="button" id="toggle-pw" tabindex="-1">
-            <svg id="toggle-pw-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <button class="login-btn" id="login-btn">Entrar</button>
-    </div>
-
-    <span class="login-lang">Português (Brasil)</span>
-  </div>
-
-  <!-- Definir senha (convite) -->
-  <div class="login-card" id="set-password-panel" aria-labelledby="set-password-title">
-    <div class="login-logo">
-      <img src="logo-rd.svg" alt="RD Station" style="height:40px;">
-    </div>
-
-    <div class="login-heading">
-      <h1 id="set-password-title">Defina sua senha</h1>
-      <p id="set-password-subtitle">Crie uma senha para acessar sua conta</p>
-    </div>
-
-    <div class="login-form">
-      <div id="set-password-error" class="login-error"></div>
-
-      <div class="login-field">
-        <label for="set-password-email">E-mail</label>
-        <div class="login-input-wrap">
-          <input class="login-input" type="email" id="set-password-email" readonly tabindex="-1">
-        </div>
-      </div>
-
-      <div class="login-field">
-        <label for="set-password-new">Nova senha</label>
-        <div class="login-input-wrap">
-          <input class="login-input has-toggle" type="password" id="set-password-new" placeholder="Mínimo de 6 caracteres" autocomplete="new-password">
-          <button class="login-toggle-pw" type="button" id="toggle-set-pw" tabindex="-1" aria-label="Mostrar senha">
-            <svg id="toggle-set-pw-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <div class="login-field">
-        <label for="set-password-confirm">Confirmar senha</label>
-        <div class="login-input-wrap">
-          <input class="login-input has-toggle" type="password" id="set-password-confirm" placeholder="Repita a senha" autocomplete="new-password">
-          <button class="login-toggle-pw" type="button" id="toggle-set-pw-confirm" tabindex="-1" aria-label="Mostrar senha">
-            <svg id="toggle-set-pw-confirm-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <button class="login-btn" id="set-password-btn" type="button">Salvar senha e entrar</button>
-    </div>
-
-    <span class="login-lang">Português (Brasil)</span>
-  </div>
-</div>
-
-<script>
-// ─── SUPABASE AUTH ────────────────────────────────────────
-(function() {
-  const SUPABASE_URL  = 'https://deeklhefjxldkweqjtsa.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZWtsaGVmanhsZGt3ZXFqdHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5Mzc5NjcsImV4cCI6MjA2NzUxMzk2N30.9oxYKZHfRNjbXJzQ17POORk_5Z12DDdkPUqAbeIdMcQ';
-  const PASSWORD_SETUP_KEY = 'needs_password_setup';
-
-  (function captureInviteFlag() {
-    try {
-      const hashParams = new URLSearchParams((location.hash || '').replace(/^#/, ''));
-      const searchParams = new URLSearchParams(location.search || '');
-      const type = (hashParams.get('type') || searchParams.get('type') || '').toLowerCase();
-      if (type === 'invite' || type === 'signup') {
-        sessionStorage.setItem(PASSWORD_SETUP_KEY, '1');
-      }
-    } catch (_) { /* ignore */ }
-  })();
-
-  window.__sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-
-  const overlay   = document.getElementById('login-overlay');
-  const emailEl   = document.getElementById('login-email');
-  const pwEl      = document.getElementById('login-password');
-  const loginBtn  = document.getElementById('login-btn');
-  const errorEl   = document.getElementById('login-error');
-  const togglePw  = document.getElementById('toggle-pw');
-  const toggleIcon = document.getElementById('toggle-pw-icon');
-
-  const setPwEmailEl   = document.getElementById('set-password-email');
-  const setPwNewEl     = document.getElementById('set-password-new');
-  const setPwConfirmEl = document.getElementById('set-password-confirm');
-  const setPwBtn       = document.getElementById('set-password-btn');
-  const setPwErrorEl   = document.getElementById('set-password-error');
-  const toggleSetPw    = document.getElementById('toggle-set-pw');
-  const toggleSetPwIcon = document.getElementById('toggle-set-pw-icon');
-  const toggleSetPwConfirm = document.getElementById('toggle-set-pw-confirm');
-  const toggleSetPwConfirmIcon = document.getElementById('toggle-set-pw-confirm-icon');
-
-  const EYE_OPEN = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
-  const EYE_CLOSED = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>';
-
-  let completingPasswordSetup = false;
-
-  function needsPasswordSetup() {
-    return sessionStorage.getItem(PASSWORD_SETUP_KEY) === '1';
-  }
-
-  function clearPasswordSetup() {
-    sessionStorage.removeItem(PASSWORD_SETUP_KEY);
-    try {
-      history.replaceState(null, '', location.pathname + location.search);
-    } catch (_) { /* ignore */ }
-  }
-
-  function bindPwToggle(btn, input, icon) {
-    if (!btn || !input || !icon) return;
-    btn.addEventListener('click', () => {
-      const isHidden = input.type === 'password';
-      input.type = isHidden ? 'text' : 'password';
-      icon.innerHTML = isHidden ? EYE_CLOSED : EYE_OPEN;
-    });
-  }
-
-  bindPwToggle(togglePw, pwEl, toggleIcon);
-  bindPwToggle(toggleSetPw, setPwNewEl, toggleSetPwIcon);
-  bindPwToggle(toggleSetPwConfirm, setPwConfirmEl, toggleSetPwConfirmIcon);
-
-  function showApp() {
-    if (needsPasswordSetup()) return;
-    document.body.classList.add('is-authenticated');
-    overlay.classList.remove('set-password-mode');
-    overlay.classList.add('hidden');
-    const reload = () => { if (window.__contactsReload) window.__contactsReload(); };
-    reload();
-    requestAnimationFrame(reload);
-  }
-
-  function showLogin() {
-    document.body.classList.remove('is-authenticated');
-    overlay.classList.remove('set-password-mode', 'hidden');
-    emailEl.focus();
-  }
-
-  function showSetPassword(user) {
-    document.body.classList.remove('is-authenticated');
-    overlay.classList.remove('hidden');
-    overlay.classList.add('set-password-mode');
-    if (setPwErrorEl) setPwErrorEl.style.display = 'none';
-    if (setPwEmailEl) setPwEmailEl.value = user?.email || '';
-    if (setPwNewEl) setPwNewEl.value = '';
-    if (setPwConfirmEl) setPwConfirmEl.value = '';
-    setTimeout(() => setPwNewEl?.focus(), 50);
-  }
-
-  function updateAccountName(user) {
-    const nameEl = document.getElementById('account-name');
-    if (nameEl && user) {
-      const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário';
-      nameEl.textContent = name;
-    }
-  }
-
-  function handleAuthenticatedSession(user) {
-    updateAccountName(user);
-    if (completingPasswordSetup) return;
-    if (needsPasswordSetup() || user?.user_metadata?.password_set === false) {
-      sessionStorage.setItem(PASSWORD_SETUP_KEY, '1');
-      showSetPassword(user);
-      return;
-    }
-    showApp();
-  }
-
-  window.__sbClient.auth.onAuthStateChange((event, session) => {
-    if (session) handleAuthenticatedSession(session.user);
-    else showLogin();
-  });
-
-  window.__sbClient.auth.getSession().then(({ data: { session } }) => {
-    if (session) handleAuthenticatedSession(session.user);
-    else showLogin();
-  });
-
-  async function doLogin() {
-    errorEl.style.display = 'none';
-    const email = emailEl.value.trim();
-    const password = pwEl.value;
-    if (!email || !password) {
-      errorEl.textContent = 'Preencha e-mail e senha.';
-      errorEl.style.display = 'block';
-      return;
-    }
-    loginBtn.disabled = true;
-    loginBtn.textContent = 'Entrando...';
-    const { error } = await window.__sbClient.auth.signInWithPassword({ email, password });
-    loginBtn.disabled = false;
-    loginBtn.textContent = 'Entrar';
-    if (error) {
-      errorEl.textContent = 'E-mail ou senha inválidos.';
-      errorEl.style.display = 'block';
-      pwEl.value = '';
-      pwEl.focus();
-      return;
-    }
-    showApp();
-  }
-
-  loginBtn.addEventListener('click', doLogin);
-  pwEl.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-  emailEl.addEventListener('keydown', e => { if (e.key === 'Enter') pwEl.focus(); });
-
-  async function doSetPassword() {
-    if (setPwErrorEl) setPwErrorEl.style.display = 'none';
-    const password = setPwNewEl?.value || '';
-    const confirm = setPwConfirmEl?.value || '';
-
-    if (!password || password.length < 6) {
-      if (setPwErrorEl) {
-        setPwErrorEl.textContent = 'A senha deve ter no mínimo 6 caracteres.';
-        setPwErrorEl.style.display = 'block';
-      }
-      return;
-    }
-    if (password !== confirm) {
-      if (setPwErrorEl) {
-        setPwErrorEl.textContent = 'As senhas não coincidem.';
-        setPwErrorEl.style.display = 'block';
-      }
-      return;
-    }
-
-    setPwBtn.disabled = true;
-    setPwBtn.textContent = 'Salvando...';
-    completingPasswordSetup = true;
-
-    const { data, error } = await window.__sbClient.auth.updateUser({
-      password,
-      data: { password_set: true },
-    });
-
-    setPwBtn.disabled = false;
-    setPwBtn.textContent = 'Salvar senha e entrar';
-
-    if (error) {
-      completingPasswordSetup = false;
-      if (setPwErrorEl) {
-        setPwErrorEl.textContent = error.message || 'Não foi possível salvar a senha.';
-        setPwErrorEl.style.display = 'block';
-      }
-      return;
-    }
-
-    clearPasswordSetup();
-    completingPasswordSetup = false;
-    updateAccountName(data?.user);
-    showApp();
-  }
-
-  setPwBtn?.addEventListener('click', doSetPassword);
-  setPwNewEl?.addEventListener('keydown', e => { if (e.key === 'Enter') setPwConfirmEl?.focus(); });
-  setPwConfirmEl?.addEventListener('keydown', e => { if (e.key === 'Enter') doSetPassword(); });
-
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    document.getElementById('account-dropdown')?.classList.remove('open');
-    clearPasswordSetup();
-    await window.__sbClient.auth.signOut();
-  });
-})();
-</script>
 <script src="../../shared/products.js"></script>
 </body>
 </html>

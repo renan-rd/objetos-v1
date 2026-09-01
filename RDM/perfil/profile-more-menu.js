@@ -3,9 +3,9 @@
   const TRASH_ICON = `<img src="${scriptBase}icons/trash.svg" width="24" height="24" alt="" aria-hidden="true">`;
 
   const MENU_ITEMS = [
-    { key: 'criar-negociacao', label: 'Criar negociação' },
-    { key: 'iniciar-atendimento', label: 'Iniciar atendimento' },
+    { key: 'editar-dados', label: 'Editar dados' },
     { key: 'mover-funil', label: 'Mover estágio do funil' },
+    { key: 'personalizar-cartao', label: 'Personalizar cartão' },
   ];
 
   const TRIGGER_IDS = [
@@ -14,6 +14,7 @@
     'profile-quick-more-btn',
     'detail-panel-more-btn',
   ];
+  const TRIGGER_SELECTOR = TRIGGER_IDS.map(id => `#${id}`).join(', ');
 
   let activeMenu = null;
 
@@ -30,25 +31,41 @@
     activeMenu = null;
   }
 
-  function positionMenu() {
-    if (!activeMenu || !activeMenu._anchor) return;
-    const rect = activeMenu._anchor.getBoundingClientRect();
-    const menuW = activeMenu.offsetWidth;
-    const menuH = activeMenu.offsetHeight;
-    const gap = 4;
-    let top = rect.bottom + gap;
-    let left = rect.right - menuW;
+  function liveAnchor(anchor) {
+    if (anchor?.id) {
+      const byId = document.getElementById(anchor.id);
+      if (byId) {
+        const rect = byId.getBoundingClientRect();
+        if (rect.width || rect.height) return byId;
+      }
+    }
+    if (anchor?.isConnected) {
+      const rect = anchor.getBoundingClientRect();
+      if (rect.width || rect.height) return anchor;
+    }
+    return null;
+  }
 
-    if (left < 8) left = 8;
+  function positionMenu() {
+    if (!activeMenu) return;
+    const anchor = liveAnchor(activeMenu._anchor) || activeMenu._anchor;
+    if (!anchor) return;
+    activeMenu._anchor = anchor;
+
+    const rect = anchor.getBoundingClientRect();
+    const menuW = activeMenu.offsetWidth || 220;
+    const gap = 2;
+    const top = (rect.height ? rect.bottom : 0) + gap;
+    let left = rect.right - menuW;
     if (left + menuW > window.innerWidth - 8) {
       left = window.innerWidth - menuW - 8;
     }
-    if (top + menuH > window.innerHeight - 8) {
-      top = Math.max(8, rect.top - menuH - gap);
-    }
+    if (left < 8) left = 8;
 
-    activeMenu.style.top = top + 'px';
-    activeMenu.style.left = left + 'px';
+    const maxH = Math.max(160, window.innerHeight - top - 8);
+    activeMenu.style.top = `${Math.round(top)}px`;
+    activeMenu.style.left = `${Math.round(left)}px`;
+    activeMenu.style.maxHeight = `${Math.round(maxH)}px`;
   }
 
   function buildMenuHtml() {
@@ -68,8 +85,9 @@
   }
 
   async function handleAction(key) {
-    if (key === 'criar-negociacao') {
-      document.querySelector('.profile-quick-actions .profile-quick-wrap:nth-child(4) .profile-quick-btn')?.click();
+    if (key === 'editar-dados') {
+      document.getElementById('profile-open-contact-edit')?.click();
+      window.__openProfileContactEdit?.();
       return;
     }
 
@@ -92,8 +110,8 @@
     }
 
     const labels = {
-      'iniciar-atendimento': 'Iniciar atendimento',
       'mover-funil': 'Mover estágio do funil',
+      'personalizar-cartao': 'Personalizar cartão',
     };
     if (labels[key]) {
       window.alert(`${labels[key]} — em breve.`);
@@ -101,15 +119,18 @@
   }
 
   function closeOtherMenus() {
-    document.querySelectorAll('.profile-status-dropdown, .actions-options-dropdown, .status-dropdown').forEach(el => el.remove());
-    window.__empresaAutocomplete?.close();
-    window.__closeActionsOptionsDropdown?.();
+    try {
+      document.querySelectorAll('.profile-status-dropdown, .actions-options-dropdown, .status-dropdown').forEach(el => el.remove());
+      window.__empresaAutocomplete?.close?.();
+      window.__closeActionsOptionsDropdown?.();
+    } catch (_) { /* ignore */ }
   }
 
   function openMenu(anchor) {
     closeOtherMenus();
 
-    if (activeMenu && activeMenu._anchor === anchor) {
+    const live = liveAnchor(anchor) || anchor;
+    if (activeMenu && activeMenu._anchor === live) {
       closeMenu();
       return;
     }
@@ -123,35 +144,42 @@
 
     document.body.appendChild(menu);
     activeMenu = menu;
-    activeMenu._anchor = anchor;
-    anchor.setAttribute('aria-expanded', 'true');
+    activeMenu._anchor = live;
+    live.setAttribute('aria-expanded', 'true');
     positionMenu();
+    requestAnimationFrame(positionMenu);
 
-    menu.querySelectorAll('[data-action]').forEach(item => {
-      item.addEventListener('click', async e => {
-        e.stopPropagation();
-        const action = item.dataset.action;
-        closeMenu();
-        await handleAction(action);
-      });
+    menu.addEventListener('click', async e => {
+      const item = e.target.closest('[data-action]');
+      if (!item) return;
+      e.stopPropagation();
+      const action = item.dataset.action;
+      closeMenu();
+      await handleAction(action);
     });
   }
 
   function bindTrigger(btn) {
-    if (!btn || btn.dataset.moreMenuBound) return;
+    if (!btn) return;
     btn.dataset.moreMenuBound = '1';
     btn.setAttribute('aria-haspopup', 'menu');
     if (!btn.hasAttribute('aria-expanded')) {
       btn.setAttribute('aria-expanded', 'false');
     }
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      openMenu(btn);
-    });
   }
 
   document.addEventListener('click', e => {
-    if (!e.target.closest('.profile-more-dropdown') && !e.target.closest('[data-more-menu-bound]')) {
+    const trigger = e.target.closest(TRIGGER_SELECTOR);
+    if (!trigger) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    openMenu(trigger);
+  }, true);
+
+  document.addEventListener('click', e => {
+    if (e.target.closest(TRIGGER_SELECTOR)) return;
+    if (!e.target.closest('.profile-more-dropdown')) {
       closeMenu();
     }
   });

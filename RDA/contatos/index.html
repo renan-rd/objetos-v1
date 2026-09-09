@@ -16,6 +16,8 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZWtsaGVmanhsZGt3ZXFqdHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5Mzc5NjcsImV4cCI6MjA2NzUxMzk2N30.9oxYKZHfRNjbXJzQ17POORk_5Z12DDdkPUqAbeIdMcQ'
     );
   </script>
+  <script src="../../shared/auth.js" data-login="../../login.html" data-require-auth="true"></script>
+  <link rel="stylesheet" href="../../shared/profile-tags.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -358,12 +360,79 @@
     .content-main {
       flex: 1;
       min-width: 0;
+      min-height: 0;
+      height: 100%;
       overflow-y: auto;
       padding: 0 24px 24px;
     }
 
     .content-inner {
       width: 100%;
+    }
+
+    .content-main.is-empty-state {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content-main.is-empty-state .content-inner {
+      flex-shrink: 0;
+    }
+
+    .content-main.is-empty-state .pagination {
+      display: none;
+    }
+
+    .content-main.is-empty-state .table-wrapper {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content-main.is-empty-state table {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .content-main.is-empty-state thead {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+      flex-shrink: 0;
+    }
+
+    .content-main.is-empty-state tbody,
+    .content-main.is-empty-state .empty-state-row,
+    .content-main.is-empty-state .empty-state-row td {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-height: 0;
+      width: 100%;
+    }
+
+    .content-main.is-empty-state .empty-state-row {
+      border-bottom: none;
+    }
+
+    .content-main.is-empty-state .empty-state-row td {
+      overflow: visible;
+      white-space: normal;
+      padding: 0;
+      border: none;
+    }
+
+    .empty-state-box {
+      width: 100%;
+      flex: 1;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
     /* ─── DETAIL PANEL (side sheet) ───────────────────── */
@@ -670,53 +739,130 @@
       white-space: nowrap;
     }
 
+    .overview-deals-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      height: 40px;
+      padding: 4px 4px 4px 12px;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+    }
+
+    .overview-deals-search-input {
+      flex: 1;
+      min-width: 0;
+      height: 24px;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--color-text-high);
+      font: 500 16px/1.5 var(--font);
+      letter-spacing: -0.16px;
+    }
+
+    .overview-deals-search-input::placeholder {
+      color: var(--color-text-low);
+    }
+
+    .overview-deals-search-icon {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
+    }
+
+    .overview-deals-search-icon img {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+
     .overview-deals-list {
       display: flex;
       flex-direction: column;
-      margin: 0 -16px;
+      gap: 8px;
+      min-height: 280px;
+      overflow-y: auto;
+      padding-right: 4px;
     }
 
     .overview-deal-item {
-      padding: 16px;
-      border-bottom: 1px solid var(--color-border);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .overview-deal-item:last-child {
-      border-bottom: none;
-    }
-
-    .overview-deal-main {
-      flex: 1;
-      min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      padding: 4px 0 0;
+    }
+
+    .overview-deal-item + .overview-deal-item {
+      padding-top: 8px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .overview-deal-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
     }
 
     .overview-deal-name {
-      font-size: 16px;
-      font-weight: 700;
-      line-height: 24px;
-      color: #0077B2;
-    }
-
-    .overview-deal-aux {
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 19.6px;
-      color: #405466;
-    }
-
-    .overview-deal-value {
-      font-size: 16px;
-      font-weight: 700;
-      line-height: 24px;
-      color: #002233;
-      flex-shrink: 0;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-primary-text);
+      text-decoration: none;
+    }
+
+    .overview-deal-more {
+      width: 40px;
+      height: 40px;
+      padding: 8px;
+      border: none;
+      background: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+    }
+
+    .overview-deal-more img {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .overview-deal-fields {
+      color: var(--color-text-high);
+      font: 500 14px/1.4 var(--font);
+      letter-spacing: -0.14px;
+    }
+
+    .overview-deal-fields p { margin: 0; }
+    .overview-deal-fields strong { font-weight: 700; }
+
+    .overview-deal-tag {
+      margin-top: 4px;
+      align-self: flex-start;
+      padding: 4px 8px;
+      border-radius: var(--radius-xs);
+      background: #0ed869;
+      color: var(--color-text-high);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
     }
 
     .overview-contact-row {
@@ -919,7 +1065,7 @@
     }
 
     .overview-tag.is-active {
-      background: var(--color-primary-text-on);
+      background: #DADEE0;
     }
 
     .overview-tags-fade {
@@ -1056,15 +1202,16 @@
 
     .overview-timeline-action {
       margin-top: 12px;
-      height: 40px;
-      padding: 8px 16px;
+      height: 32px;
+      padding: 6px 12px;
       border: none;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-sm);
       background: var(--color-primary-surface-low);
       color: var(--color-primary-text);
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 700;
-      letter-spacing: -0.16px;
+      letter-spacing: -0.14px;
+      line-height: 1.4;
       cursor: pointer;
       white-space: nowrap;
     }
@@ -1240,7 +1387,7 @@
     }
 
     .overview-tag.is-active {
-      background: var(--color-primary-text-on);
+      background: #DADEE0;
     }
 
     .overview-tags-fade {
@@ -1377,15 +1524,16 @@
 
     .overview-timeline-action {
       margin-top: 12px;
-      height: 40px;
-      padding: 8px 16px;
+      height: 32px;
+      padding: 6px 12px;
       border: none;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-sm);
       background: var(--color-primary-surface-low);
       color: var(--color-primary-text);
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 700;
-      letter-spacing: -0.16px;
+      letter-spacing: -0.14px;
+      line-height: 1.4;
       cursor: pointer;
       white-space: nowrap;
     }
@@ -1986,7 +2134,7 @@
       box-shadow: -6px 0 10px -4px rgba(0, 34, 51, 0.08);
     }
 
-    tbody tr:hover td.col-actions { background: #f5f7f8; }
+    tbody tr:not(.empty-state-row):hover td.col-actions { background: #f5f7f8; }
 
     thead th.col-actions { z-index: 3; }
 
@@ -2030,7 +2178,7 @@
     }
 
     tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #f5f7f8; }
+    tbody tr:not(.empty-state-row):hover { background: #f5f7f8; }
 
     tbody tr.row-selected,
     tbody tr.row-selected td,
@@ -3885,6 +4033,41 @@
             </div>
           </section>
 
+          <!-- Etiquetas -->
+          <section class="overview-card" data-accordion id="profile-tags-card">
+            <button type="button" class="overview-accordion-head" aria-expanded="true">
+              <span class="overview-accordion-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11.8787V5.5C4 4.67156 4.67156 4 5.5 4H11.8787C12.2765 4 12.658 4.15804 12.9393 4.43934L19.5607 11.0607C20.1464 11.6464 20.1464 12.5962 19.5607 13.182L13.182 19.5607C12.5962 20.1464 11.6464 20.1464 11.0607 19.5607L4.43934 12.9393C4.15804 12.658 4 12.2765 4 11.8787V11.8787ZM7.5 6C6.67156 6 6 6.67156 6 7.5C6 8.32844 6.67156 9 7.5 9C8.32844 9 9 8.32844 9 7.5C9 6.67156 8.32844 6 7.5 6Z"/></svg>
+              </span>
+              <span class="overview-accordion-title">Etiquetas</span>
+              <img class="overview-accordion-chevron" src="./painel-visao/chevron-up.svg" width="24" height="24" alt="">
+            </button>
+            <div class="overview-card-body profile-tags-card-body">
+              <div class="profile-tags-autocomplete" id="profile-tags-autocomplete">
+                <div class="profile-tags-input-shell" id="profile-tags-input-shell">
+                  <input
+                    class="profile-tags-autocomplete-input"
+                    id="profile-tags-input"
+                    type="text"
+                    placeholder="Selecione ou crie uma etiqueta"
+                    autocomplete="off"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-controls="profile-tags-dropdown"
+                    aria-expanded="false"
+                  >
+                  <button class="profile-tags-autocomplete-caret" id="profile-tags-caret" type="button" aria-label="Abrir lista de etiquetas" tabindex="-1">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M11.5337 15.0892L6.19317 9.74874C5.93561 9.49117 5.93561 9.07359 6.19317 8.81605L6.81605 8.19317C7.07318 7.93604 7.48991 7.93555 7.74764 8.19207L12 12.4245L16.2524 8.19207C16.5101 7.93555 16.9268 7.93604 17.1839 8.19317L17.8068 8.81605C18.0644 9.07362 18.0644 9.4912 17.8068 9.74874L12.4663 15.0892C12.2088 15.3468 11.7912 15.3468 11.5337 15.0892Z"/></svg>
+                  </button>
+                </div>
+                <div class="profile-tags-dropdown" id="profile-tags-dropdown" role="listbox" aria-label="Etiquetas disponíveis"></div>
+              </div>
+              <div class="profile-tags-added-title">Últimas etiquetas adicionadas</div>
+              <div class="profile-tags-selected" id="profile-tags-selected" aria-live="polite"></div>
+              <button type="button" class="overview-btn-secondary profile-tags-view-all" id="profile-tags-view-all">Ver todas as etiquetas</button>
+            </div>
+          </section>
+
           <!-- Negociações -->
           <section class="overview-card is-collapsed" data-accordion>
             <button type="button" class="overview-accordion-head" aria-expanded="false">
@@ -3895,78 +4078,43 @@
               <img class="overview-accordion-chevron" src="./painel-visao/chevron-up.svg" width="24" height="24" alt="">
             </button>
             <div class="overview-card-body">
+              <label class="overview-deals-search">
+                <input class="overview-deals-search-input" type="search" placeholder="Buscar" aria-label="Buscar negociações">
+                <span class="overview-deals-search-icon" aria-hidden="true">
+                  <img src="./painel-visao/loupe.svg" width="20" height="20" alt="">
+                </span>
+              </label>
               <div class="overview-deals-list">
-                <div class="overview-deal-item">
-                  <div class="overview-deal-main">
-                    <span class="overview-deal-name">Nome da negociação</span>
-                    <span class="overview-deal-aux">Não há tarefas</span>
+                <article class="overview-deal-item">
+                  <div class="overview-deal-head">
+                    <a class="overview-deal-name" href="#">Locação mensal - Movida Flex SUV</a>
+                    <button type="button" class="overview-deal-more" aria-label="Mais opções">
+                      <img src="./painel-visao/elipsis-v-24.svg" width="24" height="24" alt="">
+                    </button>
                   </div>
-                  <span class="overview-deal-value">R$ 2.500,00</span>
-                </div>
-                <div class="overview-deal-item">
-                  <div class="overview-deal-main">
-                    <span class="overview-deal-name">Nome da negociação</span>
-                    <span class="overview-deal-aux">Há 3 tarefas pendentes</span>
+                  <div class="overview-deal-fields">
+                    <p><strong>Valor: </strong>R$30.200,00/mês</p>
+                    <p><strong>Responsável: </strong>Fernanda Lima</p>
+                    <p><strong>Funil: </strong>Locação Pessoa Física</p>
                   </div>
-                  <span class="overview-deal-value">R$ 2.500,00</span>
-                </div>
-                <div class="overview-deal-item">
-                  <div class="overview-deal-main">
-                    <span class="overview-deal-name">Nome da negociação</span>
-                    <span class="overview-deal-aux">Não há tarefas</span>
+                  <span class="overview-deal-tag">Proposta enviada</span>
+                </article>
+                <article class="overview-deal-item">
+                  <div class="overview-deal-head">
+                    <a class="overview-deal-name" href="#">Locação anual - Movida entrerprise</a>
+                    <button type="button" class="overview-deal-more" aria-label="Mais opções">
+                      <img src="./painel-visao/elipsis-v-24.svg" width="24" height="24" alt="">
+                    </button>
                   </div>
-                  <span class="overview-deal-value">R$ 2.500,00</span>
-                </div>
-                <div class="overview-deal-item">
-                  <div class="overview-deal-main">
-                    <span class="overview-deal-name">Nome da negociação</span>
-                    <span class="overview-deal-aux">Não há tarefas</span>
+                  <div class="overview-deal-fields">
+                    <p><strong>Valor: </strong>R$56.570,00/mês</p>
+                    <p><strong>Responsável: </strong>Maria da Gloria</p>
+                    <p><strong>Funil: </strong>Locação Pessoa Jurídica</p>
                   </div>
-                  <span class="overview-deal-value">R$ 2.500,00</span>
-                </div>
-                <div class="overview-deal-item">
-                  <div class="overview-deal-main">
-                    <span class="overview-deal-name">Nome da negociação</span>
-                    <span class="overview-deal-aux">Não há tarefas</span>
-                  </div>
-                  <span class="overview-deal-value">R$ 2.500,00</span>
-                </div>
-                <div class="overview-deal-item">
-                  <div class="overview-deal-main">
-                    <span class="overview-deal-name">Nome da negociação</span>
-                    <span class="overview-deal-aux">Não há tarefas</span>
-                  </div>
-                  <span class="overview-deal-value">R$ 2.500,00</span>
-                </div>
-                <div class="overview-deal-item">
-                  <div class="overview-deal-main">
-                    <span class="overview-deal-name">Nome da negociação</span>
-                    <span class="overview-deal-aux">Há 5 tarefas pendentes</span>
-                  </div>
-                  <span class="overview-deal-value">R$ 2.500,00</span>
-                </div>
-                <div class="overview-deal-item">
-                  <div class="overview-deal-main">
-                    <span class="overview-deal-name">Nome da negociação</span>
-                    <span class="overview-deal-aux">Há 1 tarefa atrasada</span>
-                  </div>
-                  <span class="overview-deal-value">R$ 2.500,00</span>
-                </div>
-                <div class="overview-deal-item">
-                  <div class="overview-deal-main">
-                    <span class="overview-deal-name">Nome da negociação</span>
-                    <span class="overview-deal-aux">Não há tarefas</span>
-                  </div>
-                  <span class="overview-deal-value">R$ 2.500,00</span>
-                </div>
-                <div class="overview-deal-item">
-                  <div class="overview-deal-main">
-                    <span class="overview-deal-name">Nome da negociação</span>
-                    <span class="overview-deal-aux">Não há tarefas</span>
-                  </div>
-                  <span class="overview-deal-value">R$ 2.500,00</span>
-                </div>
+                  <span class="overview-deal-tag">Proposta enviada</span>
+                </article>
               </div>
+              <button type="button" class="overview-btn-secondary">Criar uma nova negociação</button>
             </div>
           </section>
 
@@ -3986,6 +4134,27 @@
           </section>
         </div>
       </div>
+
+<div class="drawer" id="drawer-edit-tags" role="dialog" aria-modal="false" aria-label="Editar etiquetas">
+  <div class="drawer-header">
+    <span class="drawer-title" id="tags-drawer-title">Editar etiquetas</span>
+    <button class="drawer-close" id="tags-drawer-close-btn" title="Fechar" type="button">
+      <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-field" id="tags-drawer-picker-host">
+      <label class="drawer-label" for="dc-tag-input">Etiquetas</label>
+    </div>
+    <div id="tags-drawer-form-error" class="drawer-error" style="display:none"></div>
+  </div>
+  <div class="drawer-footer">
+    <div class="drawer-actions">
+      <button class="drawer-btn-cancel" id="tags-drawer-cancel-btn" type="button">Cancelar</button>
+      <button class="drawer-btn-save" id="tags-drawer-save-btn" type="button">Salvar etiquetas</button>
+    </div>
+  </div>
+</div>
 
 <!-- ─── PAINEL / DRAWER: EDITAR CONTATO ───────────── -->
 <div class="drawer" id="drawer-add-contact" role="dialog" aria-modal="false" aria-label="Detalhes do contato">
@@ -4096,7 +4265,6 @@
       <div class="drawer-field" id="dc-tags-field">
         <label class="drawer-label" for="dc-tag-input">Tags</label>
         <div class="tag-picker" id="dc-tag-picker">
-          <div class="tag-picker-chips" id="dc-tag-chips"></div>
           <div class="tag-picker-input-wrap">
             <div class="tag-picker-search">
               <input class="tag-picker-input" id="dc-tag-input" type="text" placeholder="Buscar ou criar tag..." autocomplete="off">
@@ -4110,6 +4278,7 @@
               <div class="tag-picker-options" id="dc-tag-options"></div>
             </div>
           </div>
+          <div class="tag-picker-chips" id="dc-tag-chips"></div>
         </div>
       </div>
 
@@ -4392,7 +4561,10 @@
 </div>
 
 <script src="legal-basis-picker.js"></script>
+<script src="../../shared/tag-create-form.js"></script>
 <script src="tag-picker.js"></script>
+<script src="../../shared/profile-tags-card.js"></script>
+<script src="../../shared/profile-tags-panel.js"></script>
 <script src="empresa-autocomplete.js"></script>
 <script src="../../shared/contact-delete-modal.js"></script>
 <script src="../perfil/profile-more-menu.js?v=20260901-menu-3"></script>
@@ -4973,6 +5145,46 @@
       });
     }
 
+    function emptyStateIllustration() {
+      return `<img src="../../shared/empty-state-null.svg" width="360" height="242" alt="" style="display:block;width:100%;max-width:360px;height:auto;">`;
+    }
+
+    function renderEmptyState(colSpan, hasFilters) {
+      const clearBtnHtml = hasFilters
+        ? `<button type="button" id="contacts-empty-clear" style="height:40px;padding:8px 16px;background:#B2F4FF;border:none;cursor:pointer;border-radius:12px;color:#0077B2;font-size:16px;font-family:var(--font);font-weight:700;line-height:24px">Limpar filtros</button>`
+        : '';
+      const title = hasFilters ? 'Nenhum contato foi encontrado' : 'Você ainda não tem contatos';
+      const subtitle = hasFilters
+        ? 'Verifique se há filtros aplicados. <br/>Se você é novo por aqui, que tal cadastrar o seu primeiro contato?'
+        : 'Que tal cadastrar o seu primeiro contato?';
+      return `<tr class="empty-state-row"><td colspan="${colSpan}">
+        <div class="empty-state-box">
+          ${emptyStateIllustration()}
+          <div style="padding-top:24px;padding-bottom:24px;flex-direction:column;justify-content:flex-start;align-items:center;gap:8px;display:flex;max-width:520px">
+            <div style="text-align:center;color:#002233;font-size:20px;font-family:var(--font);font-weight:700;line-height:30px">${title}</div>
+            <div style="text-align:center;color:#002233;font-size:16px;font-family:var(--font);font-weight:500;line-height:24px">${subtitle}</div>
+          </div>
+          <div style="justify-content:center;align-items:center;gap:12px;display:flex;flex-wrap:wrap">
+            ${clearBtnHtml}
+            <button type="button" id="contacts-empty-add" style="height:40px;padding:8px 16px;background:#003D5C;border:none;cursor:pointer;border-radius:12px;color:#00DBFF;font-size:16px;font-family:var(--font);font-weight:700;line-height:24px">Cadastrar contato</button>
+          </div>
+        </div>
+      </td></tr>`;
+    }
+
+    function setEmptyStateLayout(isEmpty) {
+      document.querySelector('.content-main')?.classList.toggle('is-empty-state', !!isEmpty);
+    }
+
+    function bindEmptyStateActions() {
+      document.getElementById('contacts-empty-clear')?.addEventListener('click', () => {
+        window.__clearContactFilters && window.__clearContactFilters();
+      });
+      document.getElementById('contacts-empty-add')?.addEventListener('click', () => {
+        window.__openAddContact && window.__openAddContact();
+      });
+    }
+
     async function loadPage() {
       if (window.__contactsLoading) {
         window.__contactsReloadQueued = true;
@@ -4982,6 +5194,7 @@
 
       try {
       const colSpan = window.__tableColumns.filter(c => c.visible).length + 2;
+      setEmptyStateLayout(false);
       tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center;padding:32px;color:var(--color-text-low)">Carregando...</td></tr>`;
       renderThead();
       pageSize = Math.max(1, parseInt(pageSizeSelect?.value, 10) || pageSize || 10);
@@ -5045,11 +5258,20 @@
       renderPagination();
 
       if (error) {
+        setEmptyStateLayout(false);
         tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center;padding:32px;color:var(--color-danger)">Erro ao carregar: ${error.message}</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = data && data.length ? data.map(renderRow).join('') : `<tr><td colspan="${colSpan}" style="text-align:center;padding:32px;color:var(--color-text-low)">Nenhum contato encontrado.</td></tr>`;
+      if (data && data.length) {
+        setEmptyStateLayout(false);
+        tbody.innerHTML = data.map(renderRow).join('');
+      } else {
+        const hasFilters = !!(f.search || f.quickFilter || f.nome || f.email || f.status || f.telefone || f.rede_social || f.username || f.empresa || f.cidade || f.estado);
+        setEmptyStateLayout(true);
+        tbody.innerHTML = renderEmptyState(colSpan, hasFilters);
+        bindEmptyStateActions();
+      }
       renderPagination();
       } finally {
         window.__contactsLoading = false;
@@ -5206,6 +5428,7 @@
 
     function showEditPanel() {
       if (!pendingContactId) return;
+      window.__closeContactEditTags?.();
       content.classList.remove('detail-preview');
       content.classList.add('detail-edit');
       drawer.classList.add('open');
@@ -5224,10 +5447,12 @@
     }
 
     function closeDetailPanel() {
-      content.classList.remove('detail-open', 'detail-preview', 'detail-edit');
+      window.__closeContactEditTags?.();
+      content.classList.remove('detail-open', 'detail-preview', 'detail-edit', 'detail-tags');
       detailPanel.setAttribute('aria-hidden', 'true');
       drawer.classList.remove('open');
       setSelectedRow(null);
+      window.__refreshProfileTagCard?.();
       pendingContactId = null;
       editContactId = null;
       panelMode = false;
@@ -5446,6 +5671,7 @@
       if (cpfEl) cpfEl.textContent = data.cpf || '—';
       renderPreviewAvatar(data.nome, data.foto_perfil);
       renderPreviewCompanies(data);
+      window.__refreshProfileTagCard?.();
     }
 
     document.querySelectorAll('[data-accordion]').forEach(card => {
@@ -6248,6 +6474,15 @@
       closeDrawer();
       window.__contactsReload && window.__contactsReload();
     });
+
+    // Clear every filter (drawer fields, search and quick filter) for the active tab
+    window.__clearContactFilters = () => {
+      clearForm();
+      window.__activeFilters = {};
+      updateBadge({});
+      if (window.__syncFilterBadge) window.__syncFilterBadge();
+      window.__contactsReload && window.__contactsReload();
+    };
 
     // Expose badge sync so tab switching can update it
     window.__syncFilterBadge = () => updateBadge(window.__activeFilters);

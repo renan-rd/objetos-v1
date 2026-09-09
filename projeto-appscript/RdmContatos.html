@@ -1,6 +1,25 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
+<script>
+window.__GAS_URL = <?!= JSON.stringify(gasUrl) ?>;
+window.__GAS_PAGE = <?!= JSON.stringify(page) ?>;
+window.__GAS_CONTACT_ID = <?!= JSON.stringify(contactId) ?>;
+function __gasPage(page, params) {
+  var base = window.__GAS_URL || '';
+  var qs = ['page=' + encodeURIComponent(page)];
+  if (params) {
+    Object.keys(params).forEach(function (k) {
+      if (params[k] != null && params[k] !== '') {
+        qs.push(encodeURIComponent(k) + '=' + encodeURIComponent(params[k]));
+      }
+    });
+  }
+  return base + (base.indexOf('?') >= 0 ? '&' : '?') + qs.join('&');
+}
+</script>
+
   <meta charset="UTF-8">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -8,6 +27,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Template de Lista — RD Station</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
     // Inicializa o cliente compartilhado antes de qualquer módulo usar
@@ -16,8 +36,6 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZWtsaGVmanhsZGt3ZXFqdHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5Mzc5NjcsImV4cCI6MjA2NzUxMzk2N30.9oxYKZHfRNjbXJzQ17POORk_5Z12DDdkPUqAbeIdMcQ'
     );
   </script>
-  <script src="../shared/auth.js" data-login="../login.html" data-require-auth="true"></script>
-  <link rel="stylesheet" href="../shared/profile-tags.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -361,79 +379,12 @@
     .content-main {
       flex: 1;
       min-width: 0;
-      min-height: 0;
-      height: 100%;
       overflow-y: auto;
       padding: 0 24px 24px;
     }
 
     .content-inner {
       width: 100%;
-    }
-
-    .content-main.is-empty-state {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .content-main.is-empty-state .content-inner {
-      flex-shrink: 0;
-    }
-
-    .content-main.is-empty-state .pagination {
-      display: none;
-    }
-
-    .content-main.is-empty-state .table-wrapper {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .content-main.is-empty-state table {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
-
-    .content-main.is-empty-state thead {
-      display: table;
-      width: 100%;
-      table-layout: fixed;
-      flex-shrink: 0;
-    }
-
-    .content-main.is-empty-state tbody,
-    .content-main.is-empty-state .empty-state-row,
-    .content-main.is-empty-state .empty-state-row td {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      min-height: 0;
-      width: 100%;
-    }
-
-    .content-main.is-empty-state .empty-state-row {
-      border-bottom: none;
-    }
-
-    .content-main.is-empty-state .empty-state-row td {
-      overflow: visible;
-      white-space: normal;
-      padding: 0;
-      border: none;
-    }
-
-    .empty-state-box {
-      width: 100%;
-      flex: 1;
-      padding: 32px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
     }
 
     /* ─── DETAIL PANEL (side sheet) ───────────────────── */
@@ -740,130 +691,53 @@
       white-space: nowrap;
     }
 
-    .overview-deals-search {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: 100%;
-      height: 40px;
-      padding: 4px 4px 4px 12px;
-      border: 1px solid var(--color-border-interactive);
-      border-radius: var(--radius-md);
-      background: var(--color-surface);
-    }
-
-    .overview-deals-search-input {
-      flex: 1;
-      min-width: 0;
-      height: 24px;
-      padding: 0;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      color: var(--color-text-high);
-      font: 500 16px/1.5 var(--font);
-      letter-spacing: -0.16px;
-    }
-
-    .overview-deals-search-input::placeholder {
-      color: var(--color-text-low);
-    }
-
-    .overview-deals-search-icon {
-      width: 32px;
-      height: 32px;
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-      border-radius: var(--radius-sm);
-    }
-
-    .overview-deals-search-icon img {
-      width: 20px;
-      height: 20px;
-      display: block;
-    }
-
     .overview-deals-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      min-height: 280px;
-      overflow-y: auto;
-      padding-right: 4px;
+      margin: 0 -16px;
     }
 
     .overview-deal-item {
-      display: flex;
-      flex-direction: column;
-      padding: 4px 0 0;
-    }
-
-    .overview-deal-item + .overview-deal-item {
-      padding-top: 8px;
-      border-top: 1px solid var(--color-border);
-    }
-
-    .overview-deal-head {
+      padding: 16px;
+      border-bottom: 1px solid var(--color-border);
       display: flex;
       align-items: center;
-      gap: 8px;
-      width: 100%;
+      gap: 12px;
+    }
+
+    .overview-deal-item:last-child {
+      border-bottom: none;
+    }
+
+    .overview-deal-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     .overview-deal-name {
-      flex: 1;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
       font-size: 16px;
       font-weight: 700;
-      line-height: 1.5;
-      letter-spacing: -0.16px;
-      color: var(--color-primary-text);
-      text-decoration: none;
+      line-height: 24px;
+      color: #0077B2;
     }
 
-    .overview-deal-more {
-      width: 40px;
-      height: 40px;
-      padding: 8px;
-      border: none;
-      background: none;
-      border-radius: var(--radius-md);
-      cursor: pointer;
+    .overview-deal-aux {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 19.6px;
+      color: #405466;
+    }
+
+    .overview-deal-value {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 24px;
+      color: #002233;
       flex-shrink: 0;
-      display: grid;
-      place-items: center;
-    }
-
-    .overview-deal-more img {
-      width: 24px;
-      height: 24px;
-      display: block;
-    }
-
-    .overview-deal-fields {
-      color: var(--color-text-high);
-      font: 500 14px/1.4 var(--font);
-      letter-spacing: -0.14px;
-    }
-
-    .overview-deal-fields p { margin: 0; }
-    .overview-deal-fields strong { font-weight: 700; }
-
-    .overview-deal-tag {
-      margin-top: 4px;
-      align-self: flex-start;
-      padding: 4px 8px;
-      border-radius: var(--radius-xs);
-      background: #0ed869;
-      color: var(--color-text-high);
-      font-size: 12px;
-      font-weight: 900;
-      line-height: 1.3;
-      letter-spacing: -0.12px;
+      white-space: nowrap;
     }
 
     .overview-contact-row {
@@ -1121,7 +995,7 @@
     }
 
     .overview-tag.is-active {
-      background: #DADEE0;
+      background: var(--color-primary-text-on);
     }
 
     .overview-tags-fade {
@@ -1258,16 +1132,15 @@
 
     .overview-timeline-action {
       margin-top: 12px;
-      height: 32px;
-      padding: 6px 12px;
+      height: 40px;
+      padding: 8px 16px;
       border: none;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       background: var(--color-primary-surface-low);
       color: var(--color-primary-text);
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
-      letter-spacing: -0.14px;
-      line-height: 1.4;
+      letter-spacing: -0.16px;
       cursor: pointer;
       white-space: nowrap;
     }
@@ -1289,7 +1162,8 @@
 
     /* Oculta colunas menos críticas quando o painel está aberto */
     .content.detail-open .col-tags,
-    .content.detail-open .col-empresa-cargo {
+    .content.detail-open .col-conversoes,
+    .content.detail-open .col-ultima-conversao {
       display: none;
     }
 
@@ -1801,7 +1675,7 @@
 
     table {
       width: 100%;
-      min-width: 1135px;
+      min-width: 1150px;
       table-layout: fixed;
       border-collapse: collapse;
     }
@@ -1827,16 +1701,38 @@
     th.col-contact,
     td.col-contact { min-width: 240px; width: 28%; }
 
+    th.col-conversoes,
+    td.col-conversoes { min-width: 170px; width: 170px; }
+
     th.col-tags,
     td.col-tags { min-width: 170px; width: 170px; }
 
     th.col-created-at,
     td.col-created-at { min-width: 155px; width: 155px; }
 
-    th.col-empresa-cargo,
-    td.col-empresa-cargo { min-width: 170px; width: 170px; }
+    th.col-ultima-conversao,
+    td.col-ultima-conversao {
+      min-width: 220px;
+      width: 22%;
+    }
 
-    td.col-empresa-cargo { white-space: normal; }
+    td.col-ultima-conversao {
+      white-space: normal;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    td.col-ultima-conversao .cell-text {
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    td.col-ultima-conversao .cell-text-main,
+    td.col-ultima-conversao .cell-text-sub {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
     th.col-telefone,
     td.col-telefone { width: 210px; min-width: 210px; }
@@ -1907,7 +1803,7 @@
 
     .th-inner svg { width: 16px; height: 16px; fill: var(--color-text-low); }
     th.col-telefone .th-inner svg,
-    th.col-empresa-cargo .th-inner svg { display: none; }
+    th.col-ultima-conversao .th-inner svg { display: none; }
 
     tbody tr {
       border-bottom: 1px solid var(--color-border);
@@ -2400,10 +2296,18 @@
     }
 
     .actions-options-dropdown-icon svg,
-    .actions-options-dropdown-icon img {
+    .actions-options-dropdown-icon img,
+    .actions-options-dropdown-icon .material-symbols-rounded {
       width: 24px;
       height: 24px;
       display: block;
+      font-size: 24px;
+      color: #596B7A;
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .actions-options-dropdown-icon img {
+      filter: invert(40%) sepia(8%) saturate(650%) hue-rotate(169deg) brightness(94%) contrast(88%);
     }
 
     .actions-options-dropdown-label {
@@ -3015,8 +2919,7 @@
       color: var(--color-text-low);
     }
 
-    .tag-picker-product-group,
-    .tag-picker-dropdown-group {
+    .tag-picker-product-group {
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -3049,69 +2952,22 @@
       letter-spacing: -.14px;
     }
 
-    .tag-picker-create-products {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
     .tag-picker-dropdown {
       display: none;
       position: absolute;
       top: calc(100% + 4px);
       left: 0;
       right: 0;
-      z-index: 400;
-      max-height: 176px;
-      padding: 8px;
-      overflow-y: auto;
-      border: none;
-      border-radius: var(--radius-md);
       background: var(--color-surface);
-      box-shadow: 0 4px 12px rgba(0, 34, 51, .14);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      z-index: 400;
+      max-height: 260px;
+      overflow-y: auto;
     }
 
     .tag-picker-dropdown.open { display: block; }
-
-    .profile-tags-option {
-      width: 100%; min-height: 40px; padding: 8px 12px; border: 0;
-      border-radius: var(--radius-sm); background: transparent; display: flex;
-      align-items: center; gap: 12px; color: var(--color-text-high);
-      font: 700 16px/1.5 var(--font); letter-spacing: -.16px;
-      text-align: left; cursor: pointer;
-    }
-    .profile-tags-option:hover { background: var(--color-surface-low); }
-    .profile-tags-checkbox {
-      width: 18px; height: 18px; border: 1px solid var(--color-border-interactive);
-      border-radius: var(--radius-xs); background: var(--color-surface);
-      display: grid; place-items: center; flex-shrink: 0;
-    }
-    .profile-tags-option.is-selected .profile-tags-checkbox {
-      border-color: var(--color-primary-surface-high);
-      background: var(--color-primary-surface-high);
-    }
-    .profile-tags-checkbox svg {
-      width: 16px; height: 16px; display: none;
-      fill: var(--color-text-high);
-    }
-    .profile-tags-option.is-selected .profile-tags-checkbox svg { display: block; }
-    .profile-tags-dropdown-empty {
-      padding: 8px 12px; color: var(--color-text-low);
-      font: 500 14px/1.4 var(--font); letter-spacing: -.14px;
-    }
-    .profile-tags-create-divider { height: 1px; margin: 4px 0; background: var(--color-border); }
-    .profile-tags-create {
-      width: 100%; height: 32px; padding: 6px 12px 6px 8px; border: 0;
-      border-radius: var(--radius-sm); background: transparent; display: flex;
-      align-items: center; justify-content: center; gap: 4px;
-      color: var(--color-primary-text); font: 700 14px/1.4 var(--font);
-      letter-spacing: -.14px; cursor: pointer;
-    }
-    .profile-tags-create:hover { background: var(--color-primary-surface-low); }
-    .profile-tags-create svg {
-      width: 20px; height: 20px; display: block;
-      fill: currentColor; flex-shrink: 0;
-    }
 
     /* ─── EMPRESA AUTOCOMPLETE ─────────────────────────── */
     .empresa-autocomplete {
@@ -3715,8 +3571,8 @@
   <!-- ── NAVBAR TOP ──────────────────────────────────── -->
   <nav class="navbar">
     <div class="navbar-logo">
-      <img src="../shared/logos/logo-rdvendas.svg" width="162" height="32" alt="RD Vendas" style="flex-shrink:0;">
-      <div class="products-menu" id="products-menu" data-current-product="vendas" data-page="contatos" data-base="../">
+      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTg3IiBoZWlnaHQ9IjMyIiB2aWV3Qm94PSIwIDAgMTg3IDMyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB4PSIzOSIgeT0iMyIgd2lkdGg9IjIiIGhlaWdodD0iMjYiIGZpbGw9IiMwMERCRkYiIGZpbGwtb3BhY2l0eT0iMC4zIi8+CjxwYXRoIGQ9Ik0xODAuNTMgMTEuODA2NkMxODEuMTk3IDExLjgwNjYgMTgxLjc5MyAxMS45MDA1IDE4Mi4zMjEgMTIuMDgzSDE4Ni41OFYxMy41MzIyTDE4NC4zOTIgMTMuNjI3OUMxODQuNDQxIDEzLjcwMTMgMTg0LjQ4OSAxMy43NzYyIDE4NC41MzMgMTMuODUzNUMxODQuODg2IDE0LjQ2NjggMTg1LjA2MiAxNS4xNTcyIDE4NS4wNjIgMTUuOTIzOEMxODUuMDYyIDE2LjY5MDMgMTg0Ljg4NiAxNy4zODggMTg0LjUzMyAxOC4wMTY2QzE4NC4xODEgMTguNjI5OSAxODMuNjY3IDE5LjEyMTMgMTgyLjk5MiAxOS40ODkzQzE4Mi4zMTggMTkuODU3MyAxODEuNDk2IDIwLjA0MSAxODAuNTMgMjAuMDQxQzE3OS44ODMgMjAuMDQxIDE3OS4yOTkgMTkuOTU2MiAxNzguNzc1IDE5Ljc5MUwxNzcuNTk2IDIwLjg1MjVDMTc3LjY0NyAyMC44ODkyIDE3Ny42OTggMjAuOTI1OSAxNzcuNzQ4IDIwLjk2MDlDMTc3LjkwMSAyMS4wNjgyIDE3OC4xMDkgMjEuMTYwNyAxNzguMzY5IDIxLjIzNzNDMTc4LjYzIDIxLjMxMzkgMTc4Ljk5IDIxLjM4MjEgMTc5LjQ1IDIxLjQ0MzRDMTc5LjkyNSAyMS41MDQ3IDE4MC41NDYgMjEuNTY2NiAxODEuMzEyIDIxLjYyNzlDMTgyLjM3IDIxLjcwNDYgMTgzLjIxNCAyMS44ODg0IDE4My44NDMgMjIuMTc5N0MxODQuNDg3IDIyLjQ3MSAxODQuOTQ3IDIyLjg2MiAxODUuMjIzIDIzLjM1MjVDMTg1LjUxNCAyMy44NDMxIDE4NS42NiAyNC40MjYgMTg1LjY2IDI1LjEwMDZDMTg1LjY2IDI1Ljc1OTkgMTg1LjQ3NSAyNi4zODEyIDE4NS4xMDcgMjYuOTYzOUMxODQuNzU1IDI3LjU2MTcgMTg0LjIwMyAyOC4wNTIzIDE4My40NTIgMjguNDM1NUMxODIuNzAxIDI4LjgxODkgMTgxLjczNCAyOS4wMTA3IDE4MC41NTQgMjkuMDEwN0MxNzkuNTExIDI5LjAxMDcgMTc4LjU4MyAyOC44NzI3IDE3Ny43NzEgMjguNTk2N0MxNzYuOTczIDI4LjMzNjEgMTc2LjM1MyAyNy45Mjk3IDE3NS45MDggMjcuMzc3OUMxNzUuNDY0IDI2LjgyNiAxNzUuMjQxIDI2LjE0MzYgMTc1LjI0MSAyNS4zMzExQzE3NS4yNDEgMjQuOTc4NSAxNzUuMzA5IDI0LjYwMjYgMTc1LjQ0NyAyNC4yMDQxQzE3NS42MDEgMjMuODA1NSAxNzUuODU0IDIzLjQxNDYgMTc2LjIwNyAyMy4wMzEyQzE3Ni4zOTEgMjIuODM5NCAxNzYuNjExIDIyLjY1NiAxNzYuODY4IDIyLjQ4MzRDMTc2LjU2MSAyMi4zNTM2IDE3Ni4yOTQgMjIuMjE0NyAxNzYuMDY4IDIyLjA2NDVDMTc1LjgwOCAyMS44ODA2IDE3NS41NyAyMS42ODk0IDE3NS4zNTUgMjEuNDkwMlYyMC45NjA5TDE3Ny4zMzMgMTkuMDAyOUMxNzYuOTk3IDE4LjcxOTggMTc2LjcyMSAxOC4zOTEzIDE3Ni41MDYgMTguMDE2NkMxNzYuMTUzIDE3LjM4OCAxNzUuOTc3IDE2LjY5MDQgMTc1Ljk3NyAxNS45MjM4QzE3NS45NzcgMTUuMTU3MiAxNzYuMTUzIDE0LjQ2NjggMTc2LjUwNiAxMy44NTM1QzE3Ni44NzQgMTMuMjQwNCAxNzcuMzk1IDEyLjc0OTggMTc4LjA2OSAxMi4zODE4QzE3OC43NDQgMTEuOTk4NiAxNzkuNTY0IDExLjgwNjcgMTgwLjUzIDExLjgwNjZaTTE3OC42OTUgMjIuOTUzMUMxNzguMDk5IDIzLjI0NjQgMTc3LjY5OSAyMy41NzA5IDE3Ny40OTUgMjMuOTI3N0MxNzcuMjUgMjQuMzcyMyAxNzcuMTI3IDI0Ljc3ODYgMTc3LjEyNyAyNS4xNDY1QzE3Ny4xMjcgMjUuNjUyNSAxNzcuMjcyIDI2LjA3NDggMTc3LjU2MyAyNi40MTIxQzE3Ny44NTUgMjYuNzQ5NCAxNzguMjYyIDI3LjAwMjIgMTc4Ljc4MyAyNy4xNzA5QzE3OS4zMDQgMjcuMzM5NSAxNzkuODk1IDI3LjQyMzggMTgwLjU1NCAyNy40MjM4QzE4MS4yMTMgMjcuNDIzOCAxODEuNzgxIDI3LjMzMTUgMTgyLjI1NiAyNy4xNDc1QzE4Mi43MzEgMjYuOTYzNSAxODMuMDk5IDI2LjcwMzMgMTgzLjM1OSAyNi4zNjYyQzE4My42MiAyNi4wMjg5IDE4My43NTEgMjUuNjI5OSAxODMuNzUxIDI1LjE2OTlDMTgzLjc1MSAyNC42MzMzIDE4My41NTEgMjQuMTgwNSAxODMuMTUyIDIzLjgxMjVDMTgyLjc1NCAyMy40NjAxIDE4MS45OTUgMjMuMjUyNyAxODAuODc2IDIzLjE5MTRDMTgwLjAxOCAyMy4xMzMyIDE3OS4yOTEgMjMuMDUyNyAxNzguNjk1IDIyLjk1MzFaTTExMS43IDExLjgwNjZDMTEyLjc3MyAxMS44MDY3IDExMy42NjMgMTIuMDA2NiAxMTQuMzY4IDEyLjQwNTNDMTE1LjA4OSAxMi43ODg2IDExNS42MjUgMTMuMzMyOSAxMTUuOTc4IDE0LjAzODFDMTE2LjMzIDE0LjcyODEgMTE2LjUwNyAxNS41NDg0IDExNi41MDcgMTYuNDk5VjIzLjY3NDhIMTE0Ljc4MkwxMTQuNjY3IDIxLjYyNzlDMTE0LjUxNCAyMS45NDk4IDExNC4zMTUgMjIuMjU2NiAxMTQuMDY5IDIyLjU0NzlDMTEzLjgzOSAyMi44MjM4IDExMy41NjMgMjMuMDY5NSAxMTMuMjQxIDIzLjI4NDJDMTEyLjkxOSAyMy40ODM1IDExMi41NTEgMjMuNjQzOSAxMTIuMTM3IDIzLjc2NjZDMTExLjczOCAyMy44ODkzIDExMS4yNzggMjMuOTUxMiAxMTAuNzU3IDIzLjk1MTJDMTA5LjgyMiAyMy45NTEyIDEwOS4wNCAyMy43ODk3IDEwOC40MTEgMjMuNDY3OEMxMDcuNzgzIDIzLjEzMDUgMTA3LjMxNCAyMi42OTM4IDEwNy4wMDggMjIuMTU3MkMxMDYuNzAxIDIxLjYwNTQgMTA2LjU0OCAyMS4wMDcxIDEwNi41NDggMjAuMzYzM0MxMDYuNTQ4IDE5LjU4MTMgMTA2Ljc0NyAxOC45MjE0IDEwNy4xNDYgMTguMzg0OEMxMDcuNTYgMTcuODMyOCAxMDguMTM1IDE3LjQxODYgMTA4Ljg3MSAxNy4xNDI2QzEwOS42MjIgMTYuODUxMyAxMTAuNTA0IDE2LjcwNjEgMTExLjUxNiAxNi43MDYxSDExNC41NzVDMTE0LjU3NSAxNS45ODU0IDExNC40NTkgMTUuMzg3NCAxMTQuMjI5IDE0LjkxMjFDMTE0LjAxNSAxNC40MjE0IDExMy42OTMgMTQuMDUzIDExMy4yNjQgMTMuODA3NkMxMTIuODUgMTMuNTYyNCAxMTIuMzI5IDEzLjQzOTUgMTExLjcgMTMuNDM5NUMxMTAuOTY0IDEzLjQzOTUgMTEwLjMyOCAxMy42MjQyIDEwOS43OTEgMTMuOTkyMkMxMDkuMjU0IDE0LjM2MDIgMTA4LjkyNCAxNC45MDQ0IDEwOC44MDIgMTUuNjI1SDEwNi44MjRDMTA2LjkxNiAxNC43OTcxIDEwNy4xOTEgMTQuMTA2NyAxMDcuNjUxIDEzLjU1NDdDMTA4LjEyNyAxMi45ODc0IDEwOC43MjYgMTIuNTU3OSAxMDkuNDQ2IDEyLjI2NjZDMTEwLjE2NyAxMS45NjAxIDExMC45MTggMTEuODA2NiAxMTEuNyAxMS44MDY2Wk0xNDIuNTE2IDExLjgwNjZDMTQzLjY1IDExLjgwNjYgMTQ0LjYwOSAxMi4wNTk2IDE0NS4zOTEgMTIuNTY1NEMxNDYuMTg4IDEzLjA3MTQgMTQ2Ljc5NCAxMy43Mzg2IDE0Ny4yMDggMTQuNTY2NEMxNDcuNjM3IDE1LjM3OTEgMTQ3Ljg1MyAxNi4yNzY1IDE0Ny44NTMgMTcuMjU3OFYxNy43NDEyQzE0Ny44NTMgMTcuOTA5NyAxNDcuODQ0IDE4LjEwMTEgMTQ3LjgyOSAxOC4zMTU0SDEzOC43OTdDMTM4LjgzMSAxOS4xMjU2IDEzOC45OTcgMTkuODE1OCAxMzkuMjk2IDIwLjM4NTdDMTM5LjY0OSAyMS4wMjk3IDE0MC4xMDEgMjEuNTEzIDE0MC42NTMgMjEuODM1QzE0MS4yMiAyMi4xNTY4IDE0MS44MjYgMjIuMzE3MyAxNDIuNDcgMjIuMzE3NEMxNDMuMjgyIDIyLjMxNzQgMTQzLjk0OSAyMi4xNDE2IDE0NC40NzEgMjEuNzg5MUMxNDUuMDA3IDIxLjQyMTEgMTQ1LjM5MSAyMC45Mjk3IDE0NS42MjEgMjAuMzE2NEgxNDcuNTNDMTQ3LjM0NiAyMS4wMDYzIDE0Ny4wMjQgMjEuNjI3OCAxNDYuNTY0IDIyLjE3OTdDMTQ2LjEwNCAyMi43MzE3IDE0NS41MjkgMjMuMTY5MiAxNDQuODM5IDIzLjQ5MTJDMTQ0LjE2NCAyMy43OTc4IDE0My4zNzQgMjMuOTUxMiAxNDIuNDcgMjMuOTUxMkMxNDEuMzgxIDIzLjk1MTEgMTQwLjQxNiAyMy42OTc0IDEzOS41NzIgMjMuMTkxNEMxMzguNzQ0IDIyLjY4NTUgMTM4LjA5MyAyMS45ODA3IDEzNy42MTcgMjEuMDc2MkMxMzcuMTQyIDIwLjE1NjIgMTM2LjkwNCAxOS4wOTAyIDEzNi45MDQgMTcuODc4OUMxMzYuOTA0IDE2LjY1MjIgMTM3LjEzNCAxNS41ODYzIDEzNy41OTQgMTQuNjgxNkMxMzguMDY5IDEzLjc3NyAxMzguNzI5IDEzLjA3MTQgMTM5LjU3MiAxMi41NjU0QzE0MC40MzEgMTIuMDU5NiAxNDEuNDEyIDExLjgwNjcgMTQyLjUxNiAxMS44MDY2Wk01OS4xOTgyIDcuNTc1MkM2MC40NTU1IDcuNTc1MiA2MS40ODMgNy43ODk0OSA2Mi4yODAzIDguMjE4NzVDNjMuMDc3NSA4LjYzMjcyIDYzLjY2ODQgOS4xOTIyMSA2NC4wNTE4IDkuODk3NDZDNjQuNDM1MSAxMC42MDI4IDY0LjYyNyAxMS40MDA3IDY0LjYyNyAxMi4yOUM2NC42MjY5IDEzLjE0ODYgNjQuNDI3IDEzLjkzODYgNjQuMDI4MyAxNC42NTkyQzYzLjY0NSAxNS4zNzk3IDYzLjA0NjkgMTUuOTU0NSA2Mi4yMzQ0IDE2LjM4MzhDNjEuOTQ0MiAxNi41MzcxIDYxLjYyNDIgMTYuNjYxMiA2MS4yNzU0IDE2Ljc1OThMNjQuNzg3MSAyMy42NzQ4SDYyLjUxMDdMNTkuMjM4MyAxNy4wMjQ0QzU5LjE5NDYgMTcuMDI0OSA1OS4xNTA3IDE3LjAyNzMgNTkuMTA2NCAxNy4wMjczSDU1LjkzMjZWMjMuNjc0OEg1NFY3LjU3NTJINTkuMTk4MlpNNzEuOTM0NiA3LjU3NTJDNzMuODIwMyA3LjU3NTIgNzUuMzY4OCA3LjkwNDMzIDc2LjU4MDEgOC41NjM0OEM3Ny44MDY3IDkuMjA3NDggNzguNzEyMyAxMC4xMzUzIDc5LjI5NDkgMTEuMzQ2N0M3OS44OTI5IDEyLjU0MjcgODAuMTkxNCAxMy45ODQyIDgwLjE5MTQgMTUuNjcwOUM4MC4xOTE0IDE3LjMyNjkgNzkuODkyOSAxOC43NTMyIDc5LjI5NDkgMTkuOTQ5MkM3OC43MTIzIDIxLjE0NTEgNzcuODA2NyAyMi4wNjUgNzYuNTgwMSAyMi43MDlDNzUuMzY4OCAyMy4zNTI4IDczLjgyMDMgMjMuNjc0OCA3MS45MzQ2IDIzLjY3NDhINjcuMTk2M1Y3LjU3NTJINzEuOTM0NlpNOTYuMTU2MiAxOC44MjIzTDEwMS44NiA3LjU3NTJIMTA0LjEzN1YyMy42NzQ4SDEwMi4yMDVWMTEuMDI0NEw5Ni44OTE2IDIxLjQyMDlIOTUuNDQzNEw5MC4xNTMzIDExLjA3MTNWMjMuNjc0OEg4OC4yMjA3VjcuNTc1Mkg5MC40NzQ2TDk2LjE1NjIgMTguODIyM1pNMTI1LjM2IDEzLjgzMTFIMTI0LjY0N0MxMjQuMTU3IDEzLjgzMTEgMTIzLjY5IDEzLjkwMDIgMTIzLjI0NSAxNC4wMzgxQzEyMi44IDE0LjE2MDggMTIyLjQwMSAxNC4zNjc4IDEyMi4wNDkgMTQuNjU5MkMxMjEuNzEyIDE0Ljk1MDUgMTIxLjQ0MiAxNS4zNDg2IDEyMS4yNDMgMTUuODU0NUMxMjEuMDU5IDE2LjM0NTIgMTIwLjk2OCAxNi45NTkzIDEyMC45NjggMTcuNjk1M1YyMy42NzQ4SDExOS4wMzZWMTIuMDgzSDEyMC43ODNMMTIwLjkyMiAxNC4yOTFDMTIxLjE4MyAxMy43Njk3IDEyMS41MTIgMTMuMzI1IDEyMS45MTEgMTIuOTU3QzEyMi4zMjUgMTIuNTg5MSAxMjIuODE2IDEyLjMwNDggMTIzLjM4MyAxMi4xMDU1QzEyMy45NjUgMTEuOTA2MiAxMjQuNjI1IDExLjgwNjcgMTI1LjM2IDExLjgwNjZWMTMuODMxMVpNMTI5LjAyMSAxNi45OTEyTDEzMy43MzUgMTIuMDgzSDEzNi4xMDRMMTMwLjk4NyAxNy4zNDA4TDEzNi42OCAyMy42NzQ4SDEzNC4yMTlMMTI5LjAyMSAxNy42OTczVjIzLjY3NDhIMTI3LjA4OVY3LjExNTIzSDEyOS4wMjFWMTYuOTkxMlpNMTUyLjc0NSAxMi4wODNIMTU2LjEwNFYxMy43MTU4SDE1Mi43NDVWMjAuMTc4N0MxNTIuNzQ1IDIwLjg5OTIgMTUyLjg5MSAyMS4zODk3IDE1My4xODMgMjEuNjUwNEMxNTMuNDc0IDIxLjg5NTcgMTUzLjk4OCAyMi4wMTg2IDE1NC43MjQgMjIuMDE4NkgxNTUuOTY2VjIzLjY3NDhIMTU0LjE3MkMxNTMuNDgyIDIzLjY3NDggMTUyLjg4NCAyMy41NjcxIDE1Mi4zNzggMjMuMzUyNUMxNTEuODcyIDIzLjEzNzkgMTUxLjQ4IDIyLjc3NzUgMTUxLjIwNCAyMi4yNzE1QzE1MC45NDQgMjEuNzUwMiAxNTAuODEzIDIxLjA1MjUgMTUwLjgxMyAyMC4xNzg3VjEzLjcxNThIMTQ4Ljc5VjEyLjA4M0gxNTAuODEzTDE1MS4wNjYgOS4yNzYzN0gxNTIuNzQ1VjEyLjA4M1pNMTYwLjI4IDIzLjY3NDhIMTU4LjM0OVYxMi4wODNIMTYwLjI4VjIzLjY3NDhaTTE2OC45NzkgMTEuODA2NkMxNjkuODg0IDExLjgwNjYgMTcwLjY2NyAxMS45OTA0IDE3MS4zMjYgMTIuMzU4NEMxNzEuOTg1IDEyLjcxMTEgMTcyLjQ5OSAxMy4yNTYyIDE3Mi44NjcgMTMuOTkyMkMxNzMuMjM1IDE0LjcxMjggMTczLjQxOSAxNS42MzI5IDE3My40MTkgMTYuNzUyVjIzLjY3NDhIMTcxLjQ4NlYxNi45NTlDMTcxLjQ4NiAxNS43OTM4IDE3MS4yMjYgMTQuOTE5NiAxNzAuNzA1IDE0LjMzNjlDMTcwLjE5OSAxMy43NTQzIDE2OS40NzggMTMuNDYyOSAxNjguNTQzIDEzLjQ2MjlDMTY3Ljg5OSAxMy40NjI5IDE2Ny4zMjMgMTMuNjI0MyAxNjYuODE3IDEzLjk0NjNDMTY2LjMxMiAxNC4yNTI5IDE2NS45MDUgMTQuNzA0OSAxNjUuNTk5IDE1LjMwMjdDMTY1LjMwNyAxNS44ODU0IDE2NS4xNjIgMTYuNjE0MyAxNjUuMTYyIDE3LjQ4ODNWMjMuNjc0OEgxNjMuMjI5VjEyLjA4M0gxNjQuOTc4TDE2NS4wNjkgMTQuMTA2NEMxNjUuNDM3IDEzLjM4NTggMTY1Ljk1OSAxMi44MjY0IDE2Ni42MzQgMTIuNDI3N0MxNjcuMzI0IDEyLjAxMzggMTY4LjEwNiAxMS44MDY3IDE2OC45NzkgMTEuODA2NlpNMTExLjY3NyAxOC4yMDEyQzExMC45MjUgMTguMjAxMiAxMTAuMzE5IDE4LjI5MjYgMTA5Ljg1OSAxOC40NzY2QzEwOS40IDE4LjY0NTIgMTA5LjA3IDE4Ljg5MSAxMDguODcxIDE5LjIxMjlDMTA4LjY3MiAxOS41MTk1IDEwOC41NzIgMTkuODcyIDEwOC41NzIgMjAuMjcwNUMxMDguNTcyIDIwLjY4NDQgMTA4LjY2NCAyMS4wNDUgMTA4Ljg0OCAyMS4zNTE2QzEwOS4wNDcgMjEuNjU4MiAxMDkuMzMxIDIxLjg5NTggMTA5LjY5OSAyMi4wNjQ1QzExMC4wODIgMjIuMjMzIDExMC41MzQgMjIuMzE3NCAxMTEuMDU2IDIyLjMxNzRDMTExLjU5MiAyMi4zMTc0IDExMi4wNzYgMjIuMjEwNyAxMTIuNTA1IDIxLjk5NjFDMTEyLjk0OSAyMS43NjYxIDExMy4zMjUgMjEuNDU5NCAxMTMuNjMyIDIxLjA3NjJDMTEzLjkzOSAyMC42Nzc1IDExNC4xNjkgMjAuMjQgMTE0LjMyMiAxOS43NjQ2QzExNC40OTEgMTkuMjg5NCAxMTQuNTc1IDE4Ljc5MDggMTE0LjU3NSAxOC4yNjk1VjE4LjIwMTJIMTExLjY3N1pNNjkuMTI4OSAyMi4wNjQ1SDcxLjg4ODdDNzMuNDUyNSAyMi4wNjQ0IDc0LjY5NDMgMjEuODExNiA3NS42MTQzIDIxLjMwNTdDNzYuNTM0MyAyMC43ODQzIDc3LjE5NDEgMjAuMDQ4MyA3Ny41OTI4IDE5LjA5NzdDNzcuOTkxNCAxOC4xMzE3IDc4LjE5MDQgMTYuOTg5NCA3OC4xOTA0IDE1LjY3MDlDNzguMTkwNCAxNC4zMjE4IDc3Ljk5MTMgMTMuMTY0MiA3Ny41OTI4IDEyLjE5ODJDNzcuMTk0MSAxMS4yMzIyIDc2LjUzNDMgMTAuNDg4MSA3NS42MTQzIDkuOTY2OEM3NC42OTQzIDkuNDQ1NTYgNzMuNDUyNSA5LjE4NDU5IDcxLjg4ODcgOS4xODQ1N0g2OS4xMjg5VjIyLjA2NDVaTTE4MC41MyAxMy40MTdDMTc5LjcxOCAxMy40MTcxIDE3OS4wNTkgMTMuNjMxNCAxNzguNTUzIDE0LjA2MDVDMTc4LjA2MiAxNC40ODk5IDE3Ny44MTYgMTUuMTExMiAxNzcuODE2IDE1LjkyMzhDMTc3LjgxNiAxNi43NTE4IDE3OC4wNjIgMTcuMzgwMiAxNzguNTUzIDE3LjgwOTZDMTc5LjA0MyAxOC4yMzg4IDE3OS43MDIgMTguNDU0IDE4MC41MyAxOC40NTQxQzE4MS4zNTggMTguNDU0MSAxODIuMDEgMTguMjM4OSAxODIuNDg1IDE3LjgwOTZDMTgyLjk2MSAxNy4zODAyIDE4My4xOTggMTYuNzUxOCAxODMuMTk4IDE1LjkyMzhDMTgzLjE5OCAxNS4xMTEyIDE4Mi45NjEgMTQuNDg5OSAxODIuNDg1IDE0LjA2MDVDMTgyLjAxIDEzLjYzMTQgMTgxLjM1OCAxMy40MTcgMTgwLjUzIDEzLjQxN1pNMTQyLjQ3IDEzLjQzOTVDMTQxLjgxMSAxMy40Mzk1IDE0MS4xOTcgMTMuNTkyOCAxNDAuNjMgMTMuODk5NEMxNDAuMDc4IDE0LjE5MDcgMTM5LjYzMyAxNC42MjgzIDEzOS4yOTYgMTUuMjEwOUMxMzkuMDMgMTUuNjU3NCAxMzguODcxIDE2LjE5NDMgMTM4LjgxNCAxNi44MjEzSDE0NS45NjZDMTQ1LjkyIDE1Ljc2MzQgMTQ1LjU2NyAxNC45MzQ5IDE0NC45MDggMTQuMzM2OUMxNDQuMjY0IDEzLjczODkgMTQzLjQ1MSAxMy40Mzk1IDE0Mi40NyAxMy40Mzk1Wk01NS45MzI2IDE1LjUwOThINTkuMDYwNUM2MC4yODcyIDE1LjUwOTggNjEuMTg0NiAxNS4yMTEzIDYxLjc1MiAxNC42MTMzQzYyLjMzNDYgMTQuMDE1MyA2Mi42MjYgMTMuMjQ3OCA2Mi42MjYgMTIuMzEyNUM2Mi42MjU5IDExLjM2MiA2Mi4zNDE3IDEwLjYxMDUgNjEuNzc0NCAxMC4wNTg2QzYxLjIyMjQgOS40OTEzNyA2MC4zMDk3IDkuMjA4MDEgNTkuMDM3MSA5LjIwODAxSDU1LjkzMjZWMTUuNTA5OFpNMTU5LjMxNCA3QzE1OS42ODIgNy4wMDAwNSAxNTkuOTk2IDcuMTIyOSAxNjAuMjU3IDcuMzY4MTZDMTYwLjUxOCA3LjU5ODE2IDE2MC42NDggNy45MDQ3NSAxNjAuNjQ4IDguMjg4MDlDMTYwLjY0OCA4LjY3MTMgMTYwLjUxNyA4Ljk5MzMgMTYwLjI1NyA5LjI1MzkxQzE1OS45OTYgOS40OTkwMyAxNTkuNjgyIDkuNjIyMDIgMTU5LjMxNCA5LjYyMjA3QzE1OC45MzEgOS42MjIwNyAxNTguNjA5IDkuNDk5MDcgMTU4LjM0OSA5LjI1MzkxQzE1OC4xMDMgOC45OTMzIDE1Ny45ODEgOC42NzEzIDE1Ny45OCA4LjI4ODA5QzE1Ny45OCA3LjkwNDc1IDE1OC4xMDMgNy41OTgxNiAxNTguMzQ5IDcuMzY4MTZDMTU4LjYwOSA3LjEyMjg2IDE1OC45MzEgNyAxNTkuMzE0IDdaIiBmaWxsPSIjMDBEQkZGIi8+CjxwYXRoIGQ9Ik0yNC45OTA5IDE2LjU2ODFDMjQuODQ0MiAxNy4xMjEzIDI0LjQ5OCAxNy42MjM0IDIzLjk4OTMgMTguMDE3NEMyMi41NjMyIDE5LjEyMyAyMC45OTEgMjAuMDk5MSAxOS4zMTUxIDIwLjkxNjlDMTcuNjQgMjEuNzM1NyAxNS44NTQzIDIyLjM5OTUgMTQuMDA5NCAyMi44OTA1QzEzLjY4MTMgMjIuOTc3MyAxMy4zNDI1IDIzLjAyMTUgMTIuOTk5NSAyMy4wMjE1QzEyLjY1NzQgMjMuMDIxNSAxMi4zMTc3IDIyLjk3NzMgMTEuOTkwNSAyMi44OTA1QzEwLjE0NDcgMjIuMzk5NSA4LjM2IDIxLjczNTcgNi42ODQ4IDIwLjkxNjlDNS4wMDg4NyAyMC4wOTkxIDMuNDM2NzkgMTkuMTIzIDIuMDEwNTkgMTguMDE3NEMxLjUwMTEgMTcuNjIzNCAxLjE1NDk2IDE3LjEyMTMgMS4wMDkwNyAxNi41NjgxSDEuMDA4MTRDMC45MTA5MTEgMTYuMTk2MiAwLjkxMDkxMSAxNS44MDM4IDEuMDA4MTQgMTUuNDMySDEuMDA5MDdDMS4xNTQ5NiAxNC44Nzc5IDEuNTAxMSAxNC4zNzY2IDIuMDEwNTkgMTMuOTgyNkMzLjQzNjc5IDEyLjg3NzEgNS4wMDg4NyAxMS45MDEgNi42ODQ4IDExLjA4MzFDOC4zNiAxMC4yNjQ0IDEwLjE0NDcgOS42MDA2NCAxMS45OTA1IDkuMTA4NjlDMTIuMzE3NyA5LjAyMjcyIDEyLjY1NzQgOC45Nzg0NSAxMi45OTk1IDguOTc4NDVDMTMuMzQyNSA4Ljk3ODQ1IDEzLjY4MTMgOS4wMjI3MiAxNC4wMDk0IDkuMTA4NjlDMTUuODU0MyA5LjYwMDY0IDE3LjY0IDEwLjI2NDQgMTkuMzE1MSAxMS4wODMxQzIwLjk5MSAxMS45MDEgMjIuNTYzMiAxMi44NzcxIDIzLjk4OTMgMTMuOTgyNkMyNC40OTggMTQuMzc2NiAyNC44NDQyIDE0Ljg3NzkgMjQuOTkwOSAxNS40MzJDMjUuMDg5MSAxNS44MDM4IDI1LjA4OTEgMTYuMTk2MiAyNC45OTA5IDE2LjU2ODFaTTI1LjM1MTIgNi42OTc3MUMyNS4xODcxIDYuMDc3MzMgMjQuNzkzOSA1LjUxNjQ4IDI0LjIzOTEgNS4wODY3MkMyMS4zMzQ4IDIuODM0MDMgMTcuODc5MSAxLjE0NzIgMTQuMTE5OCAwLjE0NTU5OEMxMy43NTU1IDAuMDQ4NTMxNSAxMy4zNzc5IC03Ljc0ODZlLTA3IDEyLjk5OTUgLTcuNzQ4NmUtMDdDMTIuNjIxOSAtNy43NDg2ZS0wNyAxMi4yNDQ0IDAuMDQ4NTMxNSAxMS44OCAwLjE0NTU5OEM4LjEyMDA4IDEuMTQ3MiA0LjY2NTExIDIuODM0MDMgMS43NjA4NiA1LjA4NjcyQzEuMjA2IDUuNTE2NDggMC44MTIwMjggNi4wNzczMyAwLjY0ODc3NSA2LjY5NzcxQzAuMjE1OTQ4IDguMzMzNDQgMCAxMC4wMDA2IDAgMTEuNjY3VjEyLjc0MjdWMTUuOTk5NlYxOS4yNTc0VjIwLjMzMjNDMCAyMS45OTk1IDAuMjE1OTQ4IDIzLjY2NjcgMC42NDg3NzUgMjUuMzAxNUMwLjgxMjAyOCAyNS45MjI4IDEuMjA2IDI2LjQ4MjggMS43NjA4NiAyNi45MTM0QzQuNjY1MTEgMjkuMTY1MiA4LjEyMDA4IDMwLjg1MjggMTEuODggMzEuODU0NUMxMi4yNDQ0IDMxLjk1MTUgMTIuNjIxOSAzMiAxMi45OTk1IDMyQzEzLjM3NzkgMzIgMTMuNzU1NSAzMS45NTE1IDE0LjExOTggMzEuODU0NUMxNy44NzkxIDMwLjg1MjggMjEuMzM0OCAyOS4xNjUyIDI0LjIzOTEgMjYuOTEzNEMyNC43OTM5IDI2LjQ4MjggMjUuMTg3MSAyNS45MjI4IDI1LjM1MTIgMjUuMzAxNUMyNS43ODQxIDIzLjY2NjcgMjYgMjEuOTk5NSAyNiAyMC4zMzIzVjE5LjI1NzRWMTUuOTk5NlYxMi43NDI3VjExLjY2N0MyNiAxMC4wMDA2IDI1Ljc4NDEgOC4zMzM0NCAyNS4zNTEyIDYuNjk3NzFaIiBmaWxsPSIjMDBEQkZGIi8+Cjwvc3ZnPgo=" width="187" height="32" alt="RD Marketing" style="flex-shrink:0;">
+      <div class="products-menu" id="products-menu" data-current-product="marketing" data-page="contatos" data-base="../../">
         <button type="button" class="products-menu-trigger" id="products-menu-trigger" aria-expanded="false" aria-haspopup="true" aria-label="Trocar produto">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.61138 13.4077L5.16098 8.95728C4.94634 8.74264 4.94634 8.39466 5.16098 8.18004L5.68005 7.66097C5.89432 7.4467 6.24159 7.44629 6.45637 7.66006L10 11.1871L13.5436 7.66006C13.7584 7.44629 14.1057 7.4467 14.32 7.66097L14.839 8.18004C15.0537 8.39468 15.0537 8.74267 14.839 8.95728L10.3886 13.4077C10.174 13.6223 9.82602 13.6223 9.61138 13.4077Z" fill="white"/></svg>
         </button>
@@ -3754,7 +3610,7 @@
 
       <div class="account-menu" id="account-menu">
         <div class="account-avatar">
-          <img src="avatar-navbar.png" alt="Avatar">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAA5dJREFUeAGtVdtLFFEY/52zM7u6VqZEEl00KCq6WRBd7MHFIHqIerEgivoDgnzpJYISIqggWuoxulFP9VAPgRVUdFcTN7ohkQ0KmaQpadk6O3P6zjmzszvOKkZ+y5nLmTO/3+/7feebZRgbQ621dNwB190JhipMJgRL0doUTKcRxRut/Ecst6h9JobtYxCiAf8TjJ1DxmxE2ZrBHIEGf0Tg1ZiKkBm5ZkKScDWhlU8NuAxGWAZhykuMvKyCzb/8E0BrB3DrMdi9V2BlpeAH6+FuWwc3Hh1D5CYYfrZcppwOTAr42Tvg/E3gaRuJFBBaImCYiNfUwt1fh3TdMgjT0OsFSzIMNbfTyont6e4DO3wB4slrEuVqYA+c0U/eMzOKomXrYVbOQWZ7NdI1i+CUl1iUQbOYEPzaA+DkJWBgUGMyD1AKHEOEGeUwF62BaRiIVJQis3UFJiY4dws4dTmoOovJvA2I3F6X17xyOfisOYhwDoNx8HHBn5PfZ64CjuuD5A9BNaBDAFxeu70WHCcD23GQpvP4BGdJveu9KgsqNIjIAxMeUTY7sbQKuH6Uiu5AUNYOjcIEn3uAt51+7toOTaTG2JBzh3YB95LA5tUQC8qBkV+AbcMoSHCpSaLSiNCNre1Adsd4GenKAnNnAxePAGuX+K+z9xbEiA1mpwsQDI0A99uoWgTOgwmKQKk9o+6cBuZX5Ka7v0MM/1bPREGLHr6h9EbpOVcNpJWHQ83t3hIEl9FO1hIwodNwwhmwlg5qQE74pCBiaCW+4qB+HN4bZn7xQRGofqERIhAyA7JHSAVmLATsR31dWL0M+Z1yHSVS1pGOwgqkl85o72UNzCLdoYViz9bw3FPqnW/9vj1wRYqTwDv+go9d2nsuLaJzhDIxtE3ZSijCBaS8ZlWYoKlVqVcWqTpkiICL2/6Crj6lnBGJ8IgQi4PlJaF20qbVYfCvP+gT/sQDl41GRJw1ckzf+JgMTyp1NMeKS8iaqLZIkkSLdW+pJDym+kSY4Ar1jmNr/1UWmSSslKW3qRs7TsJSYsNioCgOlJQCxdM0kST0vwseSfWSIHgvfWmbmn17aKQQSx+XjzSB/IN2ownUrkqiLKaAWbwEjIjYjFlUC1OLl2PTSmB6PEhw6jrwiTaIPSrBk4jbCVjWYI4gS1K2oUH0DC6kHrhK/qdUBpKoojJbXmBe3tbsHQDbdwK4cddSlqT/JNDf2ZAFl/EXF750L9+LZy8AAAAASUVORK5CYII=" alt="Avatar">
         </div>
         <span class="account-name" id="account-name">Agência RD</span>
         <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.61138 13.4077L5.16098 8.95728C4.94634 8.74264 4.94634 8.39466 5.16098 8.18004L5.68005 7.66097C5.89432 7.4467 6.24159 7.44629 6.45637 7.66006L10 11.1871L13.5436 7.66006C13.7584 7.44629 14.1057 7.4467 14.32 7.66097L14.839 8.18004C15.0537 8.39468 15.0537 8.74267 14.839 8.95728L10.3886 13.4077C10.174 13.6223 9.82602 13.6223 9.61138 13.4077Z" fill="white"/></svg>
@@ -3777,7 +3633,7 @@
       </div>
     </div>
     <!-- Contatos (active) -->
-    <a href="./index.html" style="display:contents; text-decoration:none;">
+    <a href="<?!= __gasPageHref('marketing-contatos') ?>" style="display:contents; text-decoration:none;">
       <div class="sidebar-item active">
         <div class="sidebar-item-inner">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.375 3.25H16.5C17.7305 3.25 18.75 4.26953 18.75 5.5V19C18.75 20.2656 17.7305 21.25 16.5 21.25H6.375C5.10938 21.25 4.125 20.2656 4.125 19V5.5C4.125 4.26953 5.10938 3.25 6.375 3.25ZM10.3125 13.375C8.73047 13.375 7.5 14.6406 7.5 16.1875C7.5 16.5039 7.74609 16.75 8.0625 16.75H14.8125C15.0938 16.75 15.375 16.5039 15.375 16.1875C15.375 14.6406 14.1094 13.375 12.5625 13.375H10.3125ZM9.1875 10C9.1875 10.8086 9.60938 11.5469 10.3125 11.9688C10.9805 12.3555 11.8594 12.3555 12.5625 11.9688C13.2305 11.5469 13.6875 10.8086 13.6875 10C13.6875 9.22656 13.2305 8.48828 12.5625 8.06641C11.8594 7.67969 10.9805 7.67969 10.3125 8.06641C9.60938 8.48828 9.1875 9.22656 9.1875 10ZM21 6.0625V8.3125C21 8.62891 20.7188 8.875 20.4375 8.875C20.1211 8.875 19.875 8.62891 19.875 8.3125V6.0625C19.875 5.78125 20.1211 5.5 20.4375 5.5C20.7188 5.5 21 5.78125 21 6.0625ZM20.4375 10C20.7188 10 21 10.2812 21 10.5625V12.8125C21 13.1289 20.7188 13.375 20.4375 13.375C20.1211 13.375 19.875 13.1289 19.875 12.8125V10.5625C19.875 10.2812 20.1211 10 20.4375 10ZM21 15.0625V17.3125C21 17.6289 20.7188 17.875 20.4375 17.875C20.1211 17.875 19.875 17.6289 19.875 17.3125V15.0625C19.875 14.7812 20.1211 14.5 20.4375 14.5C20.7188 14.5 21 14.7812 21 15.0625Z" fill="#00DBFF"/></svg>
@@ -3787,19 +3643,19 @@
     </a>
     <div class="sidebar-item">
       <div class="sidebar-item-inner">
-        <img src="../perfil/icons/hands.svg" width="24" height="24" alt="" aria-hidden="true">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTYuMzc1IDcuOTI1NzhWMTAuODQzOEw1Ljg0NzY2IDEyLjc0MjJDNS43NDIxOSAxMy4wOTM4IDUuNTY2NDEgMTMuMzc1IDUuMzIwMzEgMTMuNjIxMUwyLjE1NjI1IDE2Ljc4NTJDMS44Mzk4NCAxNy4xMzY3IDEuMzEyNSAxNy4xMzY3IDAuOTk2MDk0IDE2Ljc4NTJDMC42NDQ1MzEgMTYuNDY4OCAwLjY0NDUzMSAxNS45NDE0IDAuOTk2MDk0IDE1LjU4OThMNC4xMjUgMTIuNDYwOUM0LjE2MDE2IDEyLjQyNTggNC4xOTUzMSAxMi4zNTU1IDQuMjMwNDcgMTIuMzIwM0w0Ljk2ODc1IDkuNDcyNjZDNS4xNzk2OSA4Ljc2OTUzIDUuNzA3MDMgOC4xNzE4OCA2LjM3NSA3LjkyNTc4WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTEyLjU2MjUgMTBIMTYuMjE4OEMxNy41ODk4IDEwIDE4Ljc1IDExLjE2MDIgMTguNzUgMTIuNTMxMkMxOC43NSAxMy40NDUzIDE4LjI1NzggMTQuMjE4OCAxNy41ODk4IDE0LjY3NThWMTUuMDYyNUMxNy41ODk4IDE2LjIyMjcgMTYuODUxNiAxNy4yMDcgMTUuNzk2OSAxNy41MjM0QzE1LjQ4MDUgMTguNDAyMyAxNC42MzY3IDE5IDEzLjY1MjMgMTlIOS42NDQ1M0M5LjU3NDIyIDE5IDkuNTAzOTEgMTkuMDM1MiA5LjQzMzU5IDE5LjEwNTVMNy41IDIxLjAwMzlDNy4xODM1OSAyMS4zNTU1IDYuNjU2MjUgMjEuMzU1NSA2LjMzOTg0IDIxLjAwMzlDNS45ODgyOCAyMC42ODc1IDUuOTg4MjggMjAuMTYwMiA2LjMzOTg0IDE5LjgwODZMOC4yMzgyOCAxNy45MTAyQzguNjI1IDE3LjUyMzQgOS4xMTcxOSAxNy4zMTI1IDkuNjQ0NTMgMTcuMzEyNUgxMy42ODc1QzEzLjk2ODggMTcuMzEyNSAxNC4yNSAxNy4wNjY0IDE0LjI1IDE2Ljc1QzE0LjI1IDE2LjI5MyAxNC42MDE2IDE1LjkwNjIgMTUuMDkzOCAxNS45MDYyQzE1LjU1MDggMTUuOTA2MiAxNS45Mzc1IDE1LjU1NDcgMTUuOTM3NSAxNS4wNjI1QzE1LjkzNzUgMTQuOTIxOSAxNS44NjcyIDE0Ljc4MTIgMTUuNzk2OSAxNC42NDA2QzE1LjY1NjIgMTQuMzk0NSAxNS42NTYyIDE0LjExMzMgMTUuNzYxNyAxMy44NjcyQzE1Ljg2NzIgMTMuNjIxMSAxNi4wNzgxIDEzLjQ0NTMgMTYuMzU5NCAxMy4zNzVDMTYuNzQ2MSAxMy4zMDQ3IDE3LjA2MjUgMTIuOTUzMSAxNy4wNjI1IDEyLjUzMTJDMTcuMDYyNSAxMi4wNzQyIDE2LjY3NTggMTEuNjg3NSAxNi4yMTg4IDExLjY4NzVIMTIuNTYyNVYxMFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0xNy41ODk4IDMuNTMxMjVDMTcuOTA2MiAzLjE3OTY5IDE4LjQzMzYgMy4xNzk2OSAxOC43ODUyIDMuNTMxMjVDMTkuMTAxNiAzLjg0NzY2IDE5LjEwMTYgNC4zNzUgMTguNzg1MiA0LjY5MTQxTDE2Ljg1MTYgNi42MjVDMTYuNDY0OCA3LjAxMTcyIDE1Ljk3MjcgNy4xODc1IDE1LjQ0NTMgNy4xODc1SDEwLjU5MzhDOS43ODUxNiA3LjE4NzUgOS4xODc1IDcuODIwMzEgOS4xODc1IDguNTkzNzVWMTEuOTY4OEM5LjE4NzUgMTIuNDYwOSA5LjUzOTA2IDEyLjgxMjUgMTAuMDMxMiAxMi44MTI1QzEwLjQ4ODMgMTIuODEyNSAxMC44NzUgMTIuNDYwOSAxMC44NzUgMTEuOTY4OFY5LjE1NjI1QzEwLjg3NSA4LjY5OTIyIDExLjIyNjYgOC4zMTI1IDExLjcxODggOC4zMTI1QzEyLjE2NDMgOC4zMTI1IDEyLjU0MTggOC42ODAxMyAxMi41NjA1IDkuMTIyMDdWMTEuOTk4QzEyLjU0NDYgMTMuMzkwNiAxMS4zOTI4IDE0LjUgMTAuMDMxMiAxNC41QzguNjI1IDE0LjUgNy41IDEzLjM3NSA3LjUgMTEuOTY4OFY4LjU5Mzc1QzcuNSA2LjkwNjI1IDguODcxMDkgNS41IDEwLjU5MzggNS41SDE1LjQ0NTNDMTUuNTE1NiA1LjUgMTUuNTg1OSA1LjUgMTUuNjU2MiA1LjQyOTY5TDE3LjU4OTggMy41MzEyNVoiIGZpbGw9IiMwMERCRkYiLz4KPHBhdGggZD0iTTIxLjgwODYgNy43NUMyMi4xMjUgNy4zOTg0NCAyMi42NTIzIDcuMzk4NDQgMjMuMDAzOSA3Ljc1QzIzLjMyMDMgOC4wNjY0MSAyMy4zMjAzIDguNTkzNzUgMjMuMDAzOSA4LjkxMDE2TDE5LjgzOTggMTIuMDc0MkMxOS43MzQ0IDExLjQ0MTQgMTkuNTIzNCAxMC44Nzg5IDE5LjEzNjcgMTAuMzg2N0wyMS44MDg2IDcuNzVaIiBmaWxsPSIjMDBEQkZGIi8+Cjwvc3ZnPgo=" width="24" height="24" alt="" aria-hidden="true">
       </div>
     </div>
     <!-- Atrair -->
     <div class="sidebar-item">
       <div class="sidebar-item-inner">
-        <img src="../perfil/icons/predio.svg" width="24" height="24" alt="" aria-hidden="true">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE4Ljc1IDQuOTM3NUgxMy4xMjVDMTIuODA4NiA0LjkzNzUgMTIuNTYyNSA1LjIxODc1IDEyLjU2MjUgNS41VjE5QzEyLjU2MjUgMTkuMzE2NCAxMi44MDg2IDE5LjU2MjUgMTMuMTI1IDE5LjU2MjVIMTguNzVDMTkuMDMxMiAxOS41NjI1IDE5LjMxMjUgMTkuMzE2NCAxOS4zMTI1IDE5VjUuNUMxOS4zMTI1IDUuMjE4NzUgMTkuMDMxMiA0LjkzNzUgMTguNzUgNC45Mzc1Wk0xMy4xMjUgMy4yNUgxOC43NUMxOS45ODA1IDMuMjUgMjEgNC4yNjk1MyAyMSA1LjVWMTlDMjEgMjAuMjY1NiAxOS45ODA1IDIxLjI1IDE4Ljc1IDIxLjI1SDEzLjEyNUMxMS44NTk0IDIxLjI1IDEwLjg3NSAyMC4yNjU2IDEwLjg3NSAxOVY1LjVDMTAuODc1IDQuMjY5NTMgMTEuODU5NCAzLjI1IDEzLjEyNSAzLjI1Wk05Ljc1IDcuNzVWOS40Mzc1SDUuNTMxMjVDNS4wMzkwNiA5LjQzNzUgNC42ODc1IDkuODI0MjIgNC42ODc1IDEwLjI4MTJWMTguNzE4OEM0LjY4NzUgMTkuMjEwOSA1LjAzOTA2IDE5LjU2MjUgNS41MzEyNSAxOS41NjI1SDkuNzg1MTZDOS44OTA2MiAyMC4yMzA1IDEwLjE3MTkgMjAuNzkzIDEwLjU5MzggMjEuMjVINS41MzEyNUM0LjEyNSAyMS4yNSAzIDIwLjEyNSAzIDE4LjcxODhWMTAuMjgxMkMzIDguOTEwMTYgNC4xMjUgNy43NSA1LjUzMTI1IDcuNzVIOS43NVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik04LjA2MjUgMTQuNUg2LjkzNzVDNi42MjEwOSAxNC41IDYuMzc1IDE0Ljc4MTIgNi4zNzUgMTUuMDYyNVYxNi4xODc1QzYuMzc1IDE2LjUwMzkgNi42MjEwOSAxNi43NSA2LjkzNzUgMTYuNzVIOC4wNjI1QzguMzQzNzUgMTYuNzUgOC42MjUgMTYuNTAzOSA4LjYyNSAxNi4xODc1VjE1LjA2MjVDOC42MjUgMTQuNzgxMiA4LjM0Mzc1IDE0LjUgOC4wNjI1IDE0LjVaIiBmaWxsPSIjMDBEQkZGIi8+CjxwYXRoIGQ9Ik0xNC44MTI1IDEzLjkzNzVWMTUuMDYyNUMxNC44MTI1IDE1LjM3ODkgMTUuMDU4NiAxNS42MjUgMTUuMzc1IDE1LjYyNUgxNi41QzE2Ljc4MTIgMTUuNjI1IDE3LjA2MjUgMTUuMzc4OSAxNy4wNjI1IDE1LjA2MjVWMTMuOTM3NUMxNy4wNjI1IDEzLjY1NjIgMTYuNzgxMiAxMy4zNzUgMTYuNSAxMy4zNzVIMTUuMzc1QzE1LjA1ODYgMTMuMzc1IDE0LjgxMjUgMTMuNjU2MiAxNC44MTI1IDEzLjkzNzVaIiBmaWxsPSIjMDBEQkZGIi8+CjxwYXRoIGQ9Ik04LjA2MjUgMTEuMTI1SDYuOTM3NUM2LjYyMTA5IDExLjEyNSA2LjM3NSAxMS40MDYyIDYuMzc1IDExLjY4NzVWMTIuODEyNUM2LjM3NSAxMy4xMjg5IDYuNjIxMDkgMTMuMzc1IDYuOTM3NSAxMy4zNzVIOC4wNjI1QzguMzQzNzUgMTMuMzc1IDguNjI1IDEzLjEyODkgOC42MjUgMTIuODEyNVYxMS42ODc1QzguNjI1IDExLjQwNjIgOC4zNDM3NSAxMS4xMjUgOC4wNjI1IDExLjEyNVoiIGZpbGw9IiMwMERCRkYiLz4KPHBhdGggZD0iTTE1LjM3NSA2LjYyNUMxNS4wNTg2IDYuNjI1IDE0LjgxMjUgNi45MDYyNSAxNC44MTI1IDcuMTg3NVY4LjMxMjVDMTQuODEyNSA4LjYyODkxIDE1LjA1ODYgOC44NzUgMTUuMzc1IDguODc1SDE2LjVDMTYuNzgxMiA4Ljg3NSAxNy4wNjI1IDguNjI4OTEgMTcuMDYyNSA4LjMxMjVWNy4xODc1QzE3LjA2MjUgNi45MDYyNSAxNi43ODEyIDYuNjI1IDE2LjUgNi42MjVIMTUuMzc1WiIgZmlsbD0iIzAwREJGRiIvPgo8cGF0aCBkPSJNMTQuODEyNSAxMS42ODc1QzE0LjgxMjUgMTIuMDAzOSAxNS4wNTg2IDEyLjI1IDE1LjM3NSAxMi4yNUgxNi41QzE2Ljc4MTIgMTIuMjUgMTcuMDYyNSAxMi4wMDM5IDE3LjA2MjUgMTEuNjg3NVYxMC41NjI1QzE3LjA2MjUgMTAuMjgxMiAxNi43ODEyIDEwIDE2LjUgMTBIMTUuMzc1QzE1LjA1ODYgMTAgMTQuODEyNSAxMC4yODEyIDE0LjgxMjUgMTAuNTYyNVYxMS42ODc1WiIgZmlsbD0iIzAwREJGRiIvPgo8L3N2Zz4K" width="24" height="24" alt="" aria-hidden="true">
       </div>
     </div>
     <!-- Converter -->
     <div class="sidebar-item">
       <div class="sidebar-item-inner">
-        <img src="../perfil/icons/tasks.svg" width="24" height="24" alt="" aria-hidden="true">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTguMzc4OTEgNS44MTY0VjUuNzgxMjVMNS44NDc2NiA4LjU5Mzc1QzUuNzA3MDMgOC43Njk1MyA1LjQ5NjA5IDguODc1IDUuMjUgOC44NzVDNS4wMzkwNiA4LjkxMDE1IDQuNzkyOTcgOC44MDQ2OSA0LjY1MjM0IDguNjI4OUwzLjI0NjA5IDcuMjIyNjVDMi44OTQ1MyA2LjkwNjI1IDIuODk0NTMgNi4zNzg5IDMuMjQ2MDkgNi4wMjczNEMzLjU2MjUgNS43MTA5NCA0LjA4OTg0IDUuNzEwOTQgNC40NDE0MSA2LjAyNzM0TDUuMjE0ODQgNi44MzU5NEw3LjE0ODQ0IDQuNjU2MjVDNy40NjQ4NCA0LjMzOTg0IDcuOTkyMTkgNC4zMDQ2OSA4LjM0Mzc1IDQuNjIxMDlDOC42NjAxNiA0LjkzNzUgOC42OTUzMSA1LjQ2NDg0IDguMzc4OTEgNS44MTY0Wk04LjM3ODkxIDExLjQ0MTRWMTEuNDA2Mkw1Ljg0NzY2IDE0LjIxODdDNS43MDcwMyAxNC4zOTQ1IDUuNDk2MDkgMTQuNSA1LjI1IDE0LjVDNS4wMzkwNiAxNC41MzUyIDQuNzkyOTcgMTQuNDI5NyA0LjY1MjM0IDE0LjI1MzlMMy4yNDYwOSAxMi44NDc3QzIuODk0NTMgMTIuNTMxMiAyLjg5NDUzIDEyLjAwMzkgMy4yNDYwOSAxMS42NTIzQzMuNTYyNSAxMS4zMzU5IDQuMDg5ODQgMTEuMzM1OSA0LjQ0MTQxIDExLjY1MjNMNS4yMTQ4NCAxMi40NjA5TDcuMTQ4NDQgMTAuMjgxMkM3LjQ2NDg0IDkuOTY0ODQgNy45OTIxOSA5LjkyOTY5IDguMzQzNzUgMTAuMjQ2MUM4LjY2MDE2IDEwLjU2MjUgOC42OTUzMSAxMS4wODk4IDguMzc4OTEgMTEuNDQxNFpNMTAuNTkzOCA3LjQ2ODc1QzEwLjEwMTYgNy40Njg3NSA5Ljc1IDcuMTE3MTkgOS43NSA2LjYyNUM5Ljc1IDYuMTY3OTcgMTAuMTAxNiA1Ljc4MTI1IDEwLjU5MzggNS43ODEyNUgyMC4xNTYyQzIwLjYxMzMgNS43ODEyNSAyMSA2LjE2Nzk3IDIxIDYuNjI1QzIxIDcuMTE3MTkgMjAuNjEzMyA3LjQ2ODc1IDIwLjE1NjIgNy40Njg3NUgxMC41OTM4Wk05Ljc1IDEyLjI1QzkuNzUgMTEuNzkzIDEwLjEwMTYgMTEuNDA2MiAxMC41OTM4IDExLjQwNjJIMjAuMTU2MkMyMC42MTMzIDExLjQwNjIgMjEgMTEuNzkzIDIxIDEyLjI1QzIxIDEyLjc0MjIgMjAuNjEzMyAxMy4wOTM3IDIwLjE1NjIgMTMuMDkzN0gxMC41OTM4QzEwLjEwMTYgMTMuMDkzNyA5Ljc1IDEyLjc0MjIgOS43NSAxMi4yNVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik05LjQ2ODc1IDE3LjAzMTJDOC45NzY1NiAxNy4wMzEyIDguNjI1IDE3LjQxOCA4LjYyNSAxNy44NzVDOC42MjUgMTguMzY3MiA4Ljk3NjU2IDE4LjcxODggOS40Njg3NSAxOC43MTg4SDIwLjE1NjJDMjAuNjEzMyAxOC43MTg4IDIxIDE4LjM2NzIgMjEgMTcuODc1QzIxIDE3LjQxOCAyMC42MTMzIDE3LjAzMTIgMjAuMTU2MiAxNy4wMzEySDkuNDY4NzVaIiBmaWxsPSIjMDBEQkZGIi8+CjxwYXRoIGQ9Ik01LjI1IDE5QzUuODQ3NjYgMTkgNi4zNzUgMTguNTA3OCA2LjM3NSAxNy44NzVDNi4zNzUgMTcuMjc3MyA1Ljg0NzY2IDE2Ljc1IDUuMjUgMTYuNzVDNC42MTcxOSAxNi43NSA0LjEyNSAxNy4yNzczIDQuMTI1IDE3Ljg3NUM0LjEyNSAxOC41MDc4IDQuNjE3MTkgMTkgNS4yNSAxOVoiIGZpbGw9IiMwMERCRkYiLz4KPC9zdmc+Cg==" width="24" height="24" alt="" aria-hidden="true">
       </div>
     </div>
     <!-- Analisar -->
@@ -3929,7 +3785,7 @@
 
           <!-- Filters button -->
           <button class="btn-text" id="filter-btn">
-            <img src="./icon-filters.svg" width="24" height="24" alt="" role="presentation">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQuNSA4LjI1SDE5LjVDMTkuNzc2MiA4LjI1IDIwIDguMDI2MTYgMjAgNy43NVY2LjVDMjAgNi4yMjM4NCAxOS43NzYyIDYgMTkuNSA2SDQuNUM0LjIyMzg0IDYgNCA2LjIyMzg0IDQgNi41VjcuNzVDNCA4LjAyNjE2IDQuMjIzODQgOC4yNSA0LjUgOC4yNVpNNi41IDEzLjI1SDE3LjVDMTcuNzc2MiAxMy4yNSAxOCAxMy4wMjYyIDE4IDEyLjc1VjExLjVDMTggMTEuMjIzOCAxNy43NzYyIDExIDE3LjUgMTFINi41QzYuMjIzODQgMTEgNiAxMS4yMjM4IDYgMTEuNVYxMi43NUM2IDEzLjAyNjIgNi4yMjM4NCAxMy4yNSA2LjUgMTMuMjVaTTguNSAxOC4yNUgxNS41QzE1Ljc3NjIgMTguMjUgMTYgMTguMDI2MiAxNiAxNy43NVYxNi41QzE2IDE2LjIyMzggMTUuNzc2MiAxNiAxNS41IDE2SDguNUM4LjIyMzg0IDE2IDggMTYuMjIzOCA4IDE2LjVWMTcuNzVDOCAxOC4wMjYyIDguMjIzODQgMTguMjUgOC41IDE4LjI1WiIgZmlsbD0iIzAwNzdCMiIvPgo8L3N2Zz4K" width="24" height="24" alt="" role="presentation">
             <span class="filter-badge-wrapper">
               Filtros
               <span class="filter-badge" id="filter-badge" style="display:none">0</span>
@@ -3971,20 +3827,20 @@
                   TELEFONE
                 </div>
               </th>
-              <th class="col-empresa-cargo">
+              <th class="col-ultima-conversao">
                 <div class="th-inner">
-                  EMPRESA / CARGO
+                  ÚLTIMA CONVERSÃO
                 </div>
               </th>
-              <th class="col-created-at">
+              <th class="col-conversoes">
                 <div class="th-inner">
-                  DATA DE CRIAÇÃO
+                  CONVERSÕES
                   <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
                 </div>
               </th>
               <th class="col-tags">
                 <div class="th-inner">
-                  NEGOCIAÇÕES
+                  TAGS / ETIQUETAS
                   <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
                 </div>
               </th>
@@ -4041,7 +3897,7 @@
                 <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8.00008 8C9.68341 8 11.0477 6.65703 11.0477 5C11.0477 3.34297 9.68341 2 8.00008 2C6.31675 2 4.95246 3.34297 4.95246 5C4.95246 6.65703 6.31675 8 8.00008 8ZM10.1334 8.75H9.7358C9.20722 8.98906 8.61913 9.125 8.00008 9.125C7.38103 9.125 6.79532 8.98906 6.26437 8.75H5.86675C4.10008 8.75 2.66675 10.1609 2.66675 11.9V12.875C2.66675 13.4961 3.17865 14 3.80961 14H12.1906C12.8215 14 13.3334 13.4961 13.3334 12.875V11.9C13.3334 10.1609 11.9001 8.75 10.1334 8.75Z"/></svg>
               </span>
               <span class="overview-accordion-title">Contato</span>
-              <img class="overview-accordion-chevron" src="./painel-visao/chevron-up.svg" width="24" height="24" alt="">
+              <img class="overview-accordion-chevron" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjQ2NjMgNy45MTA3NUwxNy44MDY4IDEzLjI1MTNDMTguMDY0NCAxMy41MDg4IDE4LjA2NDQgMTMuOTI2NCAxNy44MDY4IDE0LjE4MzlMMTcuMTgzOSAxNC44MDY4QzE2LjkyNjggMTUuMDY0IDE2LjUxMDEgMTUuMDY0NSAxNi4yNTI0IDE0LjgwNzlMMTIgMTAuNTc1NUw3Ljc0NzY1IDE0LjgwNzlDNy40ODk5MSAxNS4wNjQ1IDcuMDczMTggMTUuMDY0IDYuODE2MDYgMTQuODA2OEw2LjE5MzE4IDE0LjE4MzlDNS45MzU2MSAxMy45MjY0IDUuOTM1NjEgMTMuNTA4OCA2LjE5MzE4IDEzLjI1MTNMMTEuNTMzNyA3LjkxMDc4QzExLjc5MTIgNy42NTMyMSAxMi4yMDg4IDcuNjUzMjEgMTIuNDY2MyA3LjkxMDc1WiIgZmlsbD0iIzU5NkI3QSIvPgo8L3N2Zz4K" width="24" height="24" alt="">
             </button>
             <div class="overview-card-body">
               <div class="overview-contact-row">
@@ -4051,7 +3907,7 @@
                   <div class="overview-contact-role" id="overview-role">—</div>
                 </div>
                 <button type="button" class="overview-icon-btn" id="detail-panel-more-btn" title="Mais opções" aria-label="Mais opções">
-                  <img src="./painel-visao/elipsis-v.svg" width="20" height="20" alt="">
+                  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjI2ODcgOC4wNjQ0M0MxMS4zMzg2IDguMDY0NDMgMTIuMjA0MiA4LjkzMDAzIDEyLjIwNDIgOS45OTk5MkMxMi4yMDQyIDExLjA2OTggMTEuMzM4NiAxMS45MzU0IDEwLjI2ODcgMTEuOTM1NEM5LjE5ODg0IDExLjkzNTQgOC4zMzMyNSAxMS4wNjk4IDguMzMzMjUgOS45OTk5MkM4LjMzMzI1IDguOTMwMDMgOS4xOTg4NCA4LjA2NDQzIDEwLjI2ODcgOC4wNjQ0M1pNOC4zMzMyNSA1LjI2ODc0QzguMzMzMjUgNi4zMzg2MyA5LjE5ODg0IDcuMjA0MjIgMTAuMjY4NyA3LjIwNDIyQzExLjMzODYgNy4yMDQyMiAxMi4yMDQyIDYuMzM4NjMgMTIuMjA0MiA1LjI2ODc0QzEyLjIwNDIgNC4xOTg4NCAxMS4zMzg2IDMuMzMzMjUgMTAuMjY4NyAzLjMzMzI1QzkuMTk4ODQgMy4zMzMyNSA4LjMzMzI1IDQuMTk4ODQgOC4zMzMyNSA1LjI2ODc0Wk04LjMzMzI1IDE0LjczMTFDOC4zMzMyNSAxNS44MDEgOS4xOTg4NCAxNi42NjY2IDEwLjI2ODcgMTYuNjY2NkMxMS4zMzg2IDE2LjY2NjYgMTIuMjA0MiAxNS44MDEgMTIuMjA0MiAxNC43MzExQzEyLjIwNDIgMTMuNjYxMiAxMS4zMzg2IDEyLjc5NTYgMTAuMjY4NyAxMi43OTU2QzkuMTk4ODQgMTIuNzk1NiA4LjMzMzI1IDEzLjY2MTIgOC4zMzMyNSAxNC43MzExWiIgZmlsbD0iIzAwNzdCMiIvPgo8L3N2Zz4K" width="20" height="20" alt="">
                 </button>
               </div>
               <div class="overview-divider"></div>
@@ -4093,7 +3949,7 @@
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C7.02823 3 3 7.02823 3 12C3 16.9718 7.02823 21 12 21C16.9718 21 21 16.9718 21 12C21 7.02823 16.9718 3 12 3ZM14.0722 15.7052L10.8714 13.379C10.7589 13.2956 10.6935 13.1649 10.6935 13.027V6.91935C10.6935 6.67984 10.8895 6.48387 11.129 6.48387H12.871C13.1105 6.48387 13.3065 6.67984 13.3065 6.91935V11.9165L15.6109 13.5931C15.8069 13.7347 15.8468 14.0069 15.7052 14.2028L14.6819 15.6109C14.5403 15.8032 14.2681 15.8468 14.0722 15.7052Z"/></svg>
               </span>
               <span class="overview-accordion-title">Histórico</span>
-              <img class="overview-accordion-chevron" src="./painel-visao/chevron-up.svg" width="24" height="24" alt="">
+              <img class="overview-accordion-chevron" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjQ2NjMgNy45MTA3NUwxNy44MDY4IDEzLjI1MTNDMTguMDY0NCAxMy41MDg4IDE4LjA2NDQgMTMuOTI2NCAxNy44MDY4IDE0LjE4MzlMMTcuMTgzOSAxNC44MDY4QzE2LjkyNjggMTUuMDY0IDE2LjUxMDEgMTUuMDY0NSAxNi4yNTI0IDE0LjgwNzlMMTIgMTAuNTc1NUw3Ljc0NzY1IDE0LjgwNzlDNy40ODk5MSAxNS4wNjQ1IDcuMDczMTggMTUuMDY0IDYuODE2MDYgMTQuODA2OEw2LjE5MzE4IDE0LjE4MzlDNS45MzU2MSAxMy45MjY0IDUuOTM1NjEgMTMuNTA4OCA2LjE5MzE4IDEzLjI1MTNMMTEuNTMzNyA3LjkxMDc4QzExLjc5MTIgNy42NTMyMSAxMi4yMDg4IDcuNjUzMjEgMTIuNDY2MyA3LjkxMDc1WiIgZmlsbD0iIzU5NkI3QSIvPgo8L3N2Zz4K" width="24" height="24" alt="">
             </button>
             <div class="overview-card-body">
               <div class="overview-tags">
@@ -4107,7 +3963,7 @@
                 <div class="overview-timeline-item">
                   <div class="overview-timeline-rail">
                     <div class="overview-timeline-dot overview-timeline-dot--mint">
-                      <img src="./painel-visao/cart.svg" width="24" height="24" alt="">
+                      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIwLjMzNzUgMTMuNTkzMkwyMS45Nzg5IDYuMjgwNzVDMjIuMDk3NCA1Ljc1Mjc3IDIxLjcwMTEgNS4yNSAyMS4xNjYzIDUuMjVINy41MjgwNkw3LjIwOTc5IDMuNjc0NjVDNy4xMzA0OSAzLjI4MTk5IDYuNzg5MjQgMyA2LjM5MzM3IDNIMi44MzMzM0MyLjM3MzA5IDMgMiAzLjM3Nzc1IDIgMy44NDM3NVY0LjQwNjI1QzIgNC44NzIyNSAyLjM3MzA5IDUuMjUgMi44MzMzMyA1LjI1SDUuMjU5ODNMNy42OTg5OSAxNy4zMjM5QzcuMTE1NDUgMTcuNjYzNyA2LjcyMjIyIDE4LjMwMDggNi43MjIyMiAxOS4wMzEyQzYuNzIyMjIgMjAuMTE4NiA3LjU5Mjc4IDIxIDguNjY2NjcgMjFDOS43NDA1NiAyMSAxMC42MTExIDIwLjExODYgMTAuNjExMSAxOS4wMzEyQzEwLjYxMTEgMTguNDgwMiAxMC4zODczIDE3Ljk4MjQgMTAuMDI2OSAxNy42MjVIMTcuMzA2NEMxNi45NDYxIDE3Ljk4MjQgMTYuNzIyMiAxOC40ODAyIDE2LjcyMjIgMTkuMDMxMkMxNi43MjIyIDIwLjExODYgMTcuNTkyOCAyMSAxOC42NjY3IDIxQzE5Ljc0MDYgMjEgMjAuNjExMSAyMC4xMTg2IDIwLjYxMTEgMTkuMDMxMkMyMC42MTExIDE4LjI1MTggMjAuMTYzNiAxNy41NzgyIDE5LjUxNDYgMTcuMjU5MkwxOS43MDYyIDE2LjQwNTdDMTkuODI0NyAxNS44Nzc4IDE5LjQyODMgMTUuMzc1IDE4Ljg5MzYgMTUuMzc1SDkuNTczNTFMOS4zNDYyNSAxNC4yNUgxOS41MjQ5QzE5LjkxNCAxNC4yNSAyMC4yNTEzIDEzLjk3NzQgMjAuMzM3NSAxMy41OTMyWiIgZmlsbD0iIzAwMjIzMyIvPgo8L3N2Zz4K" width="24" height="24" alt="">
                     </div>
                     <div class="overview-timeline-line"></div>
                   </div>
@@ -4126,7 +3982,7 @@
                 <div class="overview-timeline-item">
                   <div class="overview-timeline-rail">
                     <div class="overview-timeline-dot overview-timeline-dot--primary">
-                      <img src="./painel-visao/click.svg" width="24" height="24" alt="">
+                      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3IDQuNUMxNyA0LjEwMjE3IDE2Ljg0MiAzLjcyMDY0IDE2LjU2MDcgMy40MzkzNEMxNi4yNzk0IDMuMTU4MDMgMTUuODk3OCAzIDE1LjUgM0g0LjVDNC4xMDIxOCAzIDMuNzIwNjQgMy4xNTgwNCAzLjQzOTM0IDMuNDM5MzRDMy4xNTgwNCAzLjcyMDY0IDMgNC4xMDIxOCAzIDQuNVYxNS41QzMgMTUuODQ4MSAzLjEyMSAxNi4xODM3IDMuMzM5NyAxNi40NTA2QzMuMzcwOTQgMTYuNDg4OCAzLjQwNDE4IDE2LjUyNTUgMy40MzkzNCAxNi41NjA3QzMuNzIwNjQgMTYuODQyIDQuMTAyMTggMTcgNC41IDE3SDlWMTVINVY1TDE1IDVWN0gxN1Y0LjVaIiBmaWxsPSIjMDAyMjMzIi8+CjxwYXRoIGQ9Ik0xMSAxOS4zMTI5VjcuNzI1MDJDMTEgNy4zMjUwMSAxMS4zMjUgNyAxMS43MjUgN0MxMS45MDMxIDcgMTIuMDcxOCA3LjA2NTYyIDEyLjIwNjMgNy4xODQzN0wyMC43Njg3IDE0Ljc5NEMyMC45MTU2IDE0LjkyNTMgMjEgMTUuMTEyOCAyMSAxNS4zMDk3QzIxIDE1LjY5MDkgMjAuNjkwNiAxNi4wMDAzIDIwLjMwOTQgMTYuMDAwM0gxNi42MTg3TDE4LjM5MDcgMTkuNTUzNkMxOC42Mzc1IDIwLjA0NzMgMTguNDM3NSAyMC42NDc0IDE3Ljk0MzggMjAuODk0MkMxNy40NTAxIDIxLjE0MTEgMTYuODUgMjAuOTQxMSAxNi42MDMxIDIwLjQ0NzNMMTQuNzg3NSAxNi44MTI5TDEyLjIwNjMgMTkuNzY2QzEyLjA3NSAxOS45MTYxIDExLjg4NDQgMjAuMDAwNSAxMS42ODc1IDIwLjAwMDVDMTEuMzA5NCAyMC4wMDA1IDExIDE5LjY5NDIgMTEgMTkuMzEyOVoiIGZpbGw9IiMwMDIyMzMiLz4KPC9zdmc+Cg==" width="24" height="24" alt="">
                     </div>
                     <div class="overview-timeline-line"></div>
                   </div>
@@ -4145,7 +4001,7 @@
                 <div class="overview-timeline-item">
                   <div class="overview-timeline-rail">
                     <div class="overview-timeline-dot overview-timeline-dot--pink">
-                      <img src="./painel-visao/exchange.svg" width="24" height="24" alt="">
+                      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTMgOS4yMTg3NFY4LjY1NjI0QzMgOC4xOTAyNSAzLjM3Nzc1IDcuODEyNDkgMy44NDM3NSA3LjgxMjQ5SDE3LjI3MjRMMTYuMjAxMyA2LjgzNzY4QzE1Ljg1NjIgNi41MTExMSAxNS44NDg3IDUuOTY0MTkgMTYuMTg0NiA1LjYyODIzTDE2LjU2NTcgNS4yNDcxNEMxNi44OTUyIDQuOTE3NjIgMTcuNDI5NCA0LjkxNzYyIDE3Ljc1ODkgNS4yNDcxNEwyMC42NzA1IDguMTQyMDFDMjEuMTA5OCA4LjU4MTM2IDIxLjEwOTggOS4yOTM2NiAyMC42NzA1IDkuNzMzMDFMMTcuNzU4OSAxMi42Mjc5QzE3LjQyOTQgMTIuOTU3NCAxNi44OTUyIDEyLjk1NzQgMTYuNTY1NyAxMi42Mjc5TDE2LjE4NDYgMTIuMjQ2OEMxNS44NDg3IDExLjkxMDggMTUuODU2MiAxMS4zNjM5IDE2LjIwMTMgMTEuMDM3M0wxNy4yNzI0IDEwLjA2MjVIMy44NDM3NUMzLjM3Nzc1IDEwLjA2MjUgMyA5LjY4NDc0IDMgOS4yMTg3NFpNMjAuMTU2MiAxNC41NjI1SDYuNzI3NjJMNy43OTg3MiAxMy41ODc3QzguMTQzNzggMTMuMjYxMSA4LjE1MTM0IDEyLjcxNDIgNy44MTUzOSAxMi4zNzgyTDcuNDM0MjkgMTEuOTk3MUM3LjEwNDc3IDExLjY2NzYgNi41NzA1NyAxMS42Njc2IDYuMjQxMDUgMTEuOTk3MUwzLjMyOTUyIDE0Ljg5MkMyLjg5MDE3IDE1LjMzMTQgMi44OTAxNyAxNi4wNDM3IDMuMzI5NTIgMTYuNDgzTDYuMjQxMDUgMTkuMzc3OUM2LjU3MDU3IDE5LjcwNzQgNy4xMDQ4MSAxOS43MDc0IDcuNDM0MjkgMTkuMzc3OUw3LjgxNTM5IDE4Ljk5NjhDOC4xNTEzNCAxOC42NjA4IDguMTQzNzggMTguMTEzOSA3Ljc5ODcyIDE3Ljc4NzNMNi43Mjc2MiAxNi44MTI1SDIwLjE1NjJDMjAuNjIyMiAxNi44MTI1IDIxIDE2LjQzNDcgMjEgMTUuOTY4N1YxNS40MDYyQzIxIDE0Ljk0MDIgMjAuNjIyMiAxNC41NjI1IDIwLjE1NjIgMTQuNTYyNVoiIGZpbGw9IiMwMDIyMzMiLz4KPC9zdmc+Cg==" width="24" height="24" alt="">
                     </div>
                     <div class="overview-timeline-line"></div>
                   </div>
@@ -4168,41 +4024,6 @@
             </div>
           </section>
 
-          <!-- Etiquetas -->
-          <section class="overview-card" data-accordion id="profile-tags-card">
-            <button type="button" class="overview-accordion-head" aria-expanded="true">
-              <span class="overview-accordion-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11.8787V5.5C4 4.67156 4.67156 4 5.5 4H11.8787C12.2765 4 12.658 4.15804 12.9393 4.43934L19.5607 11.0607C20.1464 11.6464 20.1464 12.5962 19.5607 13.182L13.182 19.5607C12.5962 20.1464 11.6464 20.1464 11.0607 19.5607L4.43934 12.9393C4.15804 12.658 4 12.2765 4 11.8787V11.8787ZM7.5 6C6.67156 6 6 6.67156 6 7.5C6 8.32844 6.67156 9 7.5 9C8.32844 9 9 8.32844 9 7.5C9 6.67156 8.32844 6 7.5 6Z"/></svg>
-              </span>
-              <span class="overview-accordion-title">Etiquetas</span>
-              <img class="overview-accordion-chevron" src="./painel-visao/chevron-up.svg" width="24" height="24" alt="">
-            </button>
-            <div class="overview-card-body profile-tags-card-body">
-              <div class="profile-tags-autocomplete" id="profile-tags-autocomplete">
-                <div class="profile-tags-input-shell" id="profile-tags-input-shell">
-                  <input
-                    class="profile-tags-autocomplete-input"
-                    id="profile-tags-input"
-                    type="text"
-                    placeholder="Selecione ou crie uma etiqueta"
-                    autocomplete="off"
-                    role="combobox"
-                    aria-autocomplete="list"
-                    aria-controls="profile-tags-dropdown"
-                    aria-expanded="false"
-                  >
-                  <button class="profile-tags-autocomplete-caret" id="profile-tags-caret" type="button" aria-label="Abrir lista de etiquetas" tabindex="-1">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M11.5337 15.0892L6.19317 9.74874C5.93561 9.49117 5.93561 9.07359 6.19317 8.81605L6.81605 8.19317C7.07318 7.93604 7.48991 7.93555 7.74764 8.19207L12 12.4245L16.2524 8.19207C16.5101 7.93555 16.9268 7.93604 17.1839 8.19317L17.8068 8.81605C18.0644 9.07362 18.0644 9.4912 17.8068 9.74874L12.4663 15.0892C12.2088 15.3468 11.7912 15.3468 11.5337 15.0892Z"/></svg>
-                  </button>
-                </div>
-                <div class="profile-tags-dropdown" id="profile-tags-dropdown" role="listbox" aria-label="Etiquetas disponíveis"></div>
-              </div>
-              <div class="profile-tags-added-title">Últimas etiquetas adicionadas</div>
-              <div class="profile-tags-selected" id="profile-tags-selected" aria-live="polite"></div>
-              <button type="button" class="overview-btn-secondary profile-tags-view-all" id="profile-tags-view-all">Ver todas as etiquetas</button>
-            </div>
-          </section>
-
           <!-- Negociações -->
           <section class="overview-card is-collapsed" data-accordion>
             <button type="button" class="overview-accordion-head" aria-expanded="false">
@@ -4210,46 +4031,81 @@
                 <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 9.7915C9.5 9.99869 9.33219 10.1665 9.125 10.1665H6.875C6.66781 10.1665 6.5 9.99869 6.5 9.7915V8.6665H2V12.0415C2 12.6415 2.525 13.1665 3.125 13.1665H12.875C13.475 13.1665 14 12.6415 14 12.0415V8.6665H9.5V9.7915ZM12.875 4.9165H11V3.7915C11 3.1915 10.475 2.6665 9.875 2.6665H6.125C5.525 2.6665 5 3.1915 5 3.7915V4.9165H3.125C2.525 4.9165 2 5.4415 2 6.0415V7.9165H14V6.0415C14 5.4415 13.475 4.9165 12.875 4.9165ZM9.5 4.9165H6.5V4.1665H9.5V4.9165Z"/></svg>
               </span>
               <span class="overview-accordion-title">Negociações</span>
-              <img class="overview-accordion-chevron" src="./painel-visao/chevron-up.svg" width="24" height="24" alt="">
+              <img class="overview-accordion-chevron" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjQ2NjMgNy45MTA3NUwxNy44MDY4IDEzLjI1MTNDMTguMDY0NCAxMy41MDg4IDE4LjA2NDQgMTMuOTI2NCAxNy44MDY4IDE0LjE4MzlMMTcuMTgzOSAxNC44MDY4QzE2LjkyNjggMTUuMDY0IDE2LjUxMDEgMTUuMDY0NSAxNi4yNTI0IDE0LjgwNzlMMTIgMTAuNTc1NUw3Ljc0NzY1IDE0LjgwNzlDNy40ODk5MSAxNS4wNjQ1IDcuMDczMTggMTUuMDY0IDYuODE2MDYgMTQuODA2OEw2LjE5MzE4IDE0LjE4MzlDNS45MzU2MSAxMy45MjY0IDUuOTM1NjEgMTMuNTA4OCA2LjE5MzE4IDEzLjI1MTNMMTEuNTMzNyA3LjkxMDc4QzExLjc5MTIgNy42NTMyMSAxMi4yMDg4IDcuNjUzMjEgMTIuNDY2MyA3LjkxMDc1WiIgZmlsbD0iIzU5NkI3QSIvPgo8L3N2Zz4K" width="24" height="24" alt="">
             </button>
             <div class="overview-card-body">
-              <label class="overview-deals-search">
-                <input class="overview-deals-search-input" type="search" placeholder="Buscar" aria-label="Buscar negociações">
-                <span class="overview-deals-search-icon" aria-hidden="true">
-                  <img src="./painel-visao/loupe.svg" width="20" height="20" alt="">
-                </span>
-              </label>
               <div class="overview-deals-list">
-                <article class="overview-deal-item">
-                  <div class="overview-deal-head">
-                    <a class="overview-deal-name" href="#">Locação mensal - Movida Flex SUV</a>
-                    <button type="button" class="overview-deal-more" aria-label="Mais opções">
-                      <img src="./painel-visao/elipsis-v-24.svg" width="24" height="24" alt="">
-                    </button>
+                <div class="overview-deal-item">
+                  <div class="overview-deal-main">
+                    <span class="overview-deal-name">Nome da negociação</span>
+                    <span class="overview-deal-aux">Não há tarefas</span>
                   </div>
-                  <div class="overview-deal-fields">
-                    <p><strong>Valor: </strong>R$30.200,00/mês</p>
-                    <p><strong>Responsável: </strong>Fernanda Lima</p>
-                    <p><strong>Funil: </strong>Locação Pessoa Física</p>
+                  <span class="overview-deal-value">R$ 2.500,00</span>
+                </div>
+                <div class="overview-deal-item">
+                  <div class="overview-deal-main">
+                    <span class="overview-deal-name">Nome da negociação</span>
+                    <span class="overview-deal-aux">Há 3 tarefas pendentes</span>
                   </div>
-                  <span class="overview-deal-tag">Proposta enviada</span>
-                </article>
-                <article class="overview-deal-item">
-                  <div class="overview-deal-head">
-                    <a class="overview-deal-name" href="#">Locação anual - Movida entrerprise</a>
-                    <button type="button" class="overview-deal-more" aria-label="Mais opções">
-                      <img src="./painel-visao/elipsis-v-24.svg" width="24" height="24" alt="">
-                    </button>
+                  <span class="overview-deal-value">R$ 2.500,00</span>
+                </div>
+                <div class="overview-deal-item">
+                  <div class="overview-deal-main">
+                    <span class="overview-deal-name">Nome da negociação</span>
+                    <span class="overview-deal-aux">Não há tarefas</span>
                   </div>
-                  <div class="overview-deal-fields">
-                    <p><strong>Valor: </strong>R$56.570,00/mês</p>
-                    <p><strong>Responsável: </strong>Maria da Gloria</p>
-                    <p><strong>Funil: </strong>Locação Pessoa Jurídica</p>
+                  <span class="overview-deal-value">R$ 2.500,00</span>
+                </div>
+                <div class="overview-deal-item">
+                  <div class="overview-deal-main">
+                    <span class="overview-deal-name">Nome da negociação</span>
+                    <span class="overview-deal-aux">Não há tarefas</span>
                   </div>
-                  <span class="overview-deal-tag">Proposta enviada</span>
-                </article>
+                  <span class="overview-deal-value">R$ 2.500,00</span>
+                </div>
+                <div class="overview-deal-item">
+                  <div class="overview-deal-main">
+                    <span class="overview-deal-name">Nome da negociação</span>
+                    <span class="overview-deal-aux">Não há tarefas</span>
+                  </div>
+                  <span class="overview-deal-value">R$ 2.500,00</span>
+                </div>
+                <div class="overview-deal-item">
+                  <div class="overview-deal-main">
+                    <span class="overview-deal-name">Nome da negociação</span>
+                    <span class="overview-deal-aux">Não há tarefas</span>
+                  </div>
+                  <span class="overview-deal-value">R$ 2.500,00</span>
+                </div>
+                <div class="overview-deal-item">
+                  <div class="overview-deal-main">
+                    <span class="overview-deal-name">Nome da negociação</span>
+                    <span class="overview-deal-aux">Há 5 tarefas pendentes</span>
+                  </div>
+                  <span class="overview-deal-value">R$ 2.500,00</span>
+                </div>
+                <div class="overview-deal-item">
+                  <div class="overview-deal-main">
+                    <span class="overview-deal-name">Nome da negociação</span>
+                    <span class="overview-deal-aux">Há 1 tarefa atrasada</span>
+                  </div>
+                  <span class="overview-deal-value">R$ 2.500,00</span>
+                </div>
+                <div class="overview-deal-item">
+                  <div class="overview-deal-main">
+                    <span class="overview-deal-name">Nome da negociação</span>
+                    <span class="overview-deal-aux">Não há tarefas</span>
+                  </div>
+                  <span class="overview-deal-value">R$ 2.500,00</span>
+                </div>
+                <div class="overview-deal-item">
+                  <div class="overview-deal-main">
+                    <span class="overview-deal-name">Nome da negociação</span>
+                    <span class="overview-deal-aux">Não há tarefas</span>
+                  </div>
+                  <span class="overview-deal-value">R$ 2.500,00</span>
+                </div>
               </div>
-              <button type="button" class="overview-btn-secondary">Criar uma nova negociação</button>
             </div>
           </section>
 
@@ -4260,7 +4116,7 @@
                 <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M13.0477 13.25H12.5715V2.5625C12.5715 2.25184 12.3157 2 12.0001 2H4.00008C3.68449 2 3.42865 2.25184 3.42865 2.5625V13.25H2.95246C2.79468 13.25 2.66675 13.3759 2.66675 13.5312V14H13.3334V13.5312C13.3334 13.3759 13.2055 13.25 13.0477 13.25ZM5.71437 3.78125C5.71437 3.62593 5.8423 3.5 6.00008 3.5H6.95246C7.11025 3.5 7.23818 3.62593 7.23818 3.78125V4.71875C7.23818 4.87407 7.11025 5 6.95246 5H6.00008C5.8423 5 5.71437 4.87407 5.71437 4.71875V3.78125ZM5.71437 6.03125C5.71437 5.87593 5.8423 5.75 6.00008 5.75H6.95246C7.11025 5.75 7.23818 5.87593 7.23818 6.03125V6.96875C7.23818 7.12407 7.11025 7.25 6.95246 7.25H6.00008C5.8423 7.25 5.71437 7.12407 5.71437 6.96875V6.03125ZM6.95246 9.5H6.00008C5.8423 9.5 5.71437 9.37407 5.71437 9.21875V8.28125C5.71437 8.12593 5.8423 8 6.00008 8H6.95246C7.11025 8 7.23818 8.12593 7.23818 8.28125V9.21875C7.23818 9.37407 7.11025 9.5 6.95246 9.5ZM8.76199 13.25H7.23818V11.2812C7.23818 11.1259 7.36611 11 7.52389 11H8.47627C8.63406 11 8.76199 11.1259 8.76199 11.2812V13.25ZM10.2858 9.21875C10.2858 9.37407 10.1579 9.5 10.0001 9.5H9.0477C8.88991 9.5 8.76199 9.37407 8.76199 9.21875V8.28125C8.76199 8.12593 8.88991 8 9.0477 8H10.0001C10.1579 8 10.2858 8.12593 10.2858 8.28125V9.21875ZM10.2858 6.96875C10.2858 7.12407 10.1579 7.25 10.0001 7.25H9.0477C8.88991 7.25 8.76199 7.12407 8.76199 6.96875V6.03125C8.76199 5.87593 8.88991 5.75 9.0477 5.75H10.0001C10.1579 5.75 10.2858 5.87593 10.2858 6.03125V6.96875ZM10.2858 4.71875C10.2858 4.87407 10.1579 5 10.0001 5H9.0477C8.88991 5 8.76199 4.87407 8.76199 4.71875V3.78125C8.76199 3.62593 8.88991 3.5 9.0477 3.5H10.0001C10.1579 3.5 10.2858 3.62593 10.2858 3.78125V4.71875Z"/></svg>
               </span>
               <span class="overview-accordion-title">Empresa</span>
-              <img class="overview-accordion-chevron" src="./painel-visao/chevron-up.svg" width="24" height="24" alt="">
+              <img class="overview-accordion-chevron" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjQ2NjMgNy45MTA3NUwxNy44MDY4IDEzLjI1MTNDMTguMDY0NCAxMy41MDg4IDE4LjA2NDQgMTMuOTI2NCAxNy44MDY4IDE0LjE4MzlMMTcuMTgzOSAxNC44MDY4QzE2LjkyNjggMTUuMDY0IDE2LjUxMDEgMTUuMDY0NSAxNi4yNTI0IDE0LjgwNzlMMTIgMTAuNTc1NUw3Ljc0NzY1IDE0LjgwNzlDNy40ODk5MSAxNS4wNjQ1IDcuMDczMTggMTUuMDY0IDYuODE2MDYgMTQuODA2OEw2LjE5MzE4IDE0LjE4MzlDNS45MzU2MSAxMy45MjY0IDUuOTM1NjEgMTMuNTA4OCA2LjE5MzE4IDEzLjI1MTNMMTEuNTMzNyA3LjkxMDc4QzExLjc5MTIgNy42NTMyMSAxMi4yMDg4IDcuNjUzMjEgMTIuNDY2MyA3LjkxMDc1WiIgZmlsbD0iIzU5NkI3QSIvPgo8L3N2Zz4K" width="24" height="24" alt="">
             </button>
             <div class="overview-card-body">
               <div id="overview-companies-list"></div>
@@ -4269,27 +4125,6 @@
           </section>
         </div>
       </div>
-
-<div class="drawer" id="drawer-edit-tags" role="dialog" aria-modal="false" aria-label="Editar etiquetas">
-  <div class="drawer-header">
-    <span class="drawer-title" id="tags-drawer-title">Editar etiquetas</span>
-    <button class="drawer-close" id="tags-drawer-close-btn" title="Fechar" type="button">
-      <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-    </button>
-  </div>
-  <div class="drawer-body">
-    <div class="drawer-field" id="tags-drawer-picker-host">
-      <label class="drawer-label" for="dc-tag-input">Etiquetas</label>
-    </div>
-    <div id="tags-drawer-form-error" class="drawer-error" style="display:none"></div>
-  </div>
-  <div class="drawer-footer">
-    <div class="drawer-actions">
-      <button class="drawer-btn-cancel" id="tags-drawer-cancel-btn" type="button">Cancelar</button>
-      <button class="drawer-btn-save" id="tags-drawer-save-btn" type="button">Salvar etiquetas</button>
-    </div>
-  </div>
-</div>
 
 <!-- ─── PAINEL / DRAWER: EDITAR CONTATO ───────────── -->
 <div class="drawer" id="drawer-add-contact" role="dialog" aria-modal="false" aria-label="Detalhes do contato">
@@ -4400,6 +4235,7 @@
       <div class="drawer-field" id="dc-tags-field">
         <label class="drawer-label" for="dc-tag-input">Tags</label>
         <div class="tag-picker" id="dc-tag-picker">
+          <div class="tag-picker-chips" id="dc-tag-chips"></div>
           <div class="tag-picker-input-wrap">
             <div class="tag-picker-search">
               <input class="tag-picker-input" id="dc-tag-input" type="text" placeholder="Buscar ou criar tag..." autocomplete="off">
@@ -4407,9 +4243,12 @@
                 <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
               </span>
             </div>
-            <div class="tag-picker-dropdown" id="dc-tag-dropdown" role="listbox" aria-label="Tags disponíveis"></div>
+            <div class="tag-picker-dropdown" id="dc-tag-dropdown">
+              <button type="button" class="tag-picker-create" id="dc-tag-create-btn">Criar nova tag</button>
+              <div class="tag-picker-divider"></div>
+              <div class="tag-picker-options" id="dc-tag-options"></div>
+            </div>
           </div>
-          <div class="tag-picker-chips" id="dc-tag-chips"></div>
         </div>
       </div>
 
@@ -4825,14 +4664,1357 @@
   </div>
 </div>
 
-<script src="legal-basis-picker.js"></script>
-<script src="../shared/tag-create-form.js"></script>
-<script src="tag-picker.js"></script>
-<script src="../shared/profile-tags-card.js"></script>
-<script src="../shared/profile-tags-panel.js"></script>
-<script src="empresa-autocomplete.js"></script>
-<script src="../shared/contact-delete-modal.js"></script>
-<script src="../perfil/profile-more-menu.js?v=20260901-menu-3"></script>
+<script>
+(function() {
+  const OPTIONS = [
+    {
+      key: 'consentimento',
+      label: 'Consentimento',
+      description: 'Quando uma pessoa consente o tratamento dos seus dados, de forma livre, inequívoca e informada.',
+    },
+    {
+      key: 'legitimo_interesse',
+      label: 'Legítimo interesse',
+      description: 'O uso de dados pessoais é alinhado às expectativas da pessoa, sem a necessidade de consentimento.',
+    },
+    {
+      key: 'contrato_pre_existente',
+      label: 'Contrato pré-existente',
+      description: 'O processamento de dados pessoais é feito por obrigação contratual ou para validar e iniciar um acordo.',
+    },
+    {
+      key: 'obrigacao_legal',
+      label: 'Obrigação Legal',
+      description: 'O uso de dados pessoais é justificável por lei em casos de obrigação legal, processo judicial ou proteção ao crédito.',
+    },
+    {
+      key: 'interesse_vital',
+      label: 'Interesse vital ou Tutela da saúde',
+      description: 'O uso de dados pessoais é feito com intuito de proteger a vida, seja do titular do dado ou de outra pessoa.',
+    },
+    {
+      key: 'interesse_publico',
+      label: 'Interesse público',
+      description: 'O uso de dados pessoais é assegurado pelo interesse público ou por necessidade de autoridade oficial.',
+    },
+    {
+      key: 'comunicacao_direta',
+      label: 'Comunicação direta',
+      description: 'O uso de dados pessoais é voltado para estabelecer contato direto com a pessoa, para fins de suporte, avisos importantes ou atualizações.',
+    },
+    {
+      key: 'nao_possuo',
+      label: 'Não sei dizer / Não possuo Base Legal',
+      dividerBefore: true,
+    },
+  ];
+
+  const CHANNELS = [
+    { key: 'email', label: 'Comunicação via E-mail' },
+    { key: 'whatsapp', label: 'Comunicação via WhatsApp' },
+    { key: 'sms', label: 'Comunicação via SMS' },
+    { key: 'telegram', label: 'Comunicação via Telegram' },
+    { key: 'facebook', label: 'Comunicação via Facebook' },
+    { key: 'messenger', label: 'Comunicação via Messenger' },
+    { key: 'comunicacao_direta', label: 'Comunicações direta' },
+  ];
+
+  const removeIcon = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+
+  let activeDropdown = null;
+  let dropdownMaxHeight = null;
+
+  function buildDropdownHtml() {
+    return OPTIONS.map(opt => {
+      const divider = opt.dividerBefore ? '<div class="legal-select-divider" role="separator"></div>' : '';
+      const desc = opt.description ? `<div class="legal-select-item-desc">${opt.description}</div>` : '';
+      const richClass = opt.description ? ' legal-select-item--rich' : '';
+      return `${divider}<div class="legal-select-item${richClass}" role="option" data-value="${opt.key}" tabindex="-1">
+        <div class="legal-select-item-title">${opt.label}</div>${desc}
+      </div>`;
+    }).join('');
+  }
+
+  function buildCanalDropdownHtml(selectedCanal, usedCanals) {
+    return CHANNELS.map(ch => {
+      const disabled = ch.key !== selectedCanal && usedCanals.has(ch.key);
+      const disabledClass = disabled ? ' legal-select-item--disabled' : '';
+      const ariaDisabled = disabled ? ' aria-disabled="true"' : '';
+      return `<div class="legal-select-item${disabledClass}" role="option" data-value="${ch.key}" tabindex="-1"${ariaDisabled}>
+        <div class="legal-select-item-title">${ch.label}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function measureDropdownMaxHeight(scrollEl) {
+    const richItem = scrollEl.querySelector('.legal-select-item--rich');
+    if (!richItem) return 200;
+    return Math.ceil(richItem.offsetHeight * 2.5);
+  }
+
+  function measureCanalDropdownMaxHeight(scrollEl) {
+    const item = scrollEl.querySelector('.legal-select-item');
+    if (!item) return 280;
+    return Math.ceil(item.offsetHeight * CHANNELS.length);
+  }
+
+  function closeActiveDropdown() {
+    if (!activeDropdown) return;
+    activeDropdown.dropdown.classList.remove('open');
+    activeDropdown.trigger.setAttribute('aria-expanded', 'false');
+    activeDropdown = null;
+  }
+
+  function ensureDropdownMaxHeight(rootEl) {
+    if (dropdownMaxHeight) return dropdownMaxHeight;
+    const firstScroll = rootEl?.querySelector('.legal-select:not(.legal-canal-select) .legal-select-dropdown-scroll');
+    if (!firstScroll) return 200;
+    const dropdown = firstScroll.parentElement;
+    dropdown.classList.add('open');
+    dropdown.style.visibility = 'hidden';
+    dropdownMaxHeight = measureDropdownMaxHeight(firstScroll) || 200;
+    dropdown.classList.remove('open');
+    dropdown.style.visibility = '';
+    rootEl.querySelectorAll('.legal-select:not(.legal-canal-select) .legal-select-dropdown-scroll').forEach(el => {
+      el.style.maxHeight = dropdownMaxHeight + 'px';
+    });
+    return dropdownMaxHeight;
+  }
+
+  function setLegalSelectValue(wrap, value) {
+    const trigger = wrap.querySelector('.legal-select-trigger');
+    const valueEl = wrap.querySelector('.legal-select-value');
+    const hidden  = wrap.querySelector('input[type="hidden"]');
+    const option  = OPTIONS.find(o => o.key === value);
+
+    if (hidden) hidden.value = value || '';
+    if (option) {
+      valueEl.textContent = option.label;
+      valueEl.classList.remove('is-placeholder');
+    } else {
+      valueEl.textContent = 'Selecione uma opção';
+      valueEl.classList.add('is-placeholder');
+    }
+    if (trigger) trigger.setAttribute('aria-expanded', 'false');
+  }
+
+  function setCanalSelectValue(wrap, value) {
+    const trigger = wrap.querySelector('.legal-select-trigger');
+    const valueEl = wrap.querySelector('.legal-select-value');
+    const hidden  = wrap.querySelector('.dc-legal-canal');
+    const channel = CHANNELS.find(c => c.key === value);
+
+    if (hidden) hidden.value = value || '';
+    if (channel) {
+      valueEl.textContent = channel.label;
+      valueEl.classList.remove('is-placeholder');
+    } else {
+      valueEl.textContent = 'Selecione um canal';
+      valueEl.classList.add('is-placeholder');
+    }
+    if (trigger) trigger.setAttribute('aria-expanded', 'false');
+  }
+
+  function initLegalSelect(wrap, rootEl) {
+    const trigger  = wrap.querySelector('.legal-select-trigger');
+    const dropdown = document.createElement('div');
+    dropdown.className = 'legal-select-dropdown';
+    dropdown.setAttribute('role', 'listbox');
+    dropdown.innerHTML = `<div class="legal-select-dropdown-scroll">${buildDropdownHtml()}</div>`;
+    wrap.appendChild(dropdown);
+
+    trigger.addEventListener('click', e => {
+      e.stopPropagation();
+      ensureDropdownMaxHeight(rootEl || document);
+      const isOpen = activeDropdown && activeDropdown.wrap === wrap;
+      closeActiveDropdown();
+      if (!isOpen) {
+        dropdown.classList.add('open');
+        trigger.setAttribute('aria-expanded', 'true');
+        activeDropdown = { wrap, trigger, dropdown };
+      }
+    });
+
+    dropdown.querySelectorAll('.legal-select-item').forEach(item => {
+      item.addEventListener('mousedown', e => {
+        e.preventDefault();
+        setLegalSelectValue(wrap, item.dataset.value);
+        dropdown.classList.remove('open');
+        activeDropdown = null;
+      });
+    });
+  }
+
+  function bindCanalDropdownItems(canalWrap, row, picker) {
+    const dropdown = canalWrap.querySelector('.legal-select-dropdown');
+    if (!dropdown || dropdown._canalBound) return;
+
+    dropdown.addEventListener('mousedown', e => {
+      const item = e.target.closest('.legal-select-item:not(.legal-select-item--disabled)');
+      if (!item || !dropdown.contains(item)) return;
+      e.preventDefault();
+      setCanalSelectValue(canalWrap, item.dataset.value);
+      dropdown.classList.remove('open');
+      activeDropdown = null;
+      const basisWrap = row.querySelector('.legal-basis-select');
+      if (basisWrap) basisWrap.dataset.canal = item.dataset.value;
+      picker._refreshCanalOptions();
+    });
+    dropdown._canalBound = true;
+  }
+
+  function renderCanalDropdown(canalWrap, row, usedCanals) {
+    const current = canalWrap.querySelector('.dc-legal-canal')?.value || '';
+    let dropdown = canalWrap.querySelector('.legal-select-dropdown');
+    if (!dropdown) {
+      dropdown = document.createElement('div');
+      dropdown.className = 'legal-select-dropdown';
+      dropdown.setAttribute('role', 'listbox');
+      canalWrap.appendChild(dropdown);
+    }
+
+    dropdown.innerHTML = `<div class="legal-select-dropdown-scroll">${buildCanalDropdownHtml(current, usedCanals)}</div>`;
+    const scroll = dropdown.querySelector('.legal-select-dropdown-scroll');
+    if (scroll) {
+      dropdown.classList.add('open');
+      dropdown.style.visibility = 'hidden';
+      scroll.style.maxHeight = measureCanalDropdownMaxHeight(scroll) + 'px';
+      dropdown.classList.remove('open');
+      dropdown.style.visibility = '';
+    }
+    return dropdown;
+  }
+
+  function initCanalSelect(canalWrap, row, rootEl, picker) {
+    const trigger = canalWrap.querySelector('.legal-select-trigger');
+    renderCanalDropdown(canalWrap, row, picker._getUsedCanals(row));
+    bindCanalDropdownItems(canalWrap, row, picker);
+
+    if (!trigger._canalBound) {
+      trigger.addEventListener('click', e => {
+        e.stopPropagation();
+        picker._refreshCanalDropdown(canalWrap, row);
+        const dropdown = canalWrap.querySelector('.legal-select-dropdown');
+        const isOpen = activeDropdown && activeDropdown.wrap === canalWrap;
+        closeActiveDropdown();
+        if (!isOpen) {
+          dropdown.classList.add('open');
+          trigger.setAttribute('aria-expanded', 'true');
+          activeDropdown = { wrap: canalWrap, trigger, dropdown };
+        }
+      });
+      trigger._canalBound = true;
+    }
+  }
+
+  window.__legalBasisPicker = {
+    OPTIONS,
+    CHANNELS,
+    buildDropdownHtml,
+    measureDropdownMaxHeight,
+    closeActiveDropdown,
+    ensureDropdownMaxHeight,
+    setLegalSelectValue,
+    setCanalSelectValue,
+    initLegalSelect,
+    initCanalSelect,
+
+    _db: null,
+    _container: null,
+    _addBtn: null,
+    _bound: false,
+
+    init(db) {
+      this._db = db;
+      this._container = document.getElementById('dc-legal-basis-container');
+      this._addBtn = document.getElementById('dc-add-legal-basis-btn');
+      if (!this._container) return;
+      if (!this._bound) {
+        this._bindEvents();
+        this._bound = true;
+      }
+      this.reset();
+    },
+
+    _bindEvents() {
+      if (this._addBtn) {
+        this._addBtn.addEventListener('click', () => this.addRow());
+      }
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.legal-select')) closeActiveDropdown();
+      });
+    },
+
+    _getUsedCanals(excludeRow) {
+      const used = new Set();
+      this._container.querySelectorAll('.legal-basis-card').forEach(row => {
+        if (row === excludeRow) return;
+        const canal = row.querySelector('.dc-legal-canal')?.value;
+        if (canal) used.add(canal);
+      });
+      return used;
+    },
+
+    _refreshCanalDropdown(canalWrap, row) {
+      const wasOpen = activeDropdown && activeDropdown.wrap === canalWrap;
+      renderCanalDropdown(canalWrap, row, this._getUsedCanals(row));
+      bindCanalDropdownItems(canalWrap, row, this);
+      if (wasOpen) {
+        const dropdown = canalWrap.querySelector('.legal-select-dropdown');
+        const trigger = canalWrap.querySelector('.legal-select-trigger');
+        dropdown?.classList.add('open');
+        trigger?.setAttribute('aria-expanded', 'true');
+        activeDropdown = { wrap: canalWrap, trigger, dropdown };
+      }
+    },
+
+    _refreshCanalOptions() {
+      this._container.querySelectorAll('.legal-basis-card').forEach(row => {
+        const canalWrap = row.querySelector('.legal-canal-select');
+        if (!canalWrap) return;
+        const current = canalWrap.querySelector('.dc-legal-canal')?.value || '';
+        this._refreshCanalDropdown(canalWrap, row);
+        const basisWrap = row.querySelector('.legal-basis-select');
+        if (basisWrap) basisWrap.dataset.canal = current;
+      });
+      this._updateAddButton();
+    },
+
+    _updateAddButton() {
+      if (!this._addBtn) return;
+      const count = this._container.querySelectorAll('.legal-basis-card').length;
+      this._addBtn.style.display = count >= CHANNELS.length ? 'none' : '';
+    },
+
+    _createRow(canal, baseLegal, removable) {
+      const row = document.createElement('div');
+      row.className = 'legal-basis-card';
+      row.innerHTML = `
+        <div class="legal-select legal-canal-select">
+          <button type="button" class="legal-select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Canal de comunicação">
+            <span class="legal-select-value is-placeholder">Selecione um canal</span>
+            <svg class="legal-select-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5z"/></svg>
+          </button>
+          <input type="hidden" class="dc-legal-canal" value="">
+        </div>
+        <div class="legal-select legal-basis-select" data-canal="">
+          <button type="button" class="legal-select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Base legal">
+            <span class="legal-select-value is-placeholder">Selecione uma opção</span>
+            <svg class="legal-select-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5z"/></svg>
+          </button>
+          <input type="hidden" value="">
+        </div>
+        ${removable ? `<button type="button" class="legal-basis-remove-btn" title="Remover" aria-label="Remover canal">${removeIcon}<span>Remover</span></button>` : ''}`;
+
+      const canalWrap = row.querySelector('.legal-canal-select');
+      initCanalSelect(canalWrap, row, this._container, this);
+
+      if (removable) {
+        row.querySelector('.legal-basis-remove-btn').addEventListener('click', () => {
+          row.remove();
+          this._refreshCanalOptions();
+        });
+      }
+
+      const legalWrap = row.querySelector('.legal-basis-select');
+      initLegalSelect(legalWrap, this._container);
+
+      if (canal) {
+        setCanalSelectValue(canalWrap, canal);
+        legalWrap.dataset.canal = canal;
+      }
+      if (baseLegal) setLegalSelectValue(legalWrap, baseLegal);
+
+      return row;
+    },
+
+    addRow(canal, baseLegal) {
+      const row = this._createRow(canal, baseLegal, true);
+      this._container.appendChild(row);
+      this._refreshCanalOptions();
+      return row;
+    },
+
+    reset() {
+      closeActiveDropdown();
+      if (!this._container) return;
+      this._container.innerHTML = '';
+      this._container.appendChild(this._createRow('', '', false));
+      this._refreshCanalOptions();
+    },
+
+    setRows(rows) {
+      closeActiveDropdown();
+      if (!this._container) return;
+      this._container.innerHTML = '';
+      const items = (rows || []).filter(r => r && r.canal);
+      if (!items.length) {
+        this._container.appendChild(this._createRow('', '', false));
+      } else {
+        items.forEach(item => {
+          this._container.appendChild(this._createRow(item.canal, item.base_legal || '', items.length > 1));
+        });
+      }
+      this._refreshCanalOptions();
+    },
+
+    _getContainer() {
+      return document.getElementById('dc-legal-basis-container') || this._container;
+    },
+
+    collectRows() {
+      const container = this._getContainer();
+      if (!container) return [];
+      const rows = [];
+      container.querySelectorAll('.legal-basis-card').forEach(row => {
+        const canal = row.querySelector('.dc-legal-canal')?.value || '';
+        const baseLegal = row.querySelector('.legal-basis-select input[type="hidden"]')?.value || '';
+        if (canal && baseLegal) rows.push({ canal, base_legal: baseLegal });
+      });
+      return rows;
+    },
+
+    async loadForContact(contactId) {
+      const db = this._db || window.__sbClient;
+      if (!contactId || !db) {
+        this.reset();
+        return;
+      }
+      const { data, error } = await db
+        .from('claude_contato_bases_legais')
+        .select('canal, base_legal, status')
+        .eq('contato_id', contactId)
+        .eq('status', 'opt_in');
+
+      if (error) {
+        this.reset();
+        return;
+      }
+
+      const rows = (data || [])
+        .filter(r => r.base_legal)
+        .sort((a, b) => {
+          const ai = CHANNELS.findIndex(c => c.key === a.canal);
+          const bi = CHANNELS.findIndex(c => c.key === b.canal);
+          return ai - bi;
+        });
+
+      this.setRows(rows);
+    },
+
+    async saveForContact(contactId) {
+      const db = this._db || window.__sbClient;
+      if (!contactId || !db) return null;
+
+      const rows = this.collectRows();
+      const canalKeys = new Set(rows.map(r => r.canal));
+      const now = new Date().toISOString();
+
+      const { data: existing, error: fetchError } = await db
+        .from('claude_contato_bases_legais')
+        .select('canal')
+        .eq('contato_id', contactId);
+      if (fetchError) return fetchError;
+
+      const toRemove = (existing || [])
+        .map(r => r.canal)
+        .filter(canal => !canalKeys.has(canal));
+
+      for (const canal of toRemove) {
+        const { error: delError } = await db
+          .from('claude_contato_bases_legais')
+          .delete()
+          .eq('contato_id', contactId)
+          .eq('canal', canal);
+        if (delError) return delError;
+      }
+
+      if (!rows.length) return null;
+
+      const { error: upsertError } = await db
+        .from('claude_contato_bases_legais')
+        .upsert(
+          rows.map(r => ({
+            contato_id: contactId,
+            canal: r.canal,
+            status: 'opt_in',
+            base_legal: r.base_legal,
+            atualizado_em: now,
+          })),
+          { onConflict: 'contato_id,canal' }
+        );
+      return upsertError;
+    },
+  };
+})();
+
+</script>
+<script>
+(function() {
+  const TAG_COLORS = ['#E60F57','#0077B2','#FF9800','#6C63FF','#00897B','#9C27B0','#D32F2F','#43A047','#00ACC1','#FFB300','#795548','#3F51B5','#607D8B'];
+  const PRODUCTS = ['RD Marketing', 'RD Atendimento', 'RD Vendas'];
+  const PRODUCT_LABELS = { vendas: 'RD Vendas', marketing: 'RD Marketing', conversas: 'RD Atendimento' };
+
+  function escHtml(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function normalizeLabel(label) {
+    return String(label || '').trim().toLocaleLowerCase('pt-BR');
+  }
+
+  function inferProduct(label) {
+    const normalized = normalizeLabel(label);
+    if (['campeão', 'evento', 'nutrição', 'reativação', 'trial'].includes(normalized)) return 'RD Marketing';
+    if (['churn', 'detrator'].includes(normalized)) return 'RD Atendimento';
+    return 'RD Vendas';
+  }
+
+  function withProduct(tag) {
+    return tag ? { ...tag, produto: tag.produto || inferProduct(tag.label) } : tag;
+  }
+
+  function getCurrentProduct() {
+    const productId = document.getElementById('products-menu')?.dataset.currentProduct || 'vendas';
+    return PRODUCT_LABELS[productId] || 'RD Vendas';
+  }
+
+  window.__tagPicker = {
+    _db: null,
+    _allTags: [],
+    _selected: new Map(),
+    _loaded: false,
+
+    init(db) {
+      this._db = db;
+      this._bindEvents();
+    },
+
+    async ensureTagsLoaded() {
+      if (this._loaded || !this._db) return;
+      let { data, error } = await this._db
+        .from('claude_tags')
+        .select('id,label,color,produto')
+        .order('produto')
+        .order('label');
+      if (error?.code === '42703') {
+        const fallback = await this._db.from('claude_tags').select('id,label,color').order('label');
+        data = fallback.data;
+        error = fallback.error;
+      }
+      if (!error && data) {
+        this._allTags = data.map(withProduct);
+        this._loaded = true;
+      }
+    },
+
+    reset() {
+      this._selected.clear();
+      this._renderChips();
+      const input = document.getElementById('dc-tag-input');
+      if (input) input.value = '';
+      this._closeDropdown();
+    },
+
+    setSelected(tags) {
+      this._selected.clear();
+      (tags || []).forEach(tag => {
+        if (tag && tag.id) {
+          const id = String(tag.id);
+          this._selected.set(id, { id, label: tag.label, color: tag.color, produto: tag.produto });
+        }
+      });
+      this._renderChips();
+    },
+
+    getSelectedIds() {
+      return [...this._selected.keys()];
+    },
+
+    getSelectedTags() {
+      return [...this._selected.values()];
+    },
+
+    async loadForContact(contactId) {
+      await this.ensureTagsLoaded();
+      if (!contactId || !this._db) {
+        this.reset();
+        return;
+      }
+      let { data, error } = await this._db
+        .from('claude_contato_tags')
+        .select('tag_id, claude_tags(id, label, color, produto)')
+        .eq('contato_id', contactId);
+      if (error?.code === '42703') {
+        const fallback = await this._db
+          .from('claude_contato_tags')
+          .select('tag_id, claude_tags(id, label, color)')
+          .eq('contato_id', contactId);
+        data = fallback.data;
+        error = fallback.error;
+      }
+      if (error) {
+        this.reset();
+        return;
+      }
+      const tags = (data || []).map(row => withProduct(row.claude_tags)).filter(Boolean);
+      this.setSelected(tags);
+    },
+
+    async saveForContact(contactId) {
+      if (!contactId || !this._db) return null;
+      const tagIds = this.getSelectedIds();
+      const { error: delError } = await this._db.from('claude_contato_tags').delete().eq('contato_id', contactId);
+      if (delError) return delError;
+      if (!tagIds.length) return null;
+      const { error: insError } = await this._db.from('claude_contato_tags').insert(
+        tagIds.map(tag_id => ({ contato_id: contactId, tag_id }))
+      );
+      return insError;
+    },
+
+    _bindEvents() {
+      const input = document.getElementById('dc-tag-input');
+      const dropdown = document.getElementById('dc-tag-dropdown');
+      const createBtn = document.getElementById('dc-tag-create-btn');
+      const optionsEl = document.getElementById('dc-tag-options');
+      if (!input || !dropdown || !createBtn || !optionsEl) return;
+
+      input.addEventListener('focus', async () => {
+        await this.ensureTagsLoaded();
+        this._openDropdown();
+        this._renderDropdown();
+      });
+
+      input.addEventListener('input', () => {
+        this._renderDropdown();
+        this._openDropdown();
+      });
+
+      input.addEventListener('keydown', async e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          await this._createFromQuery();
+        }
+      });
+
+      createBtn.addEventListener('click', async e => {
+        e.preventDefault();
+        await this._createFromQuery();
+      });
+
+      optionsEl.addEventListener('change', e => {
+        const inputEl = e.target.closest('.tag-picker-check');
+        if (!inputEl) return;
+        const id = String(inputEl.dataset.tagId || '');
+        const tag = this._allTags.find(t => String(t.id) === id);
+        if (!tag || tag.produto !== getCurrentProduct()) return;
+        if (inputEl.checked) this._selected.set(id, { id, label: tag.label, color: tag.color, produto: tag.produto });
+        else this._selected.delete(id);
+        this._renderChips();
+      });
+
+      optionsEl.addEventListener('click', e => {
+        if (e.target.closest('.tag-picker-check')) return;
+        const label = e.target.closest('.tg-checkbox-label');
+        if (!label) return;
+        const cb = label.querySelector('.tag-picker-check');
+        if (!cb || e.target.closest('.tg-checkbox-box')) return;
+        cb.checked = !cb.checked;
+        cb.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+
+      document.addEventListener('click', e => {
+        if (e.target.closest('#dc-tag-picker')) return;
+        this._closeDropdown();
+      });
+    },
+
+    _openDropdown() {
+      const dropdown = document.getElementById('dc-tag-dropdown');
+      if (dropdown) dropdown.classList.add('open');
+    },
+
+    _closeDropdown() {
+      const dropdown = document.getElementById('dc-tag-dropdown');
+      if (dropdown) dropdown.classList.remove('open');
+    },
+
+    _getQuery() {
+      return (document.getElementById('dc-tag-input')?.value || '').trim();
+    },
+
+    _filteredTags() {
+      const q = normalizeLabel(this._getQuery());
+      const currentProduct = getCurrentProduct();
+      const productTags = this._allTags.filter(tag => tag.produto === currentProduct);
+      if (!q) return productTags;
+      return productTags.filter(t => normalizeLabel(t.label).includes(q));
+    },
+
+    _renderChips() {
+      const chipsEl = document.getElementById('dc-tag-chips');
+      if (!chipsEl) return;
+      if (!this._selected.size) {
+        chipsEl.innerHTML = '';
+        return;
+      }
+      const selected = [...this._selected.values()];
+      chipsEl.innerHTML = PRODUCTS.map((product, index) => {
+        const tags = selected.filter(tag => tag.produto === product);
+        const chips = tags.length
+          ? tags.map(tag => `
+              <span class="tag-picker-chip">
+                <span class="tag-picker-chip-dot" style="background:${escHtml(tag.color || '#405466')}"></span>
+                <span>${escHtml(tag.label)}</span>
+                <button type="button" class="tag-picker-chip-remove" data-tag-id="${tag.id}" title="Remover" aria-label="Remover etiqueta">&times;</button>
+              </span>`).join('')
+          : '<span class="tag-picker-product-empty">Nenhuma etiqueta selecionada</span>';
+        return `
+          <div class="tag-picker-product-group">
+            <div class="tag-picker-product-title">${product}</div>
+            <div class="tag-picker-product-tags">${chips}</div>
+          </div>
+          ${index < PRODUCTS.length - 1 ? '<div class="tag-picker-product-divider"></div>' : ''}`;
+      }).join('');
+
+      chipsEl.querySelectorAll('.tag-picker-chip-remove').forEach(btn => {
+        btn.addEventListener('click', () => {
+          this._selected.delete(String(btn.dataset.tagId || ''));
+          this._renderChips();
+          this._renderDropdown();
+        });
+      });
+    },
+
+    _renderDropdown() {
+      const createBtn = document.getElementById('dc-tag-create-btn');
+      const optionsEl = document.getElementById('dc-tag-options');
+      if (!createBtn || !optionsEl) return;
+
+      const query = this._getQuery();
+      const filtered = this._filteredTags();
+      const currentProduct = getCurrentProduct();
+
+      createBtn.disabled = !query;
+      createBtn.innerHTML = query
+        ? `Criar nova etiqueta <span class="tag-picker-create-label">"${escHtml(query)}" em ${currentProduct}</span>`
+        : `Criar nova etiqueta em ${currentProduct}`;
+
+      if (!filtered.length) {
+        optionsEl.innerHTML = `<div class="tag-picker-empty">Nenhuma tag encontrada</div>`;
+        return;
+      }
+
+      optionsEl.innerHTML = filtered.map(tag => {
+        const checked = this._selected.has(String(tag.id)) ? ' checked' : '';
+        const uid = `tag-pick-${tag.id}`;
+        return `
+          <label class="tg-checkbox-label tag-picker-option" for="${uid}">
+            <input class="tg-checkbox-input tag-picker-check" type="checkbox" id="${uid}" data-tag-id="${tag.id}"${checked}>
+            <span class="tg-checkbox-box">
+              <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.114 18.16l-5.85-5.85a.9.9 0 010-1.274l1.272-1.272a.9.9 0 011.273 0l3.941 3.94 8.44-8.44a.9.9 0 011.274 0l1.272 1.272a.9.9 0 010 1.273L9.752 18.16a.9.9 0 01-1.273 0z"/>
+              </svg>
+            </span>
+            <span class="tg-checkbox-text tag-picker-option-text">
+              <span class="tag-picker-option-dot" style="background:${escHtml(tag.color || '#405466')}"></span>
+              ${escHtml(tag.label)}
+            </span>
+          </label>`;
+      }).join('');
+    },
+
+    async _createFromQuery() {
+      const label = this._getQuery();
+      if (!label || !this._db) return;
+
+      await this.ensureTagsLoaded();
+      const currentProduct = getCurrentProduct();
+
+      const existing = this._allTags.find(t =>
+        t.produto === currentProduct && normalizeLabel(t.label) === normalizeLabel(label)
+      );
+      if (existing) {
+        this._selected.set(String(existing.id), { id: String(existing.id), label: existing.label, color: existing.color, produto: existing.produto });
+        this._renderChips();
+        this._renderDropdown();
+        document.getElementById('dc-tag-input').value = '';
+        return;
+      }
+
+      const color = TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)];
+      let { data, error } = await this._db
+        .from('claude_tags')
+        .insert([{ label, color, produto: currentProduct }])
+        .select('id, label, color, produto')
+        .single();
+      if (error?.code === '42703') {
+        const fallback = await this._db
+          .from('claude_tags')
+          .insert([{ label, color }])
+          .select('id, label, color')
+          .single();
+        data = fallback.data ? { ...fallback.data, produto: currentProduct } : null;
+        error = fallback.error;
+      }
+
+      if (error || !data) return;
+
+      this._allTags.push(data);
+      this._allTags.sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
+      this._selected.set(String(data.id), { id: String(data.id), label: data.label, color: data.color, produto: data.produto });
+      document.getElementById('dc-tag-input').value = '';
+      this._renderChips();
+      this._renderDropdown();
+    },
+  };
+})();
+
+</script>
+<script>
+(function() {
+  function escHtml(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function companyKey(nome, cnpj) {
+    return `${String(nome || '').trim().toLowerCase()}::${String(cnpj || '').replace(/\D/g, '')}`;
+  }
+
+  window.__empresaAutocomplete = {
+    _db: null,
+    _debounceTimer: null,
+    _pairs: [],
+    _suppressNextSearch: false,
+
+    init(db) {
+      this._db = db;
+      this._pairs = [];
+      this._ensureCloseListener();
+      this.bindPair({
+        nomeInputId: 'dc-empresa-nome',
+        cnpjInputId: 'dc-empresa-cnpj',
+        nomeDropdownId: 'dc-empresa-nome-dropdown',
+        cnpjDropdownId: 'dc-empresa-cnpj-dropdown',
+      });
+    },
+
+    ensureDb(db) {
+      this._db = db;
+      this._ensureCloseListener();
+    },
+
+    _ensureCloseListener() {
+      if (this._closeBound) return;
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.empresa-autocomplete')) this.close();
+      });
+      this._closeBound = true;
+    },
+
+    bindNomeOnly({ nomeInputId, nomeDropdownId }) {
+      const pair = {
+        nomeInput: document.getElementById(nomeInputId),
+        cnpjInput: null,
+        nomeDropdown: document.getElementById(nomeDropdownId),
+        cnpjDropdown: null,
+      };
+      if (!pair.nomeInput || !pair.nomeDropdown) return;
+      this._pairs.push(pair);
+      this._bindField('nome', pair.nomeInput, pair.nomeDropdown, pair);
+    },
+
+    bindPair({ nomeInputId, cnpjInputId, nomeDropdownId, cnpjDropdownId }) {
+      const pair = {
+        nomeInput: document.getElementById(nomeInputId),
+        cnpjInput: document.getElementById(cnpjInputId),
+        nomeDropdown: document.getElementById(nomeDropdownId),
+        cnpjDropdown: document.getElementById(cnpjDropdownId),
+      };
+      if (!pair.nomeInput || !pair.cnpjInput || !pair.nomeDropdown || !pair.cnpjDropdown) return;
+      this._pairs.push(pair);
+      this._bindField('nome', pair.nomeInput, pair.nomeDropdown, pair);
+      this._bindField('cnpj', pair.cnpjInput, pair.cnpjDropdown, pair);
+    },
+
+    close() {
+      clearTimeout(this._debounceTimer);
+      this._debounceTimer = null;
+      this._pairs.forEach(pair => {
+        [pair.nomeDropdown, pair.cnpjDropdown].filter(Boolean).forEach(dropdown => {
+          dropdown.hidden = true;
+          dropdown.innerHTML = '';
+        });
+      });
+    },
+
+    _bindField(field, input, dropdown, pair) {
+      input.setAttribute('autocomplete', 'off');
+
+      input.addEventListener('input', () => {
+        if (this._suppressNextSearch) {
+          this._suppressNextSearch = false;
+          return;
+        }
+        this._scheduleSearch(field, input, dropdown);
+      });
+
+      input.addEventListener('focus', () => {
+        const q = input.value.trim();
+        if (q.length >= 2) this._scheduleSearch(field, input, dropdown, 0);
+      });
+
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Escape') this.close();
+      });
+
+      dropdown.addEventListener('mousedown', e => {
+        const item = e.target.closest('.empresa-autocomplete-item');
+        if (!item) return;
+        e.preventDefault();
+        this._selectCompany(item.dataset.nome || '', item.dataset.cnpj || '', pair);
+      });
+    },
+
+    _scheduleSearch(field, input, dropdown, delay = 250) {
+      clearTimeout(this._debounceTimer);
+      const q = input.value.trim();
+      if (q.length < 2) {
+        dropdown.hidden = true;
+        dropdown.innerHTML = '';
+        return;
+      }
+      this._debounceTimer = setTimeout(() => this._search(field, q, dropdown), delay);
+    },
+
+    async _search(field, query, dropdown) {
+      if (!this._db) return;
+
+      let builder = this._db
+        .from('claude_contatos')
+        .select('empresa_nome, empresa_cnpj')
+        .not('empresa_nome', 'is', null)
+        .neq('empresa_nome', '')
+        .limit(40);
+
+      if (field === 'nome') {
+        builder = builder.ilike('empresa_nome', `%${query}%`);
+      } else {
+        const digits = query.replace(/\D/g, '');
+        builder = builder.ilike('empresa_cnpj', `%${digits.length >= 3 ? digits : query}%`);
+      }
+
+      const { data, error } = await builder;
+      if (error) {
+        dropdown.hidden = true;
+        dropdown.innerHTML = '';
+        return;
+      }
+
+      const seen = new Map();
+      (data || []).forEach(row => {
+        const nome = (row.empresa_nome || '').trim();
+        if (!nome) return;
+        const cnpj = (row.empresa_cnpj || '').trim();
+        const key = companyKey(nome, cnpj);
+        if (!seen.has(key)) seen.set(key, { nome, cnpj });
+      });
+
+      const results = [...seen.values()].slice(0, 8);
+      this._renderDropdown(dropdown, results);
+    },
+
+    _renderDropdown(dropdown, results) {
+      if (!results.length) {
+        dropdown.hidden = true;
+        dropdown.innerHTML = '';
+        return;
+      }
+
+      dropdown.innerHTML = results.map(company => `
+        <button type="button" class="empresa-autocomplete-item" data-nome="${escHtml(company.nome)}" data-cnpj="${escHtml(company.cnpj)}" role="option">
+          <span class="empresa-autocomplete-item-main">${escHtml(company.nome)}</span>
+          ${company.cnpj ? `<span class="empresa-autocomplete-item-sub">${escHtml(company.cnpj)}</span>` : ''}
+        </button>
+      `).join('');
+      dropdown.hidden = false;
+    },
+
+    _selectCompany(nome, cnpj, pair) {
+      this._suppressNextSearch = true;
+      pair.nomeInput.value = nome;
+      if (pair.cnpjInput) pair.cnpjInput.value = cnpj;
+      this.close();
+      requestAnimationFrame(() => { this._suppressNextSearch = false; });
+      pair.nomeInput.focus();
+    },
+  };
+})();
+
+</script>
+<script>
+(function() {
+  const overlay = document.getElementById('delete-modal-overlay');
+  if (!overlay) return;
+
+  const countEl = document.getElementById('delete-modal-count');
+  const confirmEl = document.getElementById('delete-modal-confirm');
+  const closeBtn = document.getElementById('delete-modal-close');
+  const trashBtn = document.getElementById('delete-modal-trash-btn');
+  const permanentBtn = document.getElementById('delete-modal-permanent-btn');
+
+  let pendingContactIds = null;
+  let onDeleteSuccess = null;
+
+  function getDb() {
+    return window.__profileDb || window.__sbClient;
+  }
+
+  function getContactIdsForDelete() {
+    if (pendingContactIds?.length) return [...pendingContactIds];
+    return window.__getSelectedContactIds?.() || [];
+  }
+
+  function clearPendingState() {
+    pendingContactIds = null;
+    onDeleteSuccess = null;
+  }
+
+  function updateDeletePermanentBtn() {
+    if (!permanentBtn) return;
+    permanentBtn.disabled = !confirmEl?.checked;
+  }
+
+  function closeDeleteModal() {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    if (confirmEl) confirmEl.checked = false;
+    if (permanentBtn) {
+      permanentBtn.disabled = true;
+      permanentBtn.textContent = 'Excluir permanentemente';
+    }
+    clearPendingState();
+  }
+
+  function openDeleteModal(contactIds, options = {}) {
+    const ids = (contactIds || []).filter(Boolean);
+    if (!ids.length) return;
+
+    pendingContactIds = [...ids];
+    onDeleteSuccess = typeof options.onSuccess === 'function' ? options.onSuccess : null;
+
+    if (countEl) countEl.textContent = ids.length;
+    if (confirmEl) confirmEl.checked = false;
+    updateDeletePermanentBtn();
+
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    closeBtn?.focus();
+  }
+
+  async function performPermanentDelete(contactIds) {
+    const db = getDb();
+    if (!db) return new Error('Banco de dados indisponível');
+    const { error } = await db.from('claude_contatos').delete().in('id', contactIds);
+    return error;
+  }
+
+  async function handlePermanentDelete() {
+    const contactIds = getContactIdsForDelete();
+    if (!contactIds.length) return;
+
+    const successCb = onDeleteSuccess;
+
+    if (permanentBtn) {
+      permanentBtn.disabled = true;
+      const originalLabel = permanentBtn.textContent;
+      permanentBtn.textContent = 'Excluindo...';
+
+      const error = await performPermanentDelete(contactIds);
+
+      permanentBtn.textContent = originalLabel;
+      updateDeletePermanentBtn();
+
+      if (error) {
+        closeDeleteModal();
+        requestAnimationFrame(() => {
+          window.__showToast?.('Não foi possível excluir o contato', {
+            kind: 'error',
+            action: {
+              label: 'Tentar novamente',
+              onClick: () => {
+                pendingContactIds = [...contactIds];
+                onDeleteSuccess = successCb;
+                handlePermanentDelete();
+              },
+            },
+          });
+        });
+        return;
+      }
+    } else {
+      const error = await performPermanentDelete(contactIds);
+      if (error) {
+        requestAnimationFrame(() => {
+          window.__showToast?.('Não foi possível excluir o contato', {
+            kind: 'error',
+            action: {
+              label: 'Tentar novamente',
+              onClick: () => {
+                pendingContactIds = [...contactIds];
+                onDeleteSuccess = successCb;
+                handlePermanentDelete();
+              },
+            },
+          });
+        });
+        return;
+      }
+    }
+
+    clearPendingState();
+    closeDeleteModal();
+
+    if (successCb) {
+      successCb();
+    } else {
+      document.getElementById('bulk-clear')?.click();
+      window.__contactsReload?.();
+    }
+
+    requestAnimationFrame(() => {
+      window.__showToast?.('Contato excluído com sucesso');
+    });
+  }
+
+  window.__openDeleteContactModal = openDeleteModal;
+  window.__closeDeleteContactModal = closeDeleteModal;
+
+  closeBtn?.addEventListener('click', closeDeleteModal);
+  confirmEl?.addEventListener('change', updateDeletePermanentBtn);
+
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) closeDeleteModal();
+  });
+
+  overlay.querySelector('.delete-modal')?.addEventListener('click', e => {
+    e.stopPropagation();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) {
+      closeDeleteModal();
+    }
+  });
+
+  trashBtn?.addEventListener('click', () => {
+    // Caso de uso será implementado posteriormente
+  });
+
+  permanentBtn?.addEventListener('click', async () => {
+    if (permanentBtn.disabled) return;
+    await handlePermanentDelete();
+  });
+})();
+
+</script>
+<script>
+(function() {
+  const scriptBase = (document.currentScript?.src || '').replace(/\/[^/]+$/, '/');
+  const TRASH_ICON = `<img src="${scriptBase}icons/trash.svg" width="24" height="24" alt="" aria-hidden="true">`;
+
+  const MENU_ITEMS = [
+    { key: 'editar-dados', label: 'Editar dados' },
+    { key: 'mover-funil', label: 'Mover estágio do funil' },
+    { key: 'personalizar-cartao', label: 'Personalizar cartão' },
+  ];
+
+  const TRIGGER_IDS = [
+    'page-header-more-btn',
+    'profile-overview-more-btn',
+    'profile-quick-more-btn',
+    'detail-panel-more-btn',
+  ];
+  const TRIGGER_SELECTOR = TRIGGER_IDS.map(id => `#${id}`).join(', ');
+
+  let activeMenu = null;
+
+  function getContactId() {
+    return window.__profileContactId || window.__selectedContactId || null;
+  }
+
+  function closeMenu() {
+    if (!activeMenu) return;
+    if (activeMenu._anchor) {
+      activeMenu._anchor.setAttribute('aria-expanded', 'false');
+    }
+    activeMenu.remove();
+    activeMenu = null;
+  }
+
+  function liveAnchor(anchor) {
+    if (anchor?.id) {
+      const byId = document.getElementById(anchor.id);
+      if (byId) {
+        const rect = byId.getBoundingClientRect();
+        if (rect.width || rect.height) return byId;
+      }
+    }
+    if (anchor?.isConnected) {
+      const rect = anchor.getBoundingClientRect();
+      if (rect.width || rect.height) return anchor;
+    }
+    return null;
+  }
+
+  function positionMenu() {
+    if (!activeMenu) return;
+    const anchor = liveAnchor(activeMenu._anchor) || activeMenu._anchor;
+    if (!anchor) return;
+    activeMenu._anchor = anchor;
+
+    const rect = anchor.getBoundingClientRect();
+    const menuW = activeMenu.offsetWidth || 220;
+    const gap = 2;
+    const top = (rect.height ? rect.bottom : 0) + gap;
+    let left = rect.right - menuW;
+    if (left + menuW > window.innerWidth - 8) {
+      left = window.innerWidth - menuW - 8;
+    }
+    if (left < 8) left = 8;
+
+    const maxH = Math.max(160, window.innerHeight - top - 8);
+    activeMenu.style.top = `${Math.round(top)}px`;
+    activeMenu.style.left = `${Math.round(left)}px`;
+    activeMenu.style.maxHeight = `${Math.round(maxH)}px`;
+  }
+
+  function buildMenuHtml() {
+    const items = MENU_ITEMS.map(item =>
+      `<button type="button" class="profile-more-dropdown-item" role="menuitem" data-action="${item.key}">${item.label}</button>`
+    ).join('');
+
+    return `
+      <div class="profile-more-dropdown-group">Opções</div>
+      ${items}
+      <div class="profile-more-dropdown-divider" role="separator"></div>
+      <button type="button" class="profile-more-dropdown-item profile-more-dropdown-item--danger" role="menuitem" data-action="excluir-contato">
+        ${TRASH_ICON}
+        <span>Excluir contato</span>
+      </button>
+    `;
+  }
+
+  async function handleAction(key) {
+    if (key === 'editar-dados') {
+      document.getElementById('profile-open-contact-edit')?.click();
+      window.__openProfileContactEdit?.();
+      return;
+    }
+
+    if (key === 'excluir-contato') {
+      const contactId = getContactId();
+      if (!contactId || !window.__openDeleteContactModal) return;
+
+      const onDetailPanel = typeof window.__closeDetailPanel === 'function';
+      window.__openDeleteContactModal([contactId], {
+        onSuccess: () => {
+          if (onDetailPanel) {
+            window.__closeDetailPanel();
+            window.__contactsReload?.();
+          } else {
+            window.location.href = __gasPage('marketing-contatos');
+          }
+        },
+      });
+      return;
+    }
+
+    const labels = {
+      'mover-funil': 'Mover estágio do funil',
+      'personalizar-cartao': 'Personalizar cartão',
+    };
+    if (labels[key]) {
+      window.alert(`${labels[key]} — em breve.`);
+    }
+  }
+
+  function closeOtherMenus() {
+    try {
+      document.querySelectorAll('.profile-status-dropdown, .actions-options-dropdown, .status-dropdown').forEach(el => el.remove());
+      window.__empresaAutocomplete?.close?.();
+      window.__closeActionsOptionsDropdown?.();
+    } catch (_) { /* ignore */ }
+  }
+
+  function openMenu(anchor) {
+    closeOtherMenus();
+
+    const live = liveAnchor(anchor) || anchor;
+    if (activeMenu && activeMenu._anchor === live) {
+      closeMenu();
+      return;
+    }
+
+    closeMenu();
+
+    const menu = document.createElement('div');
+    menu.className = 'profile-more-dropdown';
+    menu.setAttribute('role', 'menu');
+    menu.innerHTML = buildMenuHtml();
+
+    document.body.appendChild(menu);
+    activeMenu = menu;
+    activeMenu._anchor = live;
+    live.setAttribute('aria-expanded', 'true');
+    positionMenu();
+    requestAnimationFrame(positionMenu);
+
+    menu.addEventListener('click', async e => {
+      const item = e.target.closest('[data-action]');
+      if (!item) return;
+      e.stopPropagation();
+      const action = item.dataset.action;
+      closeMenu();
+      await handleAction(action);
+    });
+  }
+
+  function bindTrigger(btn) {
+    if (!btn) return;
+    btn.dataset.moreMenuBound = '1';
+    btn.setAttribute('aria-haspopup', 'menu');
+    if (!btn.hasAttribute('aria-expanded')) {
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  document.addEventListener('click', e => {
+    const trigger = e.target.closest(TRIGGER_SELECTOR);
+    if (!trigger) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    openMenu(trigger);
+  }, true);
+
+  document.addEventListener('click', e => {
+    if (e.target.closest(TRIGGER_SELECTOR)) return;
+    if (!e.target.closest('.profile-more-dropdown')) {
+      closeMenu();
+    }
+  });
+
+  window.addEventListener('scroll', positionMenu, true);
+  window.addEventListener('resize', positionMenu);
+
+  TRIGGER_IDS.forEach(id => bindTrigger(document.getElementById(id)));
+
+  window.__contactMoreMenu = { open: openMenu, close: closeMenu, bindTrigger };
+})();
+
+</script>
 <script>
   // ─── SHARED SOCIAL NETWORKS DATA ─────────────────────────
   window.__socialNetworks = [
@@ -4855,9 +6037,10 @@
     { key: 'nome',            label: 'Nome e e-mail',       sub: 'Foto, nome e e-mail',   visible: true  },
     { key: 'email',           label: 'E-mail',              sub: '',                      visible: false },
     { key: 'telefone',        label: 'Telefone',            sub: '',                      visible: true  },
-    { key: 'empresa_cargo',   label: 'Empresa / Cargo',     sub: 'Empresa e cargo',       visible: true  },
-    { key: 'created_at',      label: 'Data de criação',     sub: '',                      visible: true  },
-    { key: 'tags',            label: 'Negociações',         sub: '',                      visible: true  },
+    { key: 'ultima_conversao', label: 'Última conversão', sub: 'Nome e data da conversão', visible: true  },
+    { key: 'conversoes',      label: 'Conversões',          sub: '',                      visible: true  },
+    { key: 'tags',            label: 'Tags / Etiquetas',    sub: '',                      visible: true  },
+    { key: 'created_at',      label: 'Data de criação',     sub: '',                      visible: false },
     { key: 'carteira',        label: 'Carteira',            sub: '',                      visible: false },
     { key: 'status',          label: 'Status',              sub: '',                      visible: false },
     { key: 'cpf',             label: 'CPF',                 sub: 'Informações pessoais',  visible: false },
@@ -5162,9 +6345,36 @@
       return (hash % 99) + 1;
     }
 
-    function renderTagsCell(row) {
+    function getRowTags(row) {
+      const tags = (row.claude_contato_tags || [])
+        .map(link => link.claude_tags)
+        .filter(Boolean);
+      if (tags.length <= 1) return tags;
+      let hash = 0;
+      for (let i = 0; i < row.id.length; i++) hash = (hash * 31 + row.id.charCodeAt(i)) >>> 0;
+      const start = hash % tags.length;
+      return tags.slice(start).concat(tags.slice(0, start));
+    }
+
+    function renderConversoesCell(row) {
       const n = getNegociacaoNumber(row);
-      return `<td class="col-tags"><span class="cell-plain">${n}</span></td>`;
+      return `<td class="col-conversoes"><span class="cell-plain">${n}</span></td>`;
+    }
+
+    function renderTagsCell(row) {
+      const tags = getRowTags(row);
+      if (!tags.length) return `<td class="col-tags"><span class="cell-plain">—</span></td>`;
+
+      const first = tags[0];
+      const extra = tags.length - 1;
+
+      let chips = `<span class="tag"><span class="tag-label">${escHtml(first.label)}</span></span>`;
+
+      if (extra > 0) {
+        chips += `<span class="tag tag--overflow"><span class="tag-label">+${extra}</span></span>`;
+      }
+
+      return `<td class="col-tags"><div class="tags-row">${chips}</div></td>`;
     }
 
     function renderAvatarInner(row) {
@@ -5207,7 +6417,7 @@
       return `<svg viewBox="0 0 24 24" class="status-icon">${opt.icon}</svg>`;
     }
 
-    // Default visible columns count (nome, telefone, empresa/cargo, negociações, data de criação)
+    // Default visible columns count (nome, telefone, última conversão, conversões, tags)
     const DEFAULT_COL_COUNT = 5;
     const COL_MIN_PX = 160; // min width per data column when expanded
 
@@ -5221,7 +6431,7 @@
     const COL_WIDTHS = {
       telefone:        '210px',
       carteira:        '180px',
-      empresa_cargo:   '185px',
+      ultima_conversao: '22%',
       created_at:      '155px',
       status:          '230px',
       cpf:             '145px',
@@ -5236,6 +6446,44 @@
       pais:            '125px',
     };
 
+    const CONVERSAO_NOMES = [
+      'Download de e-book',
+      'Inscrição no webinar',
+      'Preenchimento de formulário',
+      'Solicitação de demonstração',
+      'Assinatura de newsletter',
+      'Cadastro no evento',
+      'Clique no e-mail',
+      'Conversão no pop-up',
+      'Agendamento de reunião',
+      'Resposta à pesquisa NPS',
+    ];
+
+    const CONVERSAO_TEMPO = [
+      'Há 2 dias',
+      'Há 5 dias',
+      'Há 7 dias',
+      'Há 12 dias',
+      'Há 3 semanas',
+      'Há 1 semana',
+      'Há 2 semanas',
+      'Há 1 mês',
+      'Há 4 meses',
+      'Há 8 meses',
+      'Há 1 ano',
+      'Há 2 anos',
+    ];
+
+    function getUltimaConversaoMock(rowId) {
+      const seed = String(rowId || '')
+        .split('')
+        .reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+      return {
+        nome: CONVERSAO_NOMES[seed % CONVERSAO_NOMES.length],
+        tempo: CONVERSAO_TEMPO[seed % CONVERSAO_TEMPO.length],
+      };
+    }
+
     function renderThead() {
       const tr = document.querySelector('table thead tr');
       if (!tr) return;
@@ -5246,9 +6494,10 @@
                       col.key === 'email' ? 'EMAIL' :
                       col.key === 'telefone' ? 'TELEFONE' :
                       col.key === 'carteira' ? 'CARTEIRA' :
-                      col.key === 'tags' ? 'NEGOCIAÇÕES' :
+                      col.key === 'conversoes' ? 'CONVERSÕES' :
+                      col.key === 'tags' ? 'TAGS / ETIQUETAS' :
                       col.key === 'created_at' ? 'DATA DE CRIAÇÃO' :
-                      col.key === 'empresa_cargo' ? 'EMPRESA / CARGO' :
+                      col.key === 'ultima_conversao' ? 'ÚLTIMA CONVERSÃO' :
                       col.key === 'status' ? 'STATUS' :
                       col.label.toUpperCase();
         if (col.key === 'nome') {
@@ -5261,12 +6510,14 @@
           html += `<th class="col-carteira"><div class="th-inner">${label}<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div></th>`;
         } else if (col.key === 'status') {
           html += `<th class="col-status"><div class="th-inner">${label}<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div></th>`;
+        } else if (col.key === 'conversoes') {
+          html += `<th class="col-conversoes"><div class="th-inner">${label}<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div></th>`;
         } else if (col.key === 'tags') {
           html += `<th class="col-tags"><div class="th-inner">${label}<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div></th>`;
         } else if (col.key === 'created_at') {
           html += `<th class="col-created-at"><div class="th-inner">${label}<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div></th>`;
-        } else if (col.key === 'empresa_cargo') {
-          html += `<th class="col-empresa-cargo"><div class="th-inner">${label}</div></th>`;
+        } else if (col.key === 'ultima_conversao') {
+          html += `<th class="col-ultima-conversao"><div class="th-inner">${label}</div></th>`;
         } else {
           const w = COL_WIDTHS[col.key] || '140px';
           html += `<th style="width:${w}"><div class="th-inner">${label}<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div></th>`;
@@ -5306,14 +6557,15 @@
             const carteiraTitle = row.carteira ? ` title="${escHtml(row.carteira)}"` : '';
             cells += `<td class="col-carteira"><div class="cell-text"><span class="cell-plain cell-text-main"${carteiraTitle}>${escHtml(carteira)}</span></div></td>`; break;
           }
+          case 'conversoes':
+            cells += renderConversoesCell(row); break;
           case 'tags':
             cells += renderTagsCell(row); break;
           case 'created_at':
             cells += `<td class="col-created-at"><span class="cell-plain">${row.created_at ? new Date(row.created_at).toLocaleDateString('pt-BR') : '—'}</span></td>`; break;
-          case 'empresa_cargo': {
-            const emp = row.empresa_nome || '—';
-            const cargo = row.cargo || '';
-            cells += `<td class="col-empresa-cargo"><div class="cell-text"><span class="cell-text-main" style="color:var(--color-text-high)">${escHtml(emp)}</span>${cargo ? `<span class="cell-text-sub">${escHtml(cargo)}</span>` : ''}</div></td>`; break;
+          case 'ultima_conversao': {
+            const conversao = getUltimaConversaoMock(row.id);
+            cells += `<td class="col-ultima-conversao"><div class="cell-text"><span class="cell-text-main" style="color:var(--color-text-high)">${escHtml(conversao.nome)}</span><span class="cell-text-sub">${escHtml(conversao.tempo)}</span></div></td>`; break;
           }
           case 'status': {
             const st = row.status || 'Lead';
@@ -5389,7 +6641,7 @@
     }
 
     function emptyStateIllustration() {
-      return `<img src="../shared/empty-state-null.svg" width="360" height="242" alt="" style="display:block;width:100%;max-width:360px;height:auto;">`;
+      return `<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDUwIiBoZWlnaHQ9IjMwMyIgdmlld0JveD0iMCAwIDQ1MCAzMDMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8yNjA2XzExOTUzKSI+CjxtYXNrIGlkPSJtYXNrMF8yNjA2XzExOTUzIiBzdHlsZT0ibWFzay10eXBlOmx1bWluYW5jZSIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeD0iMCIgeT0iMCIgd2lkdGg9IjQ1MCIgaGVpZ2h0PSIzMDMiPgo8cGF0aCBkPSJNNDUwIDBIMFYzMDNINDUwVjBaIiBmaWxsPSJ3aGl0ZSIvPgo8L21hc2s+CjxnIG1hc2s9InVybCgjbWFzazBfMjYwNl8xMTk1MykiPgo8cGF0aCBvcGFjaXR5PSIwLjcxIiBkPSJNOTcuOTkyMiAxNDYuODQ3Qzc5LjEyNTkgMTk2LjM4NCAyNi4xNjA3IDIwNy40MTkgNDIuNzcxMSAyNTQuNDc4QzU5LjM4MTUgMzAxLjUzNyAxMDQuNjQ3IDI2OC42ODUgMTUwLjQzMSAyOTUuNDFDMTk1LjcyMyAzMjEuODQ3IDE3NS4zODEgMzY2LjUwNiAyMzIuMzQzIDM2My4wNDVDMjg5LjU0MyAzNTkuNTY4IDI4MC4yOTMgMzI0Ljg2MyAzMjcuMjY4IDI5MS45ODFDMzc0LjU1OCAyNTguODc1IDQwNC4yNDcgMjYzLjk0NCA0MjguOTMzIDIyNi42NjRDNDU2Ljc5NSAxODQuNTg0IDQ1NS41ODUgMTQ4LjM0NSA0MzMuNzM3IDEwNy4wMDNDNDA4LjgxNyA1OS44NDYyIDM1Ny4yMDIgNzEuNTY4IDMxMi4xNjggNDQuNDc1OUMyODIuODE1IDIwLjkxMTMgMjMxLjAyOCAtMjUuMTY4MyAxNTIuMjU3IDE4LjcwNjZDMTAxLjk2OSA0Ni43MTU3IDExNi42NTYgOTcuODQ4NSA5Ny45OTIyIDE0Ni44NDdaIiBmaWxsPSIjRkZFOEMyIi8+CjwvZz4KPHBhdGggZD0iTTAgMzMuNzcyNEMwIDMwLjQ0IDIuNzAwNzYgMjcuNzM5NyA2LjAzMzc3IDI3LjczOTdIMjM4Ljg3M0MyNDIuMjA2IDI3LjczOTcgMjQ0LjkwNiAzMC40NCAyNDQuOTA2IDMzLjc3MjRWMTgzLjMzOUMyNDQuOTA2IDE4Ni42NzEgMjQyLjIwNiAxODkuMzcxIDIzOC44NzMgMTg5LjM3MUg2LjAzMzc3QzIuNzAwNzYgMTg5LjM3MSAwIDE4Ni42NzEgMCAxODMuMzM5VjMzLjc3MjRaIiBmaWxsPSIjRTVFOEVBIi8+CjxwYXRoIG9wYWNpdHk9IjAuNCIgZD0iTTIxNC4zNzggMzkuNTAwOEMyMTQuMzc4IDM5LjI2NjYgMjE0LjU2NiAzOS4wNzkzIDIxNC44IDM5LjA3OTNIMjIwLjcxM0MyMjAuOTQ3IDM5LjA3OTMgMjIxLjEzNCAzOS4yNjY2IDIyMS4xMzQgMzkuNTAwOEMyMjEuMTM0IDM5LjczNDkgMjIwLjk0NyAzOS45MjIyIDIyMC43MTMgMzkuOTIyMkgyMTQuOEMyMTQuNTY2IDM5LjkyMjIgMjE0LjM3OCAzOS43MzQ5IDIxNC4zNzggMzkuNTAwOFoiIGZpbGw9IiMwMDIyMzMiLz4KPHBhdGggb3BhY2l0eT0iMC40IiBkPSJNMjMxLjYzMyAzNC45ODJDMjMxLjQ2OSAzNC44MTgyIDIzMS4yIDM0LjgxODIgMjMxLjAzNiAzNC45ODJDMjMwLjg3MiAzNS4xNDU5IDIzMC44NzIgMzUuNDE1MiAyMzEuMDM2IDM1LjU3OTFMMjMyLjg1MSAzNy4zODk2TDIzMS4wNCAzOS4yMDQxQzIzMC44NzYgMzkuMzY4IDIzMC44NzYgMzkuNjM3MiAyMzEuMDQgMzkuODAxMUMyMzEuMjA0IDM5Ljk2NSAyMzEuNDczIDM5Ljk2NSAyMzEuNjM3IDM5LjgwMTFMMjMzLjQ0OCAzNy45ODY2TDIzNS4yNjIgMzkuNzk3MkMyMzUuNDI2IDM5Ljk2MTEgMjM1LjY5NiAzOS45NjExIDIzNS44NiAzOS43OTcyQzIzNi4wMjQgMzkuNjMzMyAyMzYuMDI0IDM5LjM2NDEgMjM1Ljg2IDM5LjIwMDJMMjM0LjA0NSAzNy4zODk2TDIzNS44NTYgMzUuNTc1MkMyMzYuMDIgMzUuNDExMyAyMzYuMDIgMzUuMTQyIDIzNS44NTYgMzQuOTc4MUMyMzUuNjkyIDM0LjgxNDMgMjM1LjQyMyAzNC44MTQzIDIzNS4yNTkgMzQuOTc4MUwyMzMuNDQ4IDM2Ljc5MjZMMjMxLjYzMyAzNC45ODJaIiBmaWxsPSIjMDAyMjMzIi8+CjxtYXNrIGlkPSJtYXNrMV8yNjA2XzExOTUzIiBzdHlsZT0ibWFzay10eXBlOmx1bWluYW5jZSIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeD0iMiIgeT0iNDciIHdpZHRoPSIyNDEiIGhlaWdodD0iMTQwIj4KPHBhdGggZD0iTTIuNDExOTUgNDcuMDM5NkgyNDIuNDg3VjE4Mi4xMzNDMjQyLjQ4NyAxODQuNzk4IDI0MC4zMjQgMTg2Ljk1NiAyMzcuNjYzIDE4Ni45NTZINy4yMzk3NUM0LjU3NDEyIDE4Ni45NTYgMi40MTU4NSAxODQuNzk0IDIuNDE1ODUgMTgyLjEzM1Y0Ny4wMzk2SDIuNDExOTVaIiBmaWxsPSJ3aGl0ZSIvPgo8L21hc2s+CjxnIG1hc2s9InVybCgjbWFzazFfMjYwNl8xMTk1MykiPgo8cGF0aCBkPSJNMi40MTE5NSA0Ny4wMzk2SDI0Mi40ODdWMTgyLjEzM0MyNDIuNDg3IDE4NC43OTggMjQwLjMyNCAxODYuOTU2IDIzNy42NjMgMTg2Ljk1Nkg3LjIzOTc1QzQuNTc0MTIgMTg2Ljk1NiAyLjQxNTg1IDE4NC43OTQgMi40MTU4NSAxODIuMTMzVjQ3LjAzOTZIMi40MTE5NVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0xMzMuODU5IDEzOS42MDhMMTMyLjQzOSAxMzkuNjE2VjE0MS4wODdIMTI4LjUxNkwxMjguNTA1IDEzOS42MkwxMjcuMDggMTM5LjYwOEwxMjcuMDY0IDEzOC4xNDVMMTI1LjY0OCAxMzguMTI2TDEyNS42MDkgMTM5LjYxNkwxMjQuMDUxIDEzOS42MjhMMTI0LjAzNiAxNDEuMTA3SDEyMC4xOTlMMTIwLjE4IDEzOS42NDNMMTE4Ljc1OSAxMzkuNjJWMTM4LjE0NUwxMTcuMzgxIDEzOC4xNDFMMTE3LjM3NCAxMzkuNjA0TDExNS45ODggMTM5LjYxMlYxNDEuMTAzTDExMS45NiAxNDEuMTExTDExMS45NDkgMTM5LjYyNEgxMTAuNTU5VjEzOC4xNDVIMTA5LjE1TDEwOS4xMjcgMTM5LjYxNkwxMDcuNjI4IDEzOS42MjhMMTA3LjYwOSAxNDEuMTExSDEwNC45NzhMMTA0Ljk3IDEyMS44MjdMMTAyLjI3OCAxMjEuODExTDEwMi4yNTggMTIwLjM1NkwxMDAuODMgMTIwLjM0NFYxMTQuMTU1TDEwMi4yNjIgMTE0LjEyTDEwMi4yODEgMTEyLjYxOEwxMDQuOTcgMTEyLjYwMkwxMDQuOTc4IDEwNC44OEwxMDYuMzEzIDEwNC44NDVDMTA2LjQxMSAxMDQuMzI2IDEwNi4zNiAxMDMuODYxIDEwNi4yMjMgMTAzLjMzOUMxMDYuNzYyIDEwMy40MjEgMTA3LjIwNyAxMDMuNDQ0IDEwNy43NTMgMTAzLjM4OUMxMDcuODU1IDEwMi44NjYgMTA3LjgyNyAxMDIuMzkgMTA3LjYyOCAxMDEuODI4QzEwOC4yMDIgMTAxLjkxIDEwOC42NzQgMTAyLjAwOCAxMDkuMjU2IDEwMS45MUMxMDkuMzkyIDEwMS40NzMgMTA5LjI3NSAxMDEuMDA5IDEwOS4yMTMgMTAwLjU1NkgxMTYuOTU2TDExNi45OTUgOTkuMTU5NUwxMTUuNDM0IDk5LjE0Vjk2LjIwNTZMMTExLjQzIDk2LjE5Vjk0LjcwMzNIMTA5LjczMlY5MS4xODM2TDExMS40MjYgOTEuMTY4Vjg5LjYyNjdMMTE1LjQxMSA4OS42MTExTDExNS40MzQgOTEuMTY4TDExNy4wNTQgOTEuMTgzNkwxMTcuMDQyIDk0LjY2MDRMMTE1LjQzNCA5NC42ODc3Vjk2LjE4NjFMMTE3LjAxNSA5Ni4xOTc4Vjk5LjA5N0wxMTguNDIgOTkuMTEyNkwxMTguNDM5IDEwMC41NjhIMTI2LjgyMkwxMjYuODM4IDk5LjEzMjFMMTI4LjI3OCA5OS4xMDA5Vjk2LjE5MzlMMTI5LjgzMSA5Ni4xNjY2Vjk0LjY2ODJMMTI4LjE4MSA5NC42NTY1VjkxLjIwMzFMMTI5LjgyOCA5MS4xNzU4TDEyOS44NDcgODkuNjQ2MkwxMzMuODE2IDg5LjYzMDZMMTMzLjg0OCA5MS4xNjhMMTM1LjM1NCA5MS4xODM2Vjk0LjY5MTZMMTMzLjgxNiA5NC42OTk0TDEzMy44MDggOTYuMjA5NUwxMjkuODU5IDk2LjIwMTdMMTI5Ljg1MSA5OS4xNDM5SDEyOC4zMDVMMTI4LjMyMSAxMDAuNTY4SDEzNS44NTRMMTM1Ljg2MSAxMDEuOTE0SDEzNy4yNzhMMTM3LjMxMyAxMDMuNDA5TDEzOC43MSAxMDMuNDE3TDEzOC43MjIgMTA0Ljg3NkwxNDAuMDczIDEwNC44OTJWMTEyLjUxMkgxNDIuNzc3TDE0Mi44NDQgMTE0LjAwN0MxNDMuMjg1IDExNC4xMzYgMTQzLjcwMiAxMTQuMDg1IDE0NC4xOTggMTE0LjA3M1YxMjAuMjg5TDE0Mi43OTcgMTIwLjI5N0wxNDIuNzgxIDEyMS43OTVMMTQwLjA2OSAxMjEuODM0VjE0MS4xM0gxMzYuNjg1TDEzNi42NzMgMTM5LjY0TDEzNS4yNzYgMTM5LjYyVjEzOC4xOEMxMzQuODExIDEzOC4xMTggMTM0LjM4NiAxMzguMTE4IDEzMy44ODcgMTM4LjE2NUwxMzMuODY3IDEzOS42MkwxMzMuODU5IDEzOS42MDhaIiBmaWxsPSIjQjJCQ0MxIi8+CjxwYXRoIGQ9Ik0xNDIuNjE3IDExNC4xNDdIMTM5LjkyOFYxMjAuNDIySDE0Mi42MTdWMTE0LjE0N1oiIGZpbGw9IiNFNUU4RUEiLz4KPHBhdGggZD0iTTEwNC45NzQgMTE0LjEyNEgxMDIuMjg1VjEyMC4zNDhIMTA0Ljk3NFYxMTQuMTI0WiIgZmlsbD0iI0U1RThFQSIvPgo8cGF0aCBkPSJNMTMyLjY3NyA5NC42NDg4QzEzMi4xMTkgOTQuNjc2MSAxMzEuNjM1IDk0LjgwNDkgMTMxLjA3NiA5NC42NjQ0TDEyOS44OSA5NC41ODY0TDEyOS44NTEgOTEuMjExMUwxMzEuMTA0IDkxLjEwOTZDMTMxLjY2NiA5MS4wNjI4IDEzMi4xMTkgOTAuOTUzNSAxMzIuNjYxIDkxLjE0MDhMMTMzLjc2MiA5MS4yMjI4QzEzMy44NjMgOTIuMzQ2NiAxMzMuNzg5IDkzLjQ1ODcgMTMzLjc1NCA5NC42MDJMMTMyLjY3NyA5NC42NTI3Vjk0LjY0ODhaIiBmaWxsPSIjRTVFOEVBIi8+CjxwYXRoIGQ9Ik0xMTQuMTUgOTQuNjc2MkMxMTMuNjcgOTQuNzk3MiAxMTMuMzExIDk0LjgxMjggMTEyLjg3OCA5NC42ODRMMTExLjYwOSA5NC42MDk5QzExMS4zMTYgOTMuOTUwNCAxMTEuMzc5IDkzLjI1OTcgMTExLjQ5NiA5Mi41NzNDMTExLjU3IDkyLjE1NTUgMTExLjQ0NSA5MS42OTg5IDExMS41NyA5MS4zMDQ4QzExMS44MzkgOTEuMTEzNiAxMTIuMTcxIDkxLjIyNjggMTEyLjQ2IDkxLjE4MzhDMTEzLjAzIDkxLjEwMTkgMTEzLjUzMyA5MS4wOTQxIDExNC4xMTUgOTEuMTM3TDExNS4zNzUgOTEuMjI2OEMxMTUuNDkyIDkyLjI2ODYgMTE1LjQzIDkzLjI3MTQgMTE1LjM5NSA5NC4zMDU1QzExNS4zNzUgOTQuODQ0IDExNC42NTMgOTQuNTQ3NCAxMTQuMTU0IDk0LjY3NjJIMTE0LjE1WiIgZmlsbD0iI0U1RThFQSIvPgo8cGF0aCBkPSJNMTI0LjA0NCAxMzkuNjEyTDEyMC4yMzQgMTM5LjYwNUwxMjAuMjA3IDEzOC4xM0wxMTguODA2IDEzOC4xMDJMMTE4Ljc4NiAxMzYuNjUxTDExNy4zNSAxMzYuNjU4TDExNy4zMzkgMTM4LjA5OEwxMTUuOTUzIDEzOC4xMThMMTE1LjkzNyAxMzkuNTg5TDExMi4wMTEgMTM5LjYyTDExMS45ODggMTM4LjExTDExMC42MDYgMTM4LjA5OEwxMTAuNTkxIDEzNi42NTVMMTA5LjEyNyAxMzYuNjYyTDEwOS4xMTEgMTM4LjEwMkwxMDcuNjMyIDEzOC4xMThWMTM5LjYxNkwxMDYuMzc5IDEzOS41NzdWMTA0LjkzNUwxMDcuNzczIDEwNC44OTZWMTAzLjQ0QzEwOC4xNjMgMTAzLjQxMyAxMDguNTMgMTAzLjM2NiAxMDguOTQgMTAzLjQ1MkMxMDkuMDg4IDEwMy40ODMgMTA5LjI2IDEwMy42OSAxMDkuNDcgMTAzLjU4MVYxMDEuOTgxSDEzNS43MjlMMTM1Ljc0IDEwMy40NEwxMzcuMjM1IDEwMy40NTJMMTM3LjI0NyAxMDQuODg0TDEzOC42NjQgMTA0LjkzMUwxMzguNjc1IDEzOS41OTdMMTM2LjcxMiAxMzkuNjJMMTM2LjY5NyAxMzguMTE0SDEzNS4zMTVMMTM1LjI5OSAxMzYuNjc4TDEzMy44NDQgMTM2LjY2MkwxMzMuODMyIDEzOC4xMUwxMzIuNDMxIDEzOC4xMjZWMTM5LjYwOEgxMjguNTUxTDEyOC41MTIgMTM4LjEyMkwxMjcuMTE1IDEzOC4xMDZMMTI3LjEgMTM2LjY3NEwxMjUuNjIgMTM2LjY1OEwxMjUuNjA5IDEzOC4xMTRIMTI0LjA1MUwxMjQuMDQgMTM5LjYxNkwxMjQuMDQ0IDEzOS42MTJaIiBmaWxsPSIjRTVFOEVBIi8+CjxwYXRoIGQ9Ik0xMjkuMjMgMTI0LjgzOUgxMjYuMjQ5TDEyNi4yMSAxMjMuNDM0TDExOC42NTQgMTIzLjQyN0wxMTguNjM0IDEyNC44NTlMMTE1Ljc2NiAxMjQuODQ3TDExNS43NzQgMTI2LjM1M0wxMTQuMzI2IDEyNi4zNjFMMTE0LjMxOCAxMjQuODUxTDExNS43NTQgMTI0Ljg0N0wxMTUuNzU4IDEyMy4zNTJMMTE4LjU3NiAxMjMuMzQ1TDExOC41OTUgMTIxLjg4OUwxMjYuMzkzIDEyMS44ODVMMTI2LjQ0IDEyMy4zNDFMMTI5LjI4OSAxMjMuMzQ5TDEyOS4yOTMgMTI0Ljc5NkwxMjkuMzM2IDEyNC44NDdMMTMwLjczMyAxMjQuODUxTDEzMC43NDkgMTI2LjM1M0wxMjkuMjg5IDEyNi4zNjVMMTI5LjI4MSAxMjQuODk4TDEyOS4yMyAxMjQuODM5WiIgZmlsbD0iI0IyQkNDMSIvPgo8cGF0aCBkPSJNMTE4LjYzNCAxMTcuMjU3SDExNy4yNTNDMTE3LjI4IDExNi44MDkgMTE3LjMyMyAxMTYuMzk5IDExNy4yMjEgMTE1LjkzNEMxMTYuNzYxIDExNS44MzcgMTE2LjM1NSAxMTUuODg4IDExNS45NDEgMTE1Ljg5NUwxMTUuOTM0IDExNC42ODZDMTE1LjYwMiAxMTQuNjMxIDExNS4zMDEgMTE0LjYzMSAxMTQuOTMgMTE0LjY5NEwxMTQuODggMTE1LjkwM0gxMTMuMzk3TDExMy4zODEgMTE3LjI2MUgxMTIuMDIzVjExNS44MTdIMTEzLjMzVjExNC41NTdMMTE0LjUwNSAxMTQuNTNWMTEzLjMwOEwxMTMuMzU4IDExMy4yOTdMMTEzLjI5OSAxMTIuMDMyTDExMi4wMDMgMTEyLjAwMUwxMTEuOTk2IDExMC41NzdIMTEzLjM2MkwxMTMuMzgxIDExMS45MTVMMTE0LjY0NiAxMTEuOTIzTDExNC42NTMgMTEzLjE2OEwxMTUuOTM3IDExMy4xNTZMMTE1Ljk1MyAxMTEuOTE1TDExNy4yNDEgMTExLjkwNFYxMTAuNTg5TDExOC42MTEgMTEwLjU3N1YxMTEuOTdMMTE3LjM1NCAxMTEuOTk3QzExNy4yMzcgMTEyLjQxOSAxMTcuMyAxMTIuODEzIDExNy4zMTEgMTEzLjI5M0gxMTYuMDEyTDExNi4wMDQgMTE0LjUzOEwxMTcuMzAzIDExNC41NjVDMTE3LjI4NCAxMTUuMDI5IDExNy4yNDkgMTE1LjQxNSAxMTcuMzQ2IDExNS44MjFMMTE4LjYxNSAxMTUuODM3VjExNy4yNjVMMTE4LjYzNCAxMTcuMjU3WiIgZmlsbD0iI0IyQkNDMSIvPgo8cGF0aCBkPSJNMTMxLjM1NCAxMTUuODhIMTI5Ljk0NUwxMjkuODk4IDExNC42ODJDMTI5LjUzOSAxMTQuNjI3IDEyOS4yMzQgMTE0LjYyNyAxMjguOTAzIDExNC42ODJMMTI4Ljg4NyAxMTUuODY4TDEyNy42NzcgMTE1Ljg5NUwxMjcuNjYyIDExNy4yNTdIMTI2LjI0MVYxMTUuODI5SDEyNy41MTNMMTI3LjUxNyAxMTQuNTQ5TDEyOC44NzUgMTE0LjUyMkwxMjguODYgMTEzLjI5N0wxMjcuNTAxIDExMy4yNzNMMTI3LjQ4NiAxMTEuOTgyTDEyNi4yMjkgMTExLjk2NlYxMTAuNTY5SDEyNy42NDJWMTExLjg5MkwxMjguODQ4IDExMS45MDdMMTI4Ljg2NCAxMTMuMTY4TDEyOS45ODggMTEzLjE0OEwxMjkuOTk5IDExMS44OTZMMTMxLjM4MSAxMTEuODY1TDEzMS40MDQgMTEwLjU2MUgxMzIuNzQ3TDEzMi43NTEgMTExLjk0N0wxMzEuNDYzIDExMS45NjZMMTMxLjQ1NSAxMTMuMjY5TDEzMC4yOTIgMTEzLjI4NUwxMzAuMjg0IDExNC41MThMMTMxLjQyOCAxMTQuNTM3TDEzMS40NDMgMTE1Ljc5NEMxMzEuNDQzIDExNS43OTQgMTMxLjQ1MSAxMTUuODMzIDEzMS40NzEgMTE1LjgyOUgxMzIuNzY2VjExNy4yNDJIMTMxLjRWMTE1LjkxMUwxMzEuMzU3IDExNS44OEgxMzEuMzU0WiIgZmlsbD0iI0IyQkNDMSIvPgo8L2c+CjxwYXRoIGQ9Ik0zNjYuMzMxIDMyLjY1NjVDMzY1LjE3MiAzMS4xNTQyIDM2NS41MjMgMjkuMzM1OSAzNjYuNTIyIDI3Ljg2ODdDMzY4Ljc0NyAyNC41OTg3IDM3Mi4xMzEgMjMuNzMyNSAzNzUuMDkzIDIxLjIxMTdDMzc2LjM5NyAyMC4xMDM1IDM3Ni44ODQgMTguMzgyNyAzNzYuMTc4IDE2LjgwMjRDMzc1LjUyNiAxNS4zNDMgMzczLjg0IDE0LjQxNDMgMzcyLjA5MiAxNC42OTUzQzM2OC4zNjUgMTUuMjk2MiAzNjguMDA5IDE5LjEyNDEgMzY1LjM2MyAxOC4yNjU3QzM2NC4zOTEgMTcuOTQ5NiAzNjMuNzIgMTcuMDgzMyAzNjMuNDUxIDE2LjM1NzZDMzYyLjk5OCAxNS4xNDAxIDM2My4zMDYgMTQuMTY0NiAzNjMuOTM1IDEzLjE4MTNDMzY1LjU5NCAxMC41ODY0IDM2OC40NDMgOS4yMDg5NiAzNzEuNDgzIDkuMDQxMTdDMzc0LjE0NSA4Ljg5Mjg5IDM3Ni4zNSA5Ljc1MTM1IDM3OC40MyAxMS4yOTY2QzM4MS4wMjkgMTMuMjI4MSAzODIuMzA5IDE2LjEyNzMgMzgxLjg5NiAxOS40MDEyQzM4MS43MTIgMjAuODQ0OSAzODEuMzY1IDIyLjA3MDIgMzgwLjQ2NyAyMy4yOTE1QzM3Ny4zNDUgMjcuNTQwOSAzNzIuODE4IDI4LjI3NDUgMzcyLjAwNiAzMC4wMTQ4TDM3MC43NTcgMzIuNjk1NUMzNzAuMzc4IDMzLjUxMTEgMzY5LjQ2NSAzMy43MzM1IDM2OC42NTMgMzMuNzg4MUMzNjcuODQyIDMzLjg0MjggMzY2Ljk1MiAzMy40NjA0IDM2Ni4zMjcgMzIuNjUyNkwzNjYuMzMxIDMyLjY1NjVaIiBmaWxsPSIjMDcyQjQzIi8+CjxwYXRoIGQ9Ik0zNjYuNzE4IDQzLjk5NTlDMzY4LjczMyA0My45OTU5IDM3MC4zNjcgNDIuMzYyNCAzNzAuMzY3IDQwLjM0NzRDMzcwLjM2NyAzOC4zMzI0IDM2OC43MzMgMzYuNjk5IDM2Ni43MTggMzYuNjk5QzM2NC43MDIgMzYuNjk5IDM2My4wNjggMzguMzMyNCAzNjMuMDY4IDQwLjM0NzRDMzYzLjA2OCA0Mi4zNjI0IDM2NC43MDIgNDMuOTk1OSAzNjYuNzE4IDQzLjk5NTlaIiBmaWxsPSIjMDcyQjQzIi8+CjxwYXRoIGQ9Ik0xMzIuNDk3IDIwNy4xNzNMMTI2LjQ2MyAxODkuODM2QzEyNS45MzYgMTg4LjMxOCAxMjUuMjQ2IDE4Ni44MzkgMTI1LjQ3NiAxODUuMTc3QzEyNS44NjYgMTgyLjMxNyAxMjkuMDcgMTc5LjI2MSAxMzIuMzg4IDE3OS45ODdMMTUwLjI1MSAxODMuOTAxTDE5MC4wNCAxOTIuNzIzTDIwMy4yNDggMTk1LjUzN0MyMDYuMyAxOTYuMTg4IDIwOS4wNzEgMTk3Ljk5NSAyMTAuMTM2IDIwMS4wNDNMMjE1LjcwMiAyMTYuOTUxTDIyMC4yNDQgMjMwLjY4N0wyMzIuOTY0IDIzMC41NThMMjMwLjA2NCAyMjYuNzczQzIyNy43MSAyMjIuNjQxIDIyNi4xOTIgMjE4LjAyNCAyMjYuMTQ1IDIxMy4yMDJDMjI2LjA2IDIwNC40MTggMjMwLjQxNSAxOTQuOTI0IDIzNS4yNTkgMTg3LjYzOUwyNDEuMjg1IDE3OS40MDJDMjQzLjYxMSAxNzYuMjIyIDI0NS4xOTEgMTczLjU0MSAyNDYuMjMzIDE2OS42OTdDMjQ3LjI3NSAxNjUuODU0IDI0OS4yNyAxNjIuODggMjUyLjMwMiAxNjAuNTMxQzI1My43MDcgMTU5LjQ0MyAyNTQuNjI0IDE1OC4wNDYgMjU1LjEyNCAxNTYuMjgyQzI1Ni45NyAxNDkuNzM0IDI1OS42NTEgMTQzLjU5MiAyNjMuNTAzIDEzNy45NThMMjY0LjkyIDEzNi41OTZMMjY2Ljk1NyAxMjguMzA0QzI2OC4yNjUgMTIyLjk3NCAyNzAuMTYyIDEyMC42OTkgMjc0LjIyMSAxMTcuMjE4TDI4MS4wOTMgMTExLjMxOEwyNzkuMjQzIDEwNy41NDFMMjc2LjMzMiAxMDAuNjgxQzI3NC42MjYgOTYuNjYyMiAyNzMuNTU3IDkyLjUzNzcgMjczLjExMiA4OC4xMjQ0QzI3MS44NzUgODcuNDY1IDI3MC42NzMgODcuMDA0NSAyNjkuNzAxIDg2LjAxMzRDMjY2LjkxMSA4My4xNzI3IDI2Ni41MjggNzguMSAyNjcuMDY3IDc0LjE3ODRDMjY3LjI2NiA3Mi43MjMgMjY4LjEwMSA3MS42MDMxIDI2OS41MTQgNzEuMzIyMUwyNzIuMjg5IDcwLjc2NDFDMjcxLjk0NSA2OC44MDE0IDI3Mi44NDMgNjcuNTM3MSAyNzEuODMyIDY2LjMxMThDMjcwLjY3MyA2NC45MDcxIDI2OS41MTggNjMuNDI4MiAyNjguOTMyIDYxLjY2ODRDMjY3LjUwOCA1Ny4zOTU2IDI2Ny45OTUgNTIuOTE2IDI3MC4wMDIgNDguOTM1OUMyNzAuMTc3IDQ4LjU4NDcgMjcwLjU0IDQ3Ljc2NTMgMjcwLjIwMSA0Ny40ODQzQzI2OC45ODcgNDYuNDc3NiAyNjguMjk2IDQ1LjMxNDggMjY3LjcwNyA0My45MDYxQzI2Ni4xNTMgNDAuMTk5MiAyNjYuMDU2IDM2LjM3MTIgMjY3LjMyNCAzMi41NTExQzI2OC41OTMgMjguNzMxIDI3MS4zNDggMjYuMjE0MSAyNzUuMDY0IDI0Ljg4NzRDMjgwLjQ2MSAyMi45NTk4IDI4NS41MjcgMjUuMzkwOCAyODkuOTk2IDI0LjIwODVMMjk2LjIwMSAyMS44NDM4QzI5OC42OTkgMjAuODkxNyAzMDEuMjYzIDIwLjI1MTggMzAzLjk0NCAxOS45MTIzTDMxMC45NyAxOS44MzgxQzMxMy43MzMgMjAuMDY0NSAzMTYuMzcxIDIwLjc3ODUgMzE4LjkzNSAyMS43Njk3QzMyMi4yOTYgMjMuMDczIDMyNS4yMzQgMjUuMTE3NiAzMjcuMTg2IDI4LjEzMzlDMzI4LjE2MiAyOS42NDQgMzI4LjU0IDMxLjMyNTggMzI5LjE4OCAzMi45NzI1QzMzMi42NSAzMy4xMzY0IDMzNi4xMTkgMzQuMTIzNiAzMzguNTkgMzYuNDg4M0MzNDEuNTM2IDM5LjMwNTYgMzQyLjkwNiA0NS4zNjE2IDM0My4wMjcgNDkuNDkzOUMzNDMuMTU2IDUzLjk1MDEgMzQyLjYzMyA1OC4yMTg5IDM0MS41NjggNjIuNTAzNEwzMzkuNTE5IDY5LjQyOTZDMzQxLjcyIDc2LjUzOTIgMzQwLjkwNCA4MS44NzcyIDMzNi4yNiA4Ny42NDA2QzMzNS4zIDg4LjgzMDcgMzM0LjI3MyA4OS42NDYyIDMzMy4wNzEgOTAuNTUxNUwzMzAuMzA4IDkzLjYxODZDMzMwLjE3NSA5My43NjI5IDMzMC4wODIgOTQuMDE2NiAzMzAuMTEzIDk0LjEyOTdDMzMwLjE0OCA5NC4yNzAyIDMzMC40OTIgOTQuMzEzMSAzMzAuNjk0IDk0LjMxMzFMMzQ0LjMwNCA5NC4zMjA5TDM0Ni4wMjEgOTQuNzQyNEMzNDguNjYzIDk1LjAwNzcgMzUxLjIxOSA5NS41NDYyIDM1My41NzcgOTYuNjk3M0wzNTguNTcyIDk5LjEzMjJDMzYxLjk0NCAxMDEuMjI0IDM2NC4wNTYgMTA0LjcwOCAzNjQuMzMzIDEwOC42OTZDMzY0LjM5OSAxMDkuNjQ4IDM2NC43OTcgMTEwLjIxIDM2NS42NDggMTEwLjYwNEMzNzAuNTU4IDExMi44NiAzNzMuMTM4IDExNy45MzYgMzczLjUxNiAxMjMuMjI3QzM3My41NTUgMTIzLjc3IDM3My43OTMgMTI0LjE5OSAzNzQuMjY2IDEyNC40NTdDMzgxLjIyOCAxMjguMjU3IDM4Ni42MzQgMTMzLjA0MSAzOTAuNTI1IDE0MC4wMTRDMzkyLjQ3NiAxNDMuNTE0IDM5NC4wODggMTQ3LjA1IDM5NS4yMzIgMTUwLjkyMUwzOTkuMjQgMTY0LjQ5Mkw0MDUuNDEgMTkzLjIzMUM0MDYuNDUyIDE5OS4zOCA0MDcuMTQzIDIwNS4zMDggNDA3LjQ3NSAyMTEuNDk2QzQwNy44MTQgMjE1LjgxNiA0MDcuNTg0IDIxOS45NDQgNDA3LjE4MiAyMjQuMjc2QzQwNi44MTUgMjI4LjIxMyA0MDUuOTY4IDIzMi4wMDIgNDA0LjczMSAyMzUuODFMNDQyLjM0NyAyOTEuNjMzQzQ0My4wMDYgMjkyLjYwOSA0NDMuMzYxIDI5My42MzEgNDQzLjM0MiAyOTQuNzU5TDQ0My4yNTIgMjk5LjYwOUM0NDMuMjI1IDMwMS4wMjYgNDQyLjAwMyAzMDIuMzcyIDQ0MC44MDUgMzAzLjA4NkM0MzkuODA2IDMwMy42ODMgNDM4LjY5MyAzMDMuNzM3IDQzNy40NTIgMzAzLjczN0g3Ni42MjgxQzc0Ljc4OTkgMzAzLjczNyA3My4wNDkyIDMwMy4zNzEgNzEuODUxMSAzMDEuOTg5QzY5LjY2OTQgMjk5LjQ3MiA3MC4yNjI2IDI5My42OTcgNzEuMjg5MSAyOTIuMjAzTDg0LjA5MDMgMjczLjU2N0wxMTAuNDAzIDIzNS4zMDdDMTEyLjYxNiAyMzIuMDg4IDExNS43MTUgMjMwLjk5MSAxMTkuNTQ4IDIzMC45OTFIMTQwLjQyOEMxNDAuNzM2IDIzMS4wMTQgMTQwLjgzNCAyMzAuODY2IDE0MC43NTIgMjMwLjY0TDEzNy4xOTIgMjIwLjY4MkwxMzIuNTAxIDIwNy4xNzdMMTMyLjQ5NyAyMDcuMTczWiIgZmlsbD0iIzA3MkI0MyIvPgo8cGF0aCBkPSJNMzY2LjkxNyAyMzYuNjIyQzM2OS43MzQgMjM3Ljg4NiAzNTYuNTE5IDI0Mi41NzYgMzQxLjk2NiAyMzguNTkyQzM0MC45MzkgMjM4LjMxMSAzMzkuOTE3IDIzNy45NDUgMzM5LjI4OCAyMzcuMTMzQzMzOS4zMzUgMjM2LjY4IDM0MC4wMyAyMzYuMjk0IDM0MC40MzIgMjM2LjEzNEMzNDUuNTI1IDIzNC4xMjUgMzUzLjI3NiAyMzMuOTY4IDM1OC44MzggMjM0LjU2NUMzNjEuNjc5IDIzNC44NyAzNjQuMzU2IDIzNS40NzEgMzY2LjkyMSAyMzYuNjE4TDM2Ni45MTcgMjM2LjYyMloiIGZpbGw9IiNGRUZFRkUiLz4KPHBhdGggZD0iTTM3Mi4xMDMgMjYzLjEwMUwzNzIuMTQyIDI1Mi45NDhDMzczLjY1MyAyNTIuODE1IDM3NC45NjggMjUyLjE5MSAzNzYuNDM2IDI1MS44NTlMMzc4Ljg2NyAyNTEuMzA5QzM3OS44NzQgMjU1LjA5OCAzNzguNDAzIDI1OS4wNDcgMzc1LjM4NiAyNjEuNTE3QzM3NC40NTMgMjYyLjI4MiAzNzMuNTU5IDI2Mi44ODcgMzcyLjEgMjYzLjEwMUgzNzIuMTAzWiIgZmlsbD0iI0ZFRkVGRSIvPgo8cGF0aCBkPSJNMzczLjM1MiAyNTAuODkyQzM3My4wNDggMjUwLjk4NSAzNzIuNzYzIDI1MS4wNCAzNzIuNTEzIDI1MC44OTJDMzcyLjM0OSAyNTAuNzk0IDM3Mi4xIDI1MC41NCAzNzIuMTA3IDI1MC4yMTNMMzcyLjE3IDI0Ni43ODNMMzcyLjUxMyAyNDUuNTczQzM3NC43ODEgMjQ1LjUyNiAzNzcuNDg1IDI0Ny40MDcgMzc3Ljg5MSAyNDkuNDY3TDM3My4zNTYgMjUwLjg5MkgzNzMuMzUyWiIgZmlsbD0iI0ZFQzA2NyIvPgo8cGF0aCBkPSJNMjQ1LjkzMyAyMzYuMzkyQzI0NC44NCAyMzguMDE1IDI0NC4wMiAyMzkuNTY4IDI0My4zNDkgMjQxLjYxN0wyMjYuODI1IDIzNy4xMDZMMjIyLjEyMiAyMzUuODc3TDIyMS4wNzYgMjMyLjU4N0gyMzQuNzU1QzIzNy44NTQgMjM0Ljc3NiAyNDEuODQ3IDIzNi4zNzIgMjQ1LjkyOSAyMzYuMzg4TDI0NS45MzMgMjM2LjM5MloiIGZpbGw9IiNGRUZFRkUiLz4KPHBhdGggZD0iTTMwOC41MjYgMjUyLjA3NEMzMDkuNjE1IDI1Mi4wNzggMzEwLjU1MiAyNTIuMzYzIDMxMS4zMzYgMjUyLjk4N0MzMTMuODM0IDI1NC45NzMgMzE2LjY4NyAyNTYuMDY2IDMxOS45MTUgMjU2LjMzMUMzMjIuNzU2IDI1Ni41NjUgMzI1LjU1OCAyNTYuNTgxIDMyOC40MDcgMjU2LjMzMUwzMzMuODkxIDI1NS44NTVMMzMzLjk4OCAyNzMuNTQ3QzMzMy45OTYgMjc1LjI4OCAzMzUuNTExIDI3Ni43MzUgMzM2Ljg1MyAyNzcuNjE3QzMzOC41MTIgMjc4LjcwNiAzNDAuMjY0IDI3OS4yNDggMzQyLjE1MyAyNzkuNzU1QzM0NS44NDEgMjgwLjc1IDM0OS41MSAyODAuOTMgMzUzLjM0MyAyODAuOTQ2QzM1Ny43MDYgMjgwLjk2NSAzNjEuODk0IDI4MC42MzcgMzY2LjA0MiAyNzkuMjk1QzM2OS4wNTkgMjc4LjMxOSAzNzIuMzM4IDI3Ni4xNTQgMzcyLjM4OCAyNzMuMDRMMzcyLjQ1NSAyNjkuMDMzQzM3NS45MTcgMjY4Ljc5OCAzNzkuMTQ0IDI2Ny41NjUgMzgxLjY1IDI2NS4yNTFDMzg1LjY1NCAyNjEuNTU2IDM4NS45MTYgMjU1LjM4MyAzODUuMzUgMjUwLjAxOEMzODkuNDM2IDI0OS4zODYgMzkzLjI1MyAyNDguMjYyIDM5Ni43NTQgMjQ2LjE3NEMzOTkuODM3IDI0NC4zMzYgNDAyLjAzNCAyNDEuNTM1IDQwMy41MjUgMjM4LjNDNDAzLjQ4NiAyMzguMDU0IDQwMy43NDQgMjM4LjAyMyA0MDMuODEgMjM4LjIyNkw0MDguNTA5IDI0NS4xMjhMNDQwLjQzNCAyOTIuNzY1TDc2LjIyMjIgMjkyLjc1M0w3NC4yMzU3IDI5Mi43M0M3My43NjM1IDI5Mi43MjYgNzMuNTc2MSAyOTIuODQzIDczLjYwNzMgMjkyLjYwOUw4OC40MTQ3IDI3MS4wNThMMTEyLjI0OSAyMzYuMzU3QzExMy42NTggMjM0LjMwOCAxMTUuOTMgMjMzLjA5IDExOC4zOTIgMjMzLjA4M0wxNDEuMzk5IDIzMy4wMDlDMTQxLjc2NiAyMzMuMDA5IDE0MS44MDkgMjMzLjI4NiAxNDEuODk5IDIzMy41MzlMMTQ1LjM0OSAyNDMuMTdMMTQ4LjIxOCAyNTAuODI5QzE0OS40MTIgMjU0LjAxNyAxNTIuMDY2IDI1My45NTEgMTUxLjk4NCAyNTUuODc1QzE1MS44MDQgMjYwLjE0NyAxNTYuMDkgMjYwLjgzIDE1OS42MyAyNjEuODY4TDE3MC42NTkgMjY1LjEwM0wxOTAuNDUgMjcwLjg4NkwyMjAuNzY3IDI3OS44MUwyMjguNzE0IDI4Mi4wNTRDMjMwLjc3OCAyODIuNjM1IDIzMi43NDEgMjgyLjc1NiAyMzQuODE4IDI4Mi4wNTRMMjU1LjY5NCAyNzUuMDE4TDI5Ni4xMjcgMjYxLjIyNEwyOTcuNTk4IDI2MC40ODdDMjk5Ljc0OSAyNTkuNDEgMzAwLjUyMiAyNTYuNjU5IDI5OS4wODkgMjU0LjY2MUMyOTguNDg0IDI1My44MTQgMjk3LjQ0NiAyNTMuMzM0IDI5Ni40NTkgMjUzLjAwM0wyODYuNjU5IDI0OS43MDlMMjg2LjI1MyAyNDkuNjMxQzI4Ni4xNTkgMjQ5LjYxMiAyODYuMDg5IDI0OS41MSAyODYuMjI2IDI0OS40MjhDMjg2LjI4NCAyNDkuMzkzIDI4Ni40MTMgMjQ5LjI1MyAyODYuNTY1IDI0OS4yNDFMMjk0LjUgMjQ4LjU2NkMyOTYuMTc4IDI1MS4wMDUgMjk5LjY2MyAyNTIuMDMxIDMwMi40NTQgMjUyLjA0N0wzMDguNTIyIDI1Mi4wNzhMMzA4LjUyNiAyNTIuMDc0WiIgZmlsbD0iI0ZFRkVGRSIvPgo8cGF0aCBkPSJNMjIzLjQ4OCAyNzMuNjg0TDE5My4wNSAyNjQuNzkxTDE2NC4zMDEgMjU2LjQ3MkwxNTMuMzU4IDI1My4zMzhDMTUxLjYyMSAyNTIuODM5IDE1MC4zNjggMjUxLjgxNyAxNDkuNzQgMjUwLjA2MUwxNDEuNjUzIDIyNy41MTFMMTMwLjExNiAxOTQuNzZMMTI5LjYwNSAxOTMuNDQyTDEyNy43OTggMTg3Ljg2NkMxMjcuMzg0IDE4Ni41OTMgMTI3LjA4NCAxODUuMDUyIDEyNy42NDIgMTg0LjU5OUMxMjcuODY4IDE4NC40MTYgMTI4LjE0OSAxODQuMzU4IDEyOC41MDggMTg0LjQzNkwxNDIuODg2IDE4Ny42MzlMMTk1LjA0OCAxOTkuMzFMMjAwLjQ0MSAyMDAuNTY3QzIwMi4xODYgMjAwLjk3MyAyMDMuMzU3IDIwMi4wNDYgMjAzLjk2NiAyMDMuNzM5TDIwOS44OSAyMjAuMjQ5TDIyNy44NDMgMjcwLjk2QzIyOC4zODIgMjcyLjQ4MiAyMjkuMjY0IDI3My42MSAyMjkuNTI5IDI3NS4yNDlMMjIzLjQ5OSAyNzMuNjhMMjIzLjQ4OCAyNzMuNjg0WiIgZmlsbD0iI0ZDODQwNCIvPgo8cGF0aCBkPSJNMjY1LjI5NSAyNTcuMTA0TDI3MS4xMTggMjU4Ljg1NkwyNTkuMzk0IDI2Mi41MzlMMjQ4LjgyMSAyNjUuODY4TDIzOC4zNTcgMjY5LjI1NUMyMzYuOTQxIDI2OS43MTEgMjMzLjUyMiAyNjkuNTA4IDIzMy4wMDMgMjY4LjAxOEwyMjkuODMgMjU4Ljg3MUwyMjUuMzQ1IDI0NS40MjlMMjM3Ljg5MyAyNDguODI0TDI0NC4yOTQgMjUwLjQ1MUMyNDQuNzYyIDI1MC41NjggMjQ1LjIzIDI1MC44NDUgMjQ1LjQ0OSAyNTEuMjYyQzI0Ni40MzYgMjUzLjE2NyAyNDkuMDY3IDI1Mi42NDQgMjUwLjQzMyAyNTMuNTA2QzI1MS40OTQgMjU0LjE3NyAyNTIuMzkyIDI1NC42NDkgMjUzLjc2MiAyNTQuNTM2TDI1NS41ODUgMjU0LjM4NEwyNjUuMjk1IDI1Ny4xVjI1Ny4xMDRaIiBmaWxsPSIjRkVDMDY3Ii8+CjxwYXRoIGQ9Ik0yOTMuNTI4IDI2MC40NjdMMjgyLjk1MSAyNjQuMDU3TDI1My45NTcgMjczLjg5OEwyMzUuMTUzIDI4MC4yNTlDMjMzLjA1IDI4MC45NjkgMjMxLjA5NCAyODEuMDQ3IDIyOC45NzkgMjgwLjQ1TDIyMC44NTcgMjc4LjE2M0wxOTIuMTA5IDI2OS42NTNMMTU2LjkzNyAyNTkuMzc5QzE1NC42NzMgMjU4LjcxNSAxNTMuMzY5IDI1Ny40MzUgMTUzLjU3MiAyNTUuMDI4TDE4OC43NTYgMjY1LjE0NkwyMTMuODI0IDI3Mi4zNDVMMjI4LjE1OSAyNzYuNTM2QzIzMC40MDMgMjc3LjE5MiAyMzIuMzU1IDI3Ny4wNzUgMjM0LjU4NyAyNzYuMzU3TDI4NC43OTMgMjYwLjIzM0wyOTcuOTI2IDI1Ni4xMzZDMjk4Ljg1MSAyNTguODA1IDI5Ni4xMjcgMjU5LjU4MiAyOTMuNTMyIDI2MC40NjNMMjkzLjUyOCAyNjAuNDY3WiIgZmlsbD0iI0ZDODQwNCIvPgo8cGF0aCBkPSJNMjI4Ljg3NyAyNjkuMTc3TDIxOC44MzIgMjQwLjU5OEwyMTMuNTQzIDIyNS41NDhMMjA4LjEzOCAyMTAuNDc0TDIwNS4xOTEgMjAyLjQ1MUMyMDQuNjAyIDIwMC44NTEgMjAzLjIwMSAxOTkuNTkxIDIwMS40MDUgMTk5LjE5M0wxNTIuNTYyIDE4OC4zNDFMMTQ5LjI3OSAxODcuNjY2TDE0Ny40NjEgMTg3LjE5TDEzNS45OTQgMTg0LjU2TDEyOC41MjggMTgyLjk1NkMxMzAuMjMgMTgxLjQxOSAxMzEuMzk3IDE4MS40MjMgMTMzLjU2MyAxODEuOTA3TDE0Ny40NTMgMTg1LjAyNUwxOTkuODk5IDE5Ni41NzFMMjA0LjgxNyAxOTcuOTQ0QzIwNi44NjYgMTk4Ljc2IDIwOC4xNTcgMjAwLjI4OSAyMDguODYgMjAyLjM1OEwyMTQuNTkzIDIxOS4yMzhMMjE3LjE0NiAyMjYuODc4TDIyNC44MDMgMjQ5LjI3MkwyMzEuMDIgMjY4LjA0NUMyMzEuNjIxIDI2OS44NjMgMjMxLjc4MSAyNzEuNjQ3IDIzMC41OTUgMjczLjM3OUwyMjguODc3IDI2OS4xODFWMjY5LjE3N1oiIGZpbGw9IiNGQzg0MDQiLz4KPHBhdGggZD0iTTIzMy4xOTggMjcwLjI4OUMyMzQuOTgxIDI3MS4yOCAyMzYuODI3IDI3MS4zNDIgMjM4LjcwNSAyNzAuNzM4TDI0OC4zMTcgMjY3LjY1MUwyNzEuMTEgMjYwLjQwOUMyNzIuNDEzIDI1OS45OTUgMjczLjgwMyAyNTkuMzkgMjczLjc1NiAyNTguNTQ4QzI3My43NCAyNTguMjU5IDI3My40OTEgMjU3Ljg4IDI3My4xMDggMjU3Ljc2M0wyNjMuMzgyIDI1NC43OUwyNjUuODU3IDI1Mi41NzdDMjY3LjcxOCAyNTAuOTExIDI3MS43MzggMjQ2Ljk3NCAyNzMuMTUxIDI0Ny40MDdMMjg1LjEwMiAyNTEuMDY3TDI5Ni44OTIgMjU0Ljk0NkwyNjAuNjU4IDI2Ni4zMjhMMjM2Ljc0MiAyNzQuMDM5QzIzNC44NjQgMjc0LjY0NCAyMzMuMjQ1IDI3NS40MDEgMjMxLjA4NiAyNzUuNDY3QzIzMi40MDkgMjczLjg4NyAyMzMuMTU5IDI3Mi41MzYgMjMzLjIwMiAyNzAuMjg1TDIzMy4xOTggMjcwLjI4OVoiIGZpbGw9IiNGQzg0MDQiLz4KPHBhdGggZD0iTTI0Mi40NjMgMjQ4LjM3MUwyMjQuNzk1IDI0My41OTVMMjIyLjc4MSAyMzcuNzQ2TDI0Mi41NTMgMjQzLjEwM0MyNDIuMzM4IDI0NC44MzYgMjQyLjE0NyAyNDYuNTMzIDI0Mi42NDcgMjQ4LjE0MUMyNDIuNjU0IDI0OC4xNzIgMjQyLjY3IDI0OC4yMTUgMjQyLjcyOSAyNDguMjYyQzI0Mi43NzUgMjQ4LjM3MSAyNDIuNjQzIDI0OC4zNCAyNDIuNjUxIDI0OC40NjhMMjQyLjQ1OSAyNDguMzcxSDI0Mi40NjNaIiBmaWxsPSIjRkM4NDA0Ii8+CjxwYXRoIGQ9Ik0yNTMuMzkxIDI1Mi45MTdDMjUyLjY0NiAyNTMuMTg2IDI1Mi4xMzggMjUyLjU3NyAyNTEuODM0IDI1Mi4xOTVDMjUxLjQyIDI1MS42NzYgMjUxLjUyOSAyNTAuOTE5IDI1MS44MyAyNTAuMjc5QzI1NC44NyAyNDMuNzg2IDI1OC45MzcgMjM4LjM4NiAyNjUuMjAxIDIzNC43NkMyNjYuMzQxIDIzNC4xMDEgMjY3LjM0NCAyMzMuNDAzIDI2OC4zMDQgMjMyLjQ4MkMyNjguMDE5IDIzMi4wNjQgMjY3LjQ4OCAyMzEuOTQzIDI2Ny4wNjcgMjMyLjE1NEMyNTguOTE4IDIzNi4xNjkgMjU0Ljk3MiAyNDAuOTczIDI1MC43MDYgMjQ4Ljc2NUMyNDkuODk4IDI1MC4yNCAyNDguOTMgMjUxLjY4OCAyNDcuNzEzIDI1MS4wNTJDMjQ3LjE2NiAyNTAuNzY3IDI0Ni42NTkgMjQ5Ljk5NCAyNDYuOTA5IDI0OS4yNTNMMjQ4LjY0OSAyNDQuMTQ1QzI1MS4yMDkgMjM4LjY3IDI1My43NSAyMzMuODMyIDI1OS4yMzggMjMwLjkxN0wyNjQuMDczIDIyOC4zNDlDMjY0LjA1IDIyNy44NTggMjYzLjM2NyAyMjcuNjI3IDI2Mi45MDYgMjI3Ljc3NkMyNTkuNzQ5IDIyOC43ODYgMjU2LjkzOSAyMzAuNDEgMjU0LjM5NCAyMzIuNTMyQzI1MC4zMjcgMjM1LjkyNyAyNDcuNDU5IDI0Mi41MSAyNDUuNjIxIDI0Ny41NTlDMjQ1LjUxNSAyNDcuODQ4IDI0NS4yNjkgMjQ4LjA2NyAyNDUuMTI5IDI0OC4xOTFDMjQ0Ljk2NSAyNDguMzQgMjQ0LjMxNyAyNDguMjY2IDI0NC4yNyAyNDcuOTk2QzI0My44NDkgMjQ1LjY3OCAyNDQuMTM4IDI0My40MDQgMjQ1LjEyNSAyNDEuMjExQzI0OC4zMjUgMjM0LjEwMSAyNTEuOTQ3IDIzMS4xOSAyNTguNTkgMjI3LjM1QzI2MS4zMjIgMjI1Ljc3NCAyNjQuMTA0IDIyNC41ODggMjY3LjIzMSAyMjQuMUMyNjkuOTY2IDIyMy42NzEgMjcyLjY2MyAyMjMuNjcxIDI3NS4zOTEgMjI0LjExMkwyODIuNzgzIDIyNS4zMDZMMjk0LjI3NyAyMjcuNDMyQzI5NC45MjkgMjI3LjU1MyAyOTUuNTI2IDIyNy44MzQgMjk1Ljg0NiAyMjguNDUxQzI5OC4wNDcgMjMyLjcxMiAyOTkuMjYxIDIzNy4zNzUgMjk5LjA4NSAyNDIuMjA2QzI5OS4wMzUgMjQzLjU4NyAyOTguODA0IDI0NC45NTcgMjk3LjkxNSAyNDUuOTg3QzI5Ny40MTkgMjQ2LjU2NCAyOTYuNDUxIDI0Ni41OTIgMjk1LjcyOSAyNDYuNjdMMjg5Ljg2MyAyNDcuMzA2QzI4Ny4xIDI0Ny42MDYgMjg0LjQ2OSAyNDcuMTI2IDI4MS44MDQgMjQ2LjM2NUwyNzYuNzgxIDI0NC45MzNDMjcyLjkzMyAyNDMuODM3IDI2OS4yNCAyNDcuMjkgMjY2LjI2MyAyNDkuODY5TDI2Mi4xODggMjUzLjQwMUMyNjEuNTI5IDI1My45NzQgMjYwLjQ3OSAyNTQuMjY3IDI1OS43MjEgMjUzLjc4M0MyNTkuMzEyIDI1My41MTggMjU5LjM1NSAyNTIuNzY5IDI1OS41MjYgMjUyLjMxMkMyNjEuMzkyIDI0Ny4zNjggMjY0Ljc4MyAyNDMuMzggMjY5LjIzMyAyNDAuNTQ3TDI3Mi45MjEgMjM4LjM4NUMyNzMuMTk0IDIzOC4yMjYgMjczLjI1NyAyMzcuODE2IDI3My4yMTcgMjM3LjYyMUMyNzMuMTU5IDIzNy4zNDQgMjcyLjYzNiAyMzcuMTAyIDI3Mi4yNTMgMjM3LjI3N0MyNjcuMjQ2IDIzOS41OTkgMjYzLjA3IDI0My4wNDUgMjU5LjY1MSAyNDcuMzMzTDI1Ni4zMTggMjUwLjg2OEMyNTUuNTIyIDI1MS43MTEgMjU0LjU5NyAyNTIuNDY4IDI1My4zODcgMjUyLjkwOUwyNTMuMzkxIDI1Mi45MTdaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjgzLjc2NyAxMzUuMjIyQzI4My40MjMgMTM1LjI2OSAyODMuMjQ4IDEzNS41NjIgMjgzLjIwOSAxMzUuNzFDMjgzLjEzOCAxMzUuOTY0IDI4My4yODcgMTM2LjI2OCAyODMuNTg3IDEzNi40MTNDMjg0LjA3OSAxMzYuNjUxIDI4NC42MTQgMTM2LjYwOCAyODUuMTUyIDEzNi41NTNMMjg5LjMxNyAxMzYuMTI0QzI5MS4yOTkgMTM2LjE0NyAyOTMuNzQyIDEzNy4yMjQgMjk0LjIxMSAxMzkuMzlDMjk1LjEyOCAxNDMuNjE2IDI5MS4zODkgMTQ3LjYyNyAyODcuMDk2IDE0Ny4zNTRDMjg2LjkwMSAxNDYuNjEzIDI4Ny4wMTggMTQ1Ljc5NyAyODcuMDE4IDE0NS4wMDVDMjg3LjAxOCAxNDQuMzUzIDI4Ny40NjcgMTQzLjkxNiAyODcuNjkzIDE0My4zNjZDMjg3LjgzIDE0My4wMzQgMjg3LjMzOCAxNDIuNzY1IDI4Ny4xMjMgMTQyLjcwM0MyODYuODQyIDE0Mi42MjEgMjg2LjQ4NyAxNDIuNTkzIDI4Ni4yMTggMTQyLjg4NkMyODUuMTQxIDE0NC4wNjggMjg1LjkyOSAxNDcuMzMxIDI4NC4wODcgMTUxLjg5MkMyODMuMzMgMTUzLjc2OSAyODEuOTQ4IDE1NS4wMjUgMjgwLjI3NCAxNTYuMDk1QzI3OC41OTkgMTU3LjE2NCAyNzcuNjcxIDE1OC45NTkgMjc2Ljk2IDE2MC44MjRDMjc1Ljg3OSAxNjEuMDkzIDI3NC43NDcgMTYwLjg4MiAyNzMuNjQzIDE2MC41ODZDMjY5LjQxMiAxNTkuNDUgMjY0LjUxOCAxNTUuOTYyIDI2Mi4zMDUgMTUyLjA0QzI2Mi45NjEgMTUxLjc4NyAyNjMuNTUgMTUxLjYwMyAyNjQuMDM4IDE1MS4xMzFMMjY2LjE3MyAxNDAuMTU1TDI2OS4xODYgMTI3LjE5NkMyNjkuNjYyIDEyNS4xNDcgMjcwLjY5MiAxMjMuMjMxIDI3Mi4xNiAxMjEuODI3TDI3NC44NzIgMTE5LjIyOEwyODEuNTg5IDExMy4wNzhDMjgyLjU3MyAxMTIuMTc3IDI4My42MDcgMTExLjYzMSAyODQuOTg4IDExMS42ODFDMjg3LjQ2MyAxMTEuNzY3IDI4OS44MjQgMTEyLjI0NyAyOTIuMTk3IDExMi45NTdMMjk4LjY2IDExNS40NDdDMjk5LjcxIDExNS44NTMgMzAwLjI1NiAxMTcuMDM1IDI5OS42NDcgMTE4LjA1N0MyOTkuNTAzIDExOC4zMDMgMjk4Ljk1NyAxMTguNDI4IDI5OC42NDQgMTE4LjQwNUwyODguODkxIDExNy42MjRDMjg1Ljk3MiAxMTcuMzkgMjg0LjY4IDExOS40MjcgMjgyLjc4NyAxMjEuMDg1TDI3OC42NjYgMTIzLjU5QzI3OC4yOTkgMTIzLjgxMyAyNzguMTcgMTI0LjE5MSAyNzguMzMgMTI0LjUyN0MyNzguNDc4IDEyNC44MzUgMjc4Ljg4NCAxMjQuOTk1IDI3OS4yNzUgMTI0LjgzMUwyODMuMDA2IDEyMy4yNjNDMjg1LjI1NCAxMjIuMzE4IDI4Ny45MTkgMTIyLjEwNCAyOTAuMjE4IDEyMy4xNDZDMjkyLjUxNyAxMjQuMTg3IDI5My43ODEgMTI2LjYyNiAyOTMuODY3IDEyOC45NkMyOTEuNjUxIDEyNy44NjMgMjg5LjM3NSAxMjcuMTY5IDI4Ny4wMDYgMTI3LjQ4MUwyODEuOTY4IDEyOC42NDdDMjgxLjMwNCAxMjguODg1IDI4MC41NTkgMTI5LjIzMyAyODAuMzkxIDEyOS45NTFDMjgwLjI5MyAxMzAuMzYgMjgwLjgyOCAxMzAuNDg1IDI4MS4xNTIgMTMwLjM5MkwyODYuMTQ4IDEyOC45NDRDMjg4LjgwNSAxMjguMTcxIDI5NC4yODUgMTI5LjU5NiAyOTQuNDI1IDEzMy4yMjhDMjk0LjQ2MSAxMzQuMTIyIDI5NC4yMjMgMTM0LjkyMiAyOTMuOTE4IDEzNS43NzNDMjkxLjk1MSAxMzQuODEzIDI4OS45MTQgMTM0LjQwNyAyODcuNzg3IDEzNC42ODhMMjgzLjc2MyAxMzUuMjE5TDI4My43NjcgMTM1LjIyMloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNzQuMTE5IDg1Ljk2MjdDMjcyLjc4OCA4NS43NTU5IDI3MS43MTUgODUuMTUxMSAyNzAuNzY3IDg0LjM2NjdDMjY4LjY4NiA4Mi42NDk4IDI2OC4zODYgNzcuNzUyNyAyNjguNjc4IDc0Ljc5NDlDMjY4LjgzMSA3My4yNzMxIDI3MC43MzUgNzMuMTQ4MyAyNzIuNjk1IDczLjI4MDlMMjcyLjk4NyA4MC4xNzJMMjc0LjEyMyA4NS45NjY2TDI3NC4xMTkgODUuOTYyN1oiIGZpbGw9IiNGRUZFRkUiLz4KPHBhdGggZD0iTTI5MC45NiAxMjEuMTUyTDI4OC4zOTIgMTIwLjU5NEMyODguMTQ2IDEyMC4zNzEgMjg4LjI1OSAxMTkuNjQxIDI4OC40MzkgMTE5LjI4MkwyOTEuNDYzIDExOS41NzlMMjkwLjk2IDEyMS4xNTJaIiBmaWxsPSIjRkNCRjc0Ii8+CjxwYXRoIGQ9Ik0yODUuODEyIDEyMC40MzhDMjg2LjM1NCAxMTkuODggMjg2LjcxMyAxMTkuNjI2IDI4Ny4yODcgMTE5LjM3NkMyODcuMjcyIDExOS43OTQgMjg3LjE5NCAxMjAuMjc4IDI4Ni45NDggMTIwLjQ5MkMyODYuNzAyIDEyMC43MDcgMjg2LjAzNCAxMjAuNzIyIDI4NS44MDggMTIwLjQzOEgyODUuODEyWiIgZmlsbD0iI0ZFRkVGRSIvPgo8cGF0aCBkPSJNMjk4Ljk4IDExMy42NTJDMjk1LjgxOSAxMTIuNTcxIDI5Mi45NzggMTExLjMwNyAyODkuNzg1IDExMC42NTlDMjg3LjQ5IDExMC4xOTUgMjg1LjI3MyAxMDkuOTE0IDI4Mi45NDMgMTEwLjEyNEMyODAuOTM3IDEwNy4xNTEgMjc5LjQ5NyAxMDQuMDkyIDI3OC4xNTggMTAwLjc5OEMyNzYuNDg0IDk2LjY3NCAyNzUuMzEzIDkyLjUyNjEgMjc0LjkxNSA4OC4wNTgyQzI3OS4xODUgODguNjk4MiAyODQuMTY1IDg3LjY3OTcgMjg1LjU3IDgzLjYyNTVDMjg2LjM4NiA4MS4xMzIgMjg2LjU2NSA3OC41NjQ1IDI4Ni41NTcgNzUuOTUwMUwyOTAuNDk5IDc2LjE5NTlDMjkwLjU4NSA3OC44MjU5IDI5MC45NiA4MS4yNjQ3IDI5MS43MzIgODMuNzE1MkMyOTIuMjcxIDg1LjQyMDQgMjkzLjQwNyA4Ni43MDAzIDI5NS4wODUgODcuNDMzOUMyOTguOTE4IDg5LjExMTggMzAzLjI4MSA4OS40MDA1IDMwNy4yOTcgODguMjE4MkMzMDkuMDM0IDg3LjcwNyAzMTAuMTk3IDg2LjQ4MTggMzEwLjc5OCA4NC44MzlDMzExLjc4NSA4Mi4xMzg4IDMxMi4xNiA3OS4zOTU2IDMxMi4zNjcgNzYuNTE5OEwzMTguNDA0IDc0LjQ4NjhMMzIxLjY1NSA3My42OTQ3TDMyMS44NTUgNzcuNzkxOUMzMjEuODc4IDc4LjI5MTMgMzIyLjA4OSA3OC43MjQ1IDMyMi4zNjYgNzguOTgyQzMyMi43NjQgNzkuMzQ0OSAzMjMuMzE0IDc5LjI1MTIgMzIzLjgzMyA3OS4yOTgxQzMyNS4zNzUgNzkuNDQyNCAzMjYuNTk2IDc4LjczMjMgMzI2Ljc0NSA3Ny4xNDAyQzMyNi45OTggNzQuNDUxNyAzMjguMTIyIDcyLjAzNjMgMzMwLjE1NiA3MC4yMjE4QzMzMi4wMjEgNjguMTEwOCAzMzUuMzA0IDY3Ljk4NTkgMzM3LjIzMiA3MC4wOTMxQzMzOS42MTIgNzQuNDAxIDMzOS4zNDMgNzkuNjMzNiAzMzYuNjQ2IDgzLjc0NjRDMzM1LjU1IDg1LjQyMDQgMzM0LjM1OSA4Ny4wOTA1IDMzMi41NzYgODguMDYyMUMzMzAuNTc3IDg5LjE1MDggMzI4LjAwOSA4Ny4yNTA1IDMyNy40OSA4Ny41NTA5QzMyNi44MzUgODcuOTI5NCAzMjguNCA4OC42NzQ3IDMyOC4xOTcgOTAuMjkwMkMzMjcuNjc4IDk0LjQwMyAzMjguMDc2IDk4LjMyNDYgMzI5LjIwNyAxMDIuMjg5TDMzMi45NjYgMTEzQzMzMy4zNjQgMTE0LjEzMiAzMzMuNzg1IDExNS4xNDYgMzMzLjc4OSAxMTYuNDE4QzMyNy40NDcgMTIxLjI5NiAzMjEuNjk1IDEyNi42MzQgMzE2LjA2MyAxMzIuMjg0TDMwNy42OTkgMTQwLjY3NEMzMDMuMDk0IDEzNC44ODcgMzAxLjU2NCAxMjcuODM2IDMwMS4wNjQgMTIwLjk4NEwzMDIuOTczIDEyMC41N0MzMDUuNjMgMTE5Ljk5MyAzMDcuOTY0IDExOC40NzkgMzA5Ljg0OSAxMTYuNTI4QzMxMi4xNzYgMTE0LjEyIDMxNC4xMzUgMTExLjQ5NCAzMTUuMzY4IDEwOC4zOTZDMzE1LjQ4OSAxMDguMDkxIDMxNS4zNzIgMTA3LjY5MyAzMTUuMjIgMTA3LjU2MUMzMTQuOTkzIDEwNy4zNjYgMzE0LjU2IDEwNy40MzIgMzE0LjI2IDEwNy42NjZDMzExLjA5OCAxMTAuMTA1IDMwNy43NDIgMTEyLjExMSAzMDMuODc0IDExMy4yNjJDMzAyLjM2IDExMy43MTQgMzAwLjU5MiAxMTQuMjAyIDI5OC45NzYgMTEzLjY0OEwyOTguOTggMTEzLjY1MloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yODQuMDM2IDkzLjY4NUMyODUuNjM2IDk1LjI0MTkgMjg3Ljk1NSA5NC4yMDc5IDI4OC4xNjkgOTUuMjU3NUMyODguNTY3IDk3LjIyMDMgMjgyLjQ3OSA5Ni40MjQyIDI4MS44IDkzLjUwNTVDMjgxLjU4NSA5Mi41ODQ2IDI4MS43NjEgOTEuNTc0IDI4Mi40MiA5MC44NDQzQzI4My44MzcgODkuMjcxNyAyODcuMzQ2IDg2LjA5NTUgMjg3LjYxNSA4Ny40MTgzQzI4Ny43NzkgODguMjE0MyAyODcuMDAyIDg4LjkzMjMgMjg2LjQ0IDg5LjM4ODhMMjg0LjA2IDkxLjMyMDNDMjgzLjMyNiA5MS45MTM0IDI4My4yNzEgOTIuOTQ3NSAyODQuMDMyIDkzLjY4ODlMMjg0LjAzNiA5My42ODVaIiBmaWxsPSIjMDcyQjQzIi8+CjxwYXRoIGQ9Ik0zMzAuNTIzIDc5LjA5NTFMMzMwLjk2NCA4MC42OTFDMzMxLjEzOSA4MS4zMjcgMzMwLjYyOCA4MS44NDk5IDMzMCA4MS45MTI0QzMyOC4wMzcgODIuMTE1MyAzMjguMDg3IDc0LjY0MjggMzMzLjg1MiA3Mi41NjNDMzM0LjA2NiA3Mi40ODQ5IDMzNC4yOTcgNzIuNTI3OSAzMzQuMzk4IDcyLjYwMkMzMzQuODk4IDcyLjk3NjYgMzM0LjMxMiA3My44MzEyIDMzMy4zNiA3NC42MDc3QzMzMS45NzEgNzUuNzM5MyAzMzAuNzkyIDc3LjEyODQgMzMwLjUxOSA3OS4wOTEyTDMzMC41MjMgNzkuMDk1MVoiIGZpbGw9IiMwNzJCNDMiLz4KPHBhdGggZD0iTTI5Ni4wOTIgMTAyLjk2QzI5NC41MzkgMTAyLjk5OSAyOTIuMjAxIDEwMS42MTQgMjg3LjkxNiAxMDEuOTczQzI4Ny41MzMgMTAyLjAwNCAyODcuMTY2IDEwMS44MzIgMjg3LjE1MSAxMDEuNTEyQzI4Ny4wNjEgOTkuNjYyOSAyOTYuODY1IDEwMC40MzkgMjk2Ljg0NSAxMDIuMzAxQzI5Ni44NDUgMTAyLjYxNyAyOTYuNTI1IDEwMi45NDggMjk2LjA4OCAxMDIuOTZIMjk2LjA5MloiIGZpbGw9IiMwNzJCNDMiLz4KPHBhdGggZD0iTTMwMy4wMTIgNzEuMDA5OUMyOTguOTIyIDcwLjMyNyAyOTIuOTM4IDcwLjc5NTIgMjkwLjM5NCA3NC4wMjIzTDI4Ni4zMTUgNzMuNTUwMUMyODUuNjU2IDcyLjkxOCAyODUuMDc0IDcyLjI2NjMgMjg0LjI0NyA3MS44NzIyQzI4MS4xNDQgNzAuMzg1NSAyNzcuNzcyIDY5Ljk2MDIgMjc0LjI1NiA3MC41NDk0QzI3My44ODkgNjYuMzUwOCAyNzQuMTk3IDYyLjM2NjggMjc0LjY1IDU4LjI2OTZDMjc0LjkyMyA1NS43OTE4IDI3NS4yNTUgNTMuMzg0MiAyNzYuMzI0IDUxLjA3NDJDMjgwLjg1NSA1My4zNjg2IDI4NS40ODQgNTQuNjEzMyAyOTAuNDQ4IDU0LjkwOTlDMjk0LjY5MSA1NS4xNjM1IDI5OC42ODMgNTQuMTM3MyAzMDIuNTk0IDUyLjYzNUwzMDcuNjE3IDUxLjA1ODZDMzExLjIxOSA1MC41NDM1IDMxNC40MiA1Mi43Mjg2IDMxNS4xMTQgNTYuMjU2MUMzMTUuNyA1OS4yMjE3IDMxNC42MDMgNjIuMzM5NSAzMTcuMDgxIDY1LjAyMDJMMzIwLjExIDY3LjY0MjRDMzIxLjEwMSA2OC41MDA4IDMyMS43MzcgNjkuNzAyNyAzMjEuNjg3IDcxLjEwMzVMMzE1LjUwMSA3Mi45NDE0QzMxNC4xODkgNzMuMzMxNiAzMTIuOTgzIDczLjc1MyAzMTEuNTU5IDczLjg1ODRDMzEwLjg3NiA3Mi44NzkgMzA5Ljk1MSA3Mi4xNjEgMzA4Ljc3NiA3MS45NjU5TDMwMy4wMTkgNzEuMDA2TDMwMy4wMTIgNzEuMDA5OVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0zMDYuNzc0IDY3Ljk5MzdDMzA2LjMyMSA2OC42NjA5IDMwNS42MjcgNjkuMDM5NCAzMDQuODQ2IDY5LjE2MDRDMzAwLjY5MyA2OS44MDgxIDI5NC45OTkgNjkuMjExMSAyOTMuMDAxIDY1LjQ2MTJDMjkyLjc5IDY1LjA2MzIgMjkyLjgyOSA2NC42MjIzIDI5My4wNCA2NC40NDI4QzI5My4zNzYgNjQuMTQ2MiAyOTMuOTE4IDY0LjE1MDEgMjk0LjE2IDY0LjQ4OTZDMjk2LjQ2NyA2Ny43NCAzMDEuMTExIDY4LjQ1NDEgMzA0LjkyIDY3LjY2NTlDMzA1LjUwNiA2Ny41NDQ5IDMwNi4xMDcgNjcuNTY4MyAzMDYuNzc4IDY3Ljk5MzdIMzA2Ljc3NFoiIGZpbGw9IiMwNzJCNDMiLz4KPHBhdGggZD0iTTI3Ni4xMjkgNjguNzM4OEMyNzUuNTkgNjguNjM3NCAyNzUuNjE0IDY3LjUxMzYgMjc2LjA0MyA2Ny41MTc1SDI3OC45MTZDMjgzLjQ3OCA2Ny41MzMxIDI4My45NzggNjMuMzMwNiAyODUuMjE1IDYzLjc1OThDMjg1LjU2NiA2My44ODA3IDI4NS44MzEgNjQuMzA2MSAyODUuNjI4IDY0Ljc3MDRDMjgzLjk0NiA2OC42NDUyIDI4MC4zNiA2OS41MzQ5IDI3Ni4xMjkgNjguNzQyN1Y2OC43Mzg4WiIgZmlsbD0iIzA3MkI0MyIvPgo8cGF0aCBkPSJNMzA1Ljc5IDg2LjYxODJDMzAzLjAzMSA4Ny4wOTgxIDMwMC4yNDggODYuOTQ5OSAyOTcuNjE0IDg2LjI2N0MyOTUuMDMgODUuNTk5NyAyOTMuMjgyIDgzLjU4NjMgMjkyLjkyMyA4MC45NDA3QzI5Mi42NDIgNzguODYwOSAyOTIuNjYxIDc2Ljc4ODkgMjkyLjc4MiA3NC42NTQ0QzI5Mi44NDEgNzMuNTkzMSAyOTcuNDU4IDcyLjY1MjcgMjk5LjY0IDcyLjkwNjNMMzA3LjQ3NyA3My44MTk0QzMwOC40MjUgNzMuOTI4NiAzMDkuMjQ0IDc0LjI5NTQgMzEwLjA1MiA3NC44MTQ0QzMxMC4zMDIgNzcuODU0MSAzMTAuMTUgODAuODcwNCAzMDkuMTI0IDgzLjcwNzJDMzA4LjU2MSA4NS4yNjQyIDMwNy41MzkgODYuMzA5OSAzMDUuNzkgODYuNjE0M1Y4Ni42MTgyWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTMwMC41MDIgODMuODE2N0MyOTkuODUgODQuNzk2MSAyOTguNjk1IDg1LjAyMjQgMjk3LjcyNyA4NC44OTM2QzI5NS4xNzEgODQuNTU0MiAyOTQuMDc0IDgwLjY5NSAyOTUuNDkxIDc4LjM1MzhDMjk2LjAwNiA3Ny40OTkyIDI5Ni43NTUgNzYuOTQ1MSAyOTcuNjQxIDc2Ljg4NjZDMjk4LjUyNyA3Ni44MjgxIDI5OS40MTcgNzcuMTgzMSAzMDAuMTA4IDc3Ljk0MDJDMzAxLjUxMyA3OS40ODE1IDMwMS43MzIgODEuOTc0OSAzMDAuNTA2IDgzLjgyMDZMMzAwLjUwMiA4My44MTY3WiIgZmlsbD0iIzA3MkI0MyIvPgo8cGF0aCBkPSJNMjgzLjMyNiA4My43NDYyQzI4Mi41NDUgODUuMzQyMiAyNzguMjU2IDg2Ljg0NDUgMjc2Ljc1NyA4NS45NzQzQzI3NC43NTkgODQuODE1NCAyNzQuMzg4IDc2LjIyMyAyNzQuNTA5IDcyLjgwODdDMjc3LjI1NyA3Mi4zMjg4IDI3OS45MzQgNzIuNDQ1OCAyODIuNTA2IDczLjM5OEMyODMuMzE4IDczLjY5ODQgMjgzLjk3OCA3NC4wNzMgMjg0LjQzIDc0Ljg3NjhDMjg0Ljg0NCA3Ny44NTggMjg0LjY2OCA4MC45OTkyIDI4My4zMjIgODMuNzUwMkwyODMuMzI2IDgzLjc0NjJaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjgyLjI4OCA4My40MjI0QzI4MS4zMjggODQuNDU2NCAyNzkuMjE2IDg0LjIzMDEgMjc4LjMzIDgzLjI4NThDMjc2Ljg2NyA4MS43MjUgMjc2LjYwMSA3OS4zNTI1IDI3Ny40NDQgNzcuNTQyQzI3Ny45NTIgNzYuNDUzMyAyNzguODE4IDc1LjcxMTkgMjc5LjgyNSA3NS42Mzc3QzI4MC45NzIgNzUuNTUxOSAyODEuOTk5IDc2LjAwMDYgMjgyLjYyMyA3Ny4wNTQyQzI4My43MjggNzguOTI3MiAyODMuOTQyIDgxLjYzOTEgMjgyLjI5MiA4My40MjI0SDI4Mi4yODhaIiBmaWxsPSIjMDcyQjQzIi8+CjxwYXRoIGQ9Ik0yNzMuNjE5IDIyMi4xMjlMMjY5LjAxOCAyMjIuMTA2TDI3My43NDggMjE3LjEzNUwyNzMuNjE5IDIyMi4xMjlaIiBmaWxsPSIjRkVGRUZFIi8+CjxwYXRoIGQ9Ik0yNTkuNTM0IDE0OS42ODRMMjYxLjUxMyAxNDQuOTMxTDI2My45MTMgMTQwLjk5TDI2Mi4yOTcgMTQ5LjYyMUMyNjEuMzg4IDE0OS44MzIgMjYwLjU4OCAxNDkuODM2IDI1OS41MzQgMTQ5LjY4NFoiIGZpbGw9IiNGQ0JGNzQiLz4KPHBhdGggZD0iTTI2MC4wNTcgMTQ5LjI3NEwyNjEuOTI3IDE0NC43NzFDMjYyLjE4OCAxNDQuMTQzIDI2Mi41OSAxNDMuNjM1IDI2My4wOTQgMTQzLjE3OUwyNjIuMTE4IDE0OS4wNTVDMjYxLjUzMiAxNDkuMzU2IDI2MC45NzQgMTQ5LjU0NyAyNjAuMDU3IDE0OS4yNzRaIiBmaWxsPSIjRkVDMDY3Ii8+CjxwYXRoIGQ9Ik0zODQuOTQ0IDIxNS43ODVDMzg1LjE1MSAyMTUuMjcgMzg0Ljk5NCAyMTQuNTYzIDM4NC40NzkgMjE0LjE4NUMzNzcuNzIgMjA5LjIwMiAzNzEuNTA2IDIwOC4yNjIgMzYzLjAzMyAyMDguODlMMzYyLjA4OSAyMDIuNDI4TDM1OS44OTIgMTg5Ljk2OUwzNTcuNTY5IDE3OC4wMzJMMzU2LjUzOSAxNzIuNDI5QzM1Ni40NDEgMTcxLjkwMiAzNTUuNzQ3IDE3MS4xOTYgMzU1LjMwMiAxNzEuNzExQzM1NC44NTcgMTcyLjIyNiAzNTQuODk2IDE3My4yOTEgMzU1LjAwOSAxNzMuOTc4TDM1Ni40NjUgMTgyLjg2N0wzNTkuMDMzIDE5Ni42ODhMMzYwLjg1NSAyMDkuMjA2TDM1Mi4zMzYgMjEwLjc1OUMzNDMuNDU3IDIxMi4zNzggMzM0LjY2NCAyMTMuMjggMzI1LjY0OCAyMTMuNkwzMjAuMDU5IDIxNC4wMzdDMzE0LjI2NCAyMTQuNDkzIDMwOS4zMDMgMjE2LjAzMSAzMDUuNzk4IDIyMC44MzRDMzA1LjQyIDIyMS4zNTMgMzA0Ljk1NSAyMjEuNDkgMzA0LjMxNSAyMjEuNTE3QzMwMS4xMTUgMjIxLjY1NyAyOTguMDEyIDIyMS45MjMgMjk0LjkyMSAyMjIuNjZDMjkxLjYzNSAyMjMuNDQxIDI5Mi40IDIyNS4zOTkgMjg5Ljk0OSAyMjQuOTU5TDI3NS42NjEgMjIyLjQwN0wyNzUuNzIzIDIxMy45ODZMMjc1LjY1MyAyMDkuMDI2TDI3NS41NCAxOTkuMjcxQzI3NS41MjggMTk4LjE0MyAyNzUuODI4IDE5Ny4zMjggMjc2LjA5IDE5Ni4yOTRMMjc3LjExNiAxOTIuMjI0TDI3OC4yMzcgMTg4LjA0NUwyNzguOTkgMTg1Ljg5NUwyODAuMTM3IDE4Mi4zMjhDMjgwLjc2MiAxODAuMzg5IDI4MS4wNDMgMTc4LjMzMyAyODAuNjk5IDE3Ni4zMTVMMjc5Ljk1OCAxNzMuODA2TDI3OC43MDUgMTcxLjgwOEwyNzkuNzc4IDE3MC4wMzdDMjgwLjU5NCAxNjguNjg3IDI4MS4zMiAxNjcuNDY5IDI4MS43MTQgMTY1Ljg5N0MyODIuNDg3IDE2Mi44MTggMjgzLjIwMSAxNjEuMjUzIDI4MC42NDggMTU4LjAzOEMyODAuNzgxIDE1Ny41MTkgMjgxLjI2NSAxNTcuMTk1IDI4MS42NzkgMTU2LjkzQzI4My4zNDEgMTU1Ljg3MiAyODQuNTkgMTU0LjQ5MSAyODUuMjU0IDE1Mi42NTNMMjg2LjU0NiAxNDkuMDcxQzI5MC44NjIgMTQ4LjY2MSAyOTMuODQ4IDE0Ny4wODEgMjk1LjQwNSAxNDMuMDk3TDI5Ni4wNzIgMTQxLjM4OEMyOTYuODY1IDE0MS40ODEgMjk3LjUwOSAxNDEuNzM5IDI5OC4wOTggMTQyLjI4MUMyOTcuMjI4IDE0Ni4yOTMgMjk2LjgxNCAxNTAuMjAzIDI5Ni42MTUgMTU0LjMwOEwyOTYuNjYyIDE3MC4xNTRMMjk2Ljg0OSAxNzcuOTc4TDI5Ni42MzEgMTg2Ljc1N0MyOTYuNTk5IDE4Ny45NjMgMjk2LjcyOCAxODkuMDYzIDI5Ny4zNzYgMTg5LjE2MUMyOTguMjYyIDE4OS4yOTcgMjk4LjU3OCAxODYuOTY4IDI5OC41OTggMTg1LjE5NkwyOTguNzQ2IDE3Mi41MDNMMjk4LjUyMyAxNjYuMzQ1TDI5OC41MDggMTU1Ljc0NEMyOTguNzMgMTUxLjQ2NyAyOTkuMDE1IDE0Ny4zNTggMjk5LjgwNCAxNDMuMDg5TDMwMS44ODQgMTQ1LjI0N0MzMDIuMTE0IDE0NS40ODUgMzAyLjUwOCAxNDUuMzY0IDMwMi42MTQgMTQ1LjEzNEMzMDMuMjczIDE0My43MTcgMjk5LjI4OCAxMzkuNzE0IDI5Ni4xMDggMTM5LjUyM0MyOTUuOTE2IDEzOC41MiAyOTUuNjM5IDEzNy43MzUgMjk1LjAyMyAxMzYuOTA0QzI5Ni4zOTIgMTM0Ljk2MSAyOTYuNTAyIDEzMi42NTkgMjk1LjQ2IDEzMC41NDRDMjk1Ljk5NCAxMjcuNDg5IDI5NC45OTUgMTI0LjU2NiAyOTIuNzg2IDEyMi40NzhMMjkzLjQ1OCAxMTkuOTNMMjk5LjMyNyAxMjAuMzRDMjk5LjI0MiAxMjQuMDU1IDI5OS45MjggMTI3LjQzIDMwMC45MjQgMTMwLjk0NkMzMDIuMDg3IDEzNS4wNDMgMzAzLjc4NCAxMzguODg3IDMwNi41ODcgMTQyLjA2N0MzMDYuOTQ2IDE0Mi40NzYgMzA3LjYzMyAxNDIuODQ3IDMwOC4wODUgMTQyLjUwNEMzMDkuNjc4IDE0MS4yOTggMzEwLjkyMyAxMzkuOTI4IDMxMi4yOTcgMTM4LjQ2OUMzMTcuMzQ3IDEzMy4xMDggMzIyLjUyMiAxMjguMDc4IDMyOC4wODMgMTIzLjIyOEMzMzIuODY4IDExOS4wNTYgMzM3LjgyNSAxMTUuNDM1IDM0My4zNDMgMTEyLjMyOUwzNDguMzYzIDEwOS4xNDFDMzQ5LjU3MiAxMDguMzcyIDM1MC4yNzEgMTA2LjgyMyAzNDkuNjgyIDEwNS40NDJDMzQ5LjM3MyAxMDQuNzEyIDM0OC43MDIgMTA0LjAzMyAzNDguMDIzIDEwMy42QzM0MS4zNjUgOTkuMzU0NyAzMzMuMTM0IDEwMS40MjcgMzMzLjYzNyAxMDIuNjcxQzMzMy43MTkgMTAyLjg3NCAzMzQuMDcgMTAzLjAzIDMzNC4zOSAxMDMuMDE5TDMzOS40MjkgMTAyLjg3NEMzNDIuMDAxIDEwMy4wODEgMzQ3LjM2MyAxMDQuMzIyIDM0Ny44OSAxMDUuODYzQzM0OC4wMzUgMTA2LjI5MyAzNDcuODA0IDEwNi44ODYgMzQ3LjQ0NSAxMDcuMjI5TDM0Ni4yMzYgMTA4LjM3NkwzMzkuNTU0IDExMi42MThMMzM1LjU2OSAxMTUuMjU2TDMzNC45NjggMTEzLjMzMkwzMzEuNzc2IDEwNC4yMTdDMzMwLjg3OCAxMDEuNjUzIDMzMC4wODIgOTkuMTM2MiAzMjkuOTQ5IDk2LjQyODFMMzM4LjY4NyA5Ni4yNzU5QzM0NC41MSA5Ni4xNzQ1IDM0OS44ODkgOTcuMjc4OCAzNTUuMTUzIDk5LjU4MUMzNTkuMDkxIDEwMS4zMDIgMzYxLjc3NyAxMDQuNDQ3IDM2Mi4zNDIgMTA4Ljg1NkwzNjIuNjY2IDExMS4zNzdDMzY3LjgwNiAxMTIuODQ4IDM3MS4yNDEgMTE3Ljc2OSAzNzEuMzU4IDEyMy4xOTJMMzY2LjE1NiAxMjEuMzgyQzM2MS4zNTkgMTIwLjAzMiAzNTYuNTEyIDEyMC4xNzIgMzUxLjgyNCAxMjEuOTQ0QzM0OC4yNTcgMTIzLjI5NCAzNDQuOTgzIDEyNS4wMTUgMzQxLjkzMSAxMjcuMjk0TDMzMy44NjcgMTMzLjMwN0MzMzAuMTQgMTM2LjA4NSAzMjYuNTU3IDEzOC44MTIgMzIyLjQ1OSAxNDEuMDA5QzMyMC44ODMgMTQxLjg1NiAzMTkuNDE5IDE0Mi43NjUgMzE3LjU1OCAxNDIuODg2TDMxNy45NCAxNDAuODY5QzMxNy45OTEgMTQwLjU5MiAzMTcuNjc5IDE0MC40MzYgMzE3LjQ5NSAxNDAuNDU5QzMxNy4yNDUgMTQwLjQ5IDMxNi45NzIgMTQwLjYwMyAzMTYuODM5IDE0MC44OTZMMzE1LjY5MiAxNDMuNDI5QzMxNC4yMDUgMTQzLjg2NiAzMTIuNDA2IDE0NC4xNzggMzEyLjQ5MiAxNDUuMDUyQzMxMi41MTUgMTQ1LjMwNiAzMTIuNzg4IDE0NS41NDcgMzEzLjEzMiAxNDUuNTAxTDMxNS43MzUgMTQ1LjE1N0MzMTUuNDc3IDE1MC44MzUgMzE1Ljc1OCAxNTYuMjg2IDMxNi4xNjggMTYxLjk0NEwzMTcuMDcgMTc0LjQyN0MzMTcuMzQzIDE3OC4xOTYgMzE3LjMxMiAxODEuODA5IDMxNi45NDUgMTg1LjU3NUwzMTYuMDMyIDE5NC45NEMzMTUuOTczIDE5NS41NDUgMzE2LjMzNiAxOTYuNTU5IDMxNi45OCAxOTYuNDk3QzMxNy41MTEgMTk2LjQ0NiAzMTcuODM5IDE5NS41NDUgMzE3LjkwNSAxOTUuMDNDMzE4LjU1NyAxODkuOTczIDMxOS4xNDIgMTg1LjA1NiAzMTkuMjA4IDE3OS45MTNDMzE5LjI4MyAxNzQuMzU2IDMxOC42MzkgMTY5LjAzIDMxOC4yNDggMTYzLjUxNkwzMTcuNTk3IDE1NC4zMjdDMzE3LjM3IDE1MS4xMTIgMzE3LjM4MiAxNDcuOTk4IDMxNy43NjQgMTQ0LjgyNkMzMjMuOTA0IDE0Mi44MDQgMzI5LjY3NiAxMzguNTY3IDMzNC43ODkgMTM0LjgxM0wzNDQuMDIzIDEyOC4wMzFDMzQ2Ljg2NCAxMjUuOTQzIDM0OS45NjMgMTI0LjQxOCAzNTMuMzMxIDEyMy4zMzNDMzU3LjQwOSAxMjIuMDIyIDM2MS41ODEgMTIyLjEwNCAzNjUuNjQ4IDEyMy4yNTVDMzY4LjM3NiAxMjQuMDI3IDM3MC44NyAxMjQuOTY0IDM3My4zNDEgMTI2LjMxNEMzODAuNjgyIDEzMC4zMzMgMzg1Ljc0OCAxMzUuMjAzIDM4OS41NjEgMTQyLjcwN0MzOTEuMzQ0IDE0Ni4yMTUgMzkyLjcwMyAxNDkuNzUgMzkzLjc2NCAxNTMuNTU0TDM5OC4yOCAxNjkuNzQ4TDQwMC43MDMgMTgwLjQzMkM0MDIuNzQ4IDE4OS40MzggNDA0LjE0MiAxOTguNDA5IDQwNS4wMzkgMjA3LjYxOEM0MDUuODE2IDIxNS41ODYgNDA1LjYzMyAyMjQuMjk5IDQwMy42NyAyMzEuOTgyQzQwMi4wMTUgMjM4LjQ0OCAzOTkuMzAyIDI0My4yNjcgMzkzLjA0MiAyNDUuOTcxQzM5MC41NzYgMjQ3LjAzNiAzODguMDU0IDI0Ny43MzUgMzg1LjM2OSAyNDguMDc0QzM4NC45OTggMjQ4LjEyMSAzODQuODk3IDI0Ny43ODIgMzg0LjgxOSAyNDcuNDkzTDM4NC43MjkgMjQ3LjE2NUMzODMuMjY2IDI0MS44MDggMzc3Ljk1NCAyMzkuNTggMzcyLjUzNyAyMzkuNzU1QzM3Mi4zNDIgMjM5LjgxIDM3Mi4yNTYgMjM5LjcxMiAzNzIuMjk1IDIzOS40ODZDMzcyLjE5MyAyMzcuNzM0IDM3Mi40NjMgMjM1Ljk3OCAzNzIuMDA2IDIzNC4yNzNDMzcxLjMxOSAyMzEuNzE3IDM2Ny43NjcgMjMwLjM1OSAzNjUuMDUxIDIyOS43MTFDMzYxLjA0NyAyMjguNzU1IDM1Ny4wODkgMjI4LjUzMyAzNTIuOTQ0IDIyOC41MjlDMzQ4LjQyMSAyMjguNTI5IDM0NC4wNDYgMjI4Ljg1NyAzMzkuNzQ1IDIzMC4xOEMzMzYuODkyIDIzMS4wNTcgMzMzLjk1MyAyMzIuMzYxIDMzMy45NDkgMjM1LjM5M0wzMzMuOTE0IDI1NC4wMjlMMzI0LjAxMyAyNTQuNjI2TDMxOC40NzkgMjU0LjIyQzMxNi40NzYgMjUzLjk5IDMxNC43NjcgMjUzLjExNiAzMTMuMjI1IDI1MS44NDRDMzExLjk3MyAyNTAuODE0IDMxMC42NDYgMjUwLjMwNiAzMDguOTkxIDI1MC4yNzVMMzAyLjA0OCAyNTAuMTMxQzMwMC4yNDUgMjUwLjA5MiAyOTguNTQ3IDI0OS42NzQgMjk3LjAxMyAyNDguNzIyTDI5Ni45OTQgMjQ4LjM4N0MyOTYuOTkgMjQ4LjMwMSAyOTcuMDk5IDI0OC4yODEgMjk3LjI2MyAyNDguMjczQzMwMS43MTIgMjQ4LjAyOCAzMDEuNTc1IDIzNy4yMzggMjk5LjA3NCAyMzEuNjI3TDI5Ny4yNjcgMjI3LjU3N0wyOTUuMjY1IDIyNC42NzRDMjk1Ljk0NCAyMjQuMjc2IDI5Ni42ODEgMjI0LjA4OCAyOTcuNDE5IDIyNC4wMThMMzA1LjI2OCAyMjMuMjYxQzMwOC4yNTcgMjIyLjk3MiAzMTAuNzE2IDIyNS4zOTkgMzExLjg4NyAyMjcuOTc1QzMxMi44MjMgMjMwLjAzOSAzMTMuMjc2IDIzMi4xNjYgMzEzLjY3NCAyMzQuNDE3QzMxNC40MjcgMjM4LjY5OCAzMTQuMjAxIDI0Mi45MTYgMzEzLjA3NyAyNDcuMTAzQzMxMi45NCAyNDcuNjA2IDMxMy4yMjUgMjQ4LjEyNSAzMTMuNjA0IDI0OC4yNThDMzE0LjA5NiAyNDguNDMgMzE0LjU0NSAyNDguMTE3IDMxNC43NDcgMjQ3LjU1NUMzMTYuNzU0IDI0MS44OSAzMTYuMjIzIDIzNC43MjkgMzE0LjQwNCAyMjkuMDIxQzMxMy4zMzUgMjI1LjY2OSAzMTEuMDgzIDIyMy4wMjcgMzA3Ljc5NyAyMjEuNjUzQzMwNy44NDMgMjIwLjkzMiAzMDguNDc2IDIyMC41NzMgMzA4LjkzMiAyMjAuMTJDMzEzLjE1MSAyMTUuOTUzIDMxOC44NTMgMjE2LjE5NCAzMjQuNjIyIDIxNS43MThMMzQ0Ljg5MyAyMTQuMDUyTDM1OC40NzUgMjExLjYxN0MzNjIuMzA3IDIxMC45MzEgMzY1Ljk3NiAyMTAuNjA3IDM2OS44NTIgMjEwLjgzM0MzNzMuMzI5IDIxMS4wMzIgMzc2LjU0OSAyMTEuOTMgMzc5LjYyIDIxMy42TDM4My4wMjQgMjE1LjQ1M0MzODMuODc0IDIxNS45MTQgMzg0LjcxMyAyMTYuMyAzODQuOTI0IDIxNS43ODFMMzg0Ljk0NCAyMTUuNzg1WiIgZmlsbD0iI0ZFQzA2NyIvPgo8cGF0aCBkPSJNMzU2Ljk3NiAxNTYuNDg1TDM1Ni4zMDkgMTU4LjQ3MUMzNTYuMTk5IDE1OC43OTUgMzU1Ljg2IDE1OC45NTkgMzU1LjYxIDE1OC45NDNDMzU0Ljc2NyAxNTguODg5IDM1NC43NTUgMTU3LjUyNyAzNTUuMDY0IDE1Ni4wNTZDMzU2LjA2NyAxNTEuMjcyIDM1Ny44IDE0Ni43OTYgMzYwLjQxMSAxNDIuNjZDMzYyLjYzOSAxMzkuMTI5IDM2NS43MDMgMTM2LjMxOSAzNjkuNDQ2IDEzNC41MkMzNzEuMTA4IDEzMy43MiAzNzMuNzIzIDEzMy4wMTQgMzczLjg5MSAxMzMuNzI0QzM3My45NTcgMTM0LjAwNSAzNzMuODAxIDEzNC4zMTcgMzczLjQ4OSAxMzQuNDVMMzcwLjM0NyAxMzUuODA4QzM2NS42NzIgMTM4LjM3MiAzNjIuMjcyIDE0Mi40MDYgMzYwLjE0NSAxNDcuMjY4QzM1OC44MjYgMTUwLjI4OCAzNTcuNzIyIDE1My4xNzYgMzU2Ljk3NiAxNTYuNDgxVjE1Ni40ODVaIiBmaWxsPSIjMDcyQjQzIi8+CjxwYXRoIGQ9Ik0yNzMuNzU2IDIxNC40NUwyNzAuMDY4IDIxOC4zNDVMMjY2LjUxMiAyMjIuMzI1TDI2MC44NzcgMjI0LjM3M0MyNTguNjc5IDIyNS41ODcgMjU2LjM3NyAyMjYuNDkyIDI1NC40NDUgMjI4LjEwOEwyNTIuMjcxIDIyOS42NDFDMjUwLjcxOCAyMzAuNzM4IDI0OS4xNzIgMjMxLjg5NiAyNDguMDU2IDIzMy40MUMyNDcuNzQgMjMzLjg0IDI0Ny42MTkgMjM0LjI5MiAyNDcuMjg3IDIzNC41MjNDMjQ2LjcwOSAyMzQuOTI4IDI0Ni4yOTYgMjM0LjY1NSAyNDUuNjkxIDIzNC42NEMyNDIuODkyIDIzNC41NTggMjQwLjI2MiAyMzMuNzY5IDIzNy45NTIgMjMyLjIxNkMyMzUuOTY5IDIzMC44ODYgMjM0LjI5NSAyMjkuNDM4IDIzMi45MzIgMjI3LjQ0QzIyNy41NSAyMTkuNTU4IDIyNi44MTMgMjExLjM1NiAyMzAuMTIyIDIwMi40MDVDMjMzLjI2IDE5My45MTQgMjM3LjA5NyAxODguMTIzIDI0Mi41NjUgMTgxLjA4NEwyNDUuNjMyIDE3Ni40OTFDMjQ5IDE3MS40NDYgMjQ3LjI3NSAxNjYuOTYyIDI1My4wMzIgMTYyLjY1QzI1NS4xNDMgMTYxLjA3IDI1Ni4zNjkgMTU5LjA1MyAyNTcuMTg5IDE1Ni41OUwyNTguNTg2IDE1Mi4zOTJDMjU4LjY5NSAxNTIuMDY4IDI1OS4wODUgMTUxLjgyNiAyNTkuMzA4IDE1MS43OTlDMjU5LjYyNCAxNTEuNzYgMjU5Ljg2NiAxNTIuMDAxIDI2MC4wNjUgMTUyLjMyMUMyNjYuNTA1IDE2Mi42ODkgMjc4LjU5MiAxNjQuMzQgMjc5LjI4NiAxNjEuNzcyQzI3OS40MDMgMTYxLjM0NyAyNzguNzIgMTYxLjE2NCAyNzguNTQxIDE2MC45ODhDMjc4LjI3MiAxNjAuNzE5IDI3OC41NDkgMTYwLjM3OSAyNzguNjY2IDE2MC4yMDhDMjc4Ljg0NSAxNTkuOTUgMjc5LjMxIDE1OS42MDcgMjc5LjY0OSAxNTkuODc2QzI4MS4xODcgMTYxLjA5MyAyODAuNDIyIDE2NC43NTcgMjc5LjQ5NyAxNjYuNjc3TDI3Ny4yMTggMTcxLjM4N0MyNzcuMDQ2IDE3MS43NDYgMjc2Ljg3NCAxNzIuMTQ0IDI3Ni45NzYgMTcyLjU1NEMyNzcuMDUgMTcyLjg1IDI3Ny41MjYgMTczLjA5MiAyNzcuNzk5IDE3My40NTVDMjc5LjU4MyAxNzUuODQ3IDI3OC45NzggMTc5Ljg3OCAyNzcuOTYzIDE4Mi45MDJDMjc2LjQ4NCAxODcuMyAyNzUuMTg0IDE5MS41NDEgMjc0LjE3OCAxOTYuMDk5QzI3Mi42OTEgMjAyLjg0MiAyNzAuNzMxIDIwOS4zIDI2OC41MzQgMjE1LjgxNkMyNjguMzk0IDIxNi4yMzcgMjY4LjY3NSAyMTYuNjk4IDI2OC45MDEgMjE2Ljc4NEMyNjkuMzExIDIxNi45MzYgMjY5LjY4OSAyMTYuNzk1IDI2OS44NzcgMjE2LjM1MUwyNzIuMjE4IDIxMC43MTZMMjczLjYxNiAyMDYuNDEyTDI3My43NiAyMTQuNDU4TDI3My43NTYgMjE0LjQ1WiIgZmlsbD0iI0ZFQzA2NyIvPgo8cGF0aCBkPSJNMjc0LjU2NCAxNzMuNjE1QzI3NC42ODkgMTc0LjQyMyAyNzMuNjIzIDE3NC44NzUgMjcyLjk0OCAxNzQuOTQyQzI2OS44NTMgMTc1LjIzNCAyNjYuODYgMTc0LjU5MSAyNjQuMDIyIDE3My4zMzhDMjYxLjc3IDE3Mi4zNDMgMjU5LjY4MiAxNzEuMTg4IDI1Ny45NjEgMTY5LjQ1MkMyNTYuODYxIDE2OC4zMzkgMjU1LjYzMSAxNjYuODc2IDI1Ni4zNDkgMTY2LjI0NEMyNTYuNTE3IDE2Ni4wOTYgMjU2LjkwNCAxNjYuMDk2IDI1Ny4xNTcgMTY2LjM0NUMyNTkuOTM2IDE2OS4xMDQgMjYzLjE0OCAxNzEuMTg0IDI2Ni45MDMgMTcyLjQwNUMyNjguOTc1IDE3My4xMDQgMjcwLjk4OSAxNzMuMzY1IDI3My4xODYgMTczLjE4NkMyNzMuNTQxIDE3My4xNTkgMjc0LjQ4MiAxNzMuMTM5IDI3NC41NjggMTczLjYxOUwyNzQuNTY0IDE3My42MTVaIiBmaWxsPSIjMDcyQjQzIi8+CjwvZz4KPGRlZnM+CjxjbGlwUGF0aCBpZD0iY2xpcDBfMjYwNl8xMTk1MyI+CjxyZWN0IHdpZHRoPSI0NTAiIGhlaWdodD0iMzAzIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo=" width="360" height="242" alt="" style="display:block;width:100%;max-width:360px;height:auto;">`;
     }
 
     function renderEmptyState(colSpan, hasFilters) {
@@ -5400,8 +6652,8 @@
       const subtitle = hasFilters
         ? 'Verifique se há filtros aplicados. <br/>Se você é novo por aqui, que tal cadastrar o seu primeiro contato?'
         : 'Que tal cadastrar o seu primeiro contato?';
-      return `<tr class="empty-state-row"><td colspan="${colSpan}">
-        <div class="empty-state-box">
+      return `<tr class="empty-state-row"><td colspan="${colSpan}" style="padding:0;border:none">
+        <div style="width:100%;padding:32px;flex-direction:column;justify-content:center;align-items:center;display:flex">
           ${emptyStateIllustration()}
           <div style="padding-top:24px;padding-bottom:24px;flex-direction:column;justify-content:flex-start;align-items:center;gap:8px;display:flex;max-width:520px">
             <div style="text-align:center;color:#002233;font-size:20px;font-family:var(--font);font-weight:700;line-height:30px">${title}</div>
@@ -5413,10 +6665,6 @@
           </div>
         </div>
       </td></tr>`;
-    }
-
-    function setEmptyStateLayout(isEmpty) {
-      document.querySelector('.content-main')?.classList.toggle('is-empty-state', !!isEmpty);
     }
 
     function bindEmptyStateActions() {
@@ -5436,88 +6684,84 @@
       window.__contactsLoading = true;
 
       try {
-        const colSpan = window.__tableColumns.filter(c => c.visible).length + 2;
-        setEmptyStateLayout(false);
-        tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center;padding:32px;color:var(--color-text-low)">Carregando...</td></tr>`;
-        renderThead();
-        pageSize = Math.max(1, parseInt(pageSizeSelect?.value, 10) || pageSize || 10);
-        const from = (currentPage - 1) * pageSize;
-        const to = from + pageSize - 1;
+      const colSpan = window.__tableColumns.filter(c => c.visible).length + 2;
+      tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center;padding:32px;color:var(--color-text-low)">Carregando...</td></tr>`;
+      renderThead();
+      pageSize = Math.max(1, parseInt(pageSizeSelect?.value, 10) || pageSize || 10);
+      const from = (currentPage - 1) * pageSize;
+      const to = from + pageSize - 1;
 
-        const DATA_SELECT = 'id,nome,email,emails,telefone,telefones,carteira,cargo,origem,chip,empresa_nome,empresa_cnpj,foto_perfil,status,cpf,rg,data_nascimento,cep,rua,complemento,bairro,cidade,estado,pais,rede_social,rede_social_usuario,redes_sociais,created_at,claude_contato_tags(claude_tags(id,label,color))';
+      const DATA_SELECT = 'id,nome,email,emails,telefone,telefones,carteira,cargo,origem,chip,empresa_nome,empresa_cnpj,foto_perfil,status,cpf,rg,data_nascimento,cep,rua,complemento,bairro,cidade,estado,pais,rede_social,rede_social_usuario,redes_sociais,created_at,claude_contato_tags(claude_tags(id,label,color))';
 
-        const _activeTabEl = document.querySelector('.tab[draggable="true"].active');
-        const _activeTabId = _activeTabEl ? _activeTabEl.dataset.tabId : '1';
-        const f = (window.__tabFilters && window.__tabFilters[_activeTabId]) || {};
+      // Apply active filters (read directly from per-tab store, works before filter IIFE runs)
+      const _activeTabEl = document.querySelector('.tab[draggable="true"].active');
+      const _activeTabId = _activeTabEl ? _activeTabEl.dataset.tabId : '1';
+      const f = (window.__tabFilters && window.__tabFilters[_activeTabId]) || {};
 
-        function applyFilters(q) {
-          if (f.quickFilter) {
-            const now = new Date();
-            if (f.quickFilter === 'today') {
-              q = q.gte('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString());
-            } else if (f.quickFilter === 'week') {
-              const d = new Date(now); d.setDate(now.getDate() - ((now.getDay() + 6) % 7)); d.setHours(0,0,0,0);
-              q = q.gte('created_at', d.toISOString());
-            } else if (f.quickFilter === 'month') {
-              q = q.gte('created_at', new Date(now.getFullYear(), now.getMonth(), 1).toISOString());
-            } else if (f.quickFilter === 'inactive30') {
-              q = q.lt('created_at', new Date(now - 30*24*60*60*1000).toISOString());
-            }
+      function applyFilters(q) {
+        if (f.quickFilter) {
+          const now = new Date();
+          if (f.quickFilter === 'today') {
+            q = q.gte('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString());
+          } else if (f.quickFilter === 'week') {
+            const d = new Date(now); d.setDate(now.getDate() - ((now.getDay() + 6) % 7)); d.setHours(0,0,0,0);
+            q = q.gte('created_at', d.toISOString());
+          } else if (f.quickFilter === 'month') {
+            q = q.gte('created_at', new Date(now.getFullYear(), now.getMonth(), 1).toISOString());
+          } else if (f.quickFilter === 'inactive30') {
+            q = q.lt('created_at', new Date(now - 30*24*60*60*1000).toISOString());
           }
-          if (f.search) {
-            const s = f.search;
-            q = q.or([
-              'nome','email','telefone','carteira','origem','chip','empresa_nome','empresa_cnpj',
-              'cidade','estado','pais','cpf','rg','bairro','rua','complemento','rede_social_usuario'
-            ].map(col => `${col}.ilike.%${s}%`).join(','));
-          }
-          if (f.nome)        q = q.ilike('nome', `%${f.nome}%`);
-          if (f.email)       q = q.ilike('email', `%${f.email}%`);
-          if (f.status)      q = q.eq('status', f.status);
-          if (f.telefone)    q = q.ilike('telefone', `%${f.telefone}%`);
-          if (f.rede_social) q = q.eq('rede_social', f.rede_social);
-          if (f.username)    q = q.ilike('rede_social_usuario', `%${f.username}%`);
-          if (f.empresa)     q = q.ilike('empresa_nome', `%${f.empresa}%`);
-          if (f.cidade)      q = q.ilike('cidade', `%${f.cidade}%`);
-          if (f.estado)      q = q.ilike('estado', `%${f.estado}%`);
-          return q;
         }
-
-        let listQuery = applyFilters(db.from('claude_contatos').select(DATA_SELECT));
-        let countQuery = applyFilters(db.from('claude_contatos').select('id', { count: 'exact', head: true }));
-
-        const [listRes, countRes] = await Promise.all([
-          listQuery.order('nome', { ascending: true }).range(from, to),
-          countQuery,
-        ]);
-
-        const { data, error } = listRes;
-        const rawCount = countRes?.count;
-        const resolvedCount = rawCount == null ? null : Number(rawCount);
-
-        // Atualiza total + paginação ANTES de montar as linhas (evita nav vazio se renderRow falhar)
-        totalCount = Number.isFinite(resolvedCount) ? resolvedCount : (Array.isArray(data) ? data.length : 0);
-        if (totalEl) totalEl.textContent = totalCount;
-        renderPagination();
-
-        if (error) {
-          setEmptyStateLayout(false);
-          tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center;padding:32px;color:var(--color-danger)">Erro ao carregar: ${error.message}</td></tr>`;
-          return;
+        if (f.search) {
+          const s = f.search;
+          q = q.or([
+            'nome','email','telefone','carteira','origem','chip','empresa_nome','empresa_cnpj',
+            'cidade','estado','pais','cpf','rg','bairro','rua','complemento','rede_social_usuario'
+          ].map(col => `${col}.ilike.%${s}%`).join(','));
         }
+        if (f.nome)        q = q.ilike('nome', `%${f.nome}%`);
+        if (f.email)       q = q.ilike('email', `%${f.email}%`);
+        if (f.status)      q = q.eq('status', f.status);
+        if (f.telefone)    q = q.ilike('telefone', `%${f.telefone}%`);
+        if (f.rede_social) q = q.eq('rede_social', f.rede_social);
+        if (f.username)    q = q.ilike('rede_social_usuario', `%${f.username}%`);
+        if (f.empresa)     q = q.ilike('empresa_nome', `%${f.empresa}%`);
+        if (f.cidade)      q = q.ilike('cidade', `%${f.cidade}%`);
+        if (f.estado)      q = q.ilike('estado', `%${f.estado}%`);
+        return q;
+      }
 
-        if (data && data.length) {
-          setEmptyStateLayout(false);
-          tbody.innerHTML = data.map(renderRow).join('');
-        } else {
-          const hasFilters = !!(f.search || f.quickFilter || f.nome || f.email || f.status || f.telefone || f.rede_social || f.username || f.empresa || f.cidade || f.estado);
-          setEmptyStateLayout(true);
-          tbody.innerHTML = renderEmptyState(colSpan, hasFilters);
-          bindEmptyStateActions();
-        }
-        syncHeaderCheckbox();
-        updateBulkBar();
-        renderPagination();
+      let listQuery = applyFilters(db.from('claude_contatos').select(DATA_SELECT));
+      let countQuery = applyFilters(db.from('claude_contatos').select('id', { count: 'exact', head: true }));
+
+      const [listRes, countRes] = await Promise.all([
+        listQuery.order('nome', { ascending: true }).range(from, to),
+        countQuery,
+      ]);
+
+      const { data, error } = listRes;
+      const rawCount = countRes?.count;
+      const resolvedCount = rawCount == null ? null : Number(rawCount);
+
+      totalCount = Number.isFinite(resolvedCount) ? resolvedCount : (Array.isArray(data) ? data.length : 0);
+      if (totalEl) totalEl.textContent = totalCount;
+      renderPagination();
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center;padding:32px;color:var(--color-danger)">Erro ao carregar: ${error.message}</td></tr>`;
+        return;
+      }
+
+      if (data && data.length) {
+        tbody.innerHTML = data.map(renderRow).join('');
+      } else {
+        const hasFilters = !!(f.search || f.quickFilter || f.nome || f.email || f.status || f.telefone || f.rede_social || f.username || f.empresa || f.cidade || f.estado);
+        tbody.innerHTML = renderEmptyState(colSpan, hasFilters);
+        bindEmptyStateActions();
+      }
+      syncHeaderCheckbox();
+      updateBulkBar();
+      renderPagination();
       } finally {
         window.__contactsLoading = false;
         if (window.__contactsReloadQueued) {
@@ -5679,7 +6923,6 @@
 
     function showEditPanel() {
       if (!pendingContactId) return;
-      window.__closeContactEditTags?.();
       content.classList.remove('detail-preview');
       content.classList.add('detail-edit');
       drawer.classList.add('open');
@@ -5698,12 +6941,10 @@
     }
 
     function closeDetailPanel() {
-      window.__closeContactEditTags?.();
-      content.classList.remove('detail-open', 'detail-preview', 'detail-edit', 'detail-tags');
+      content.classList.remove('detail-open', 'detail-preview', 'detail-edit');
       detailPanel.setAttribute('aria-hidden', 'true');
       drawer.classList.remove('open');
       setSelectedRow(null);
-      window.__refreshProfileTagCard?.();
       pendingContactId = null;
       editContactId = null;
       panelMode = false;
@@ -5922,7 +7163,6 @@
       if (cpfEl) cpfEl.textContent = data.cpf || '—';
       renderPreviewAvatar(data.nome, data.foto_perfil);
       renderPreviewCompanies(data);
-      window.__refreshProfileTagCard?.();
     }
 
     document.querySelectorAll('[data-accordion]').forEach(card => {
@@ -6278,14 +7518,29 @@
 
     const ACTIONS_OPTIONS = [
       {
-        key: 'pre-vendas',
-        label: 'Enviar para pré-vendas',
-        icon: '<img src="../perfil/icons/bullseye-arrow.svg" width="24" height="24" alt="" aria-hidden="true">',
+        key: 'adicionar-tag',
+        label: 'Adicionar Tag',
+        icon: '<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zIDExLjg3ODdWNS41QzMgNC42NzE1NiAzLjY3MTU2IDQgNC41IDRIMTAuODc4N0MxMS4yNzY1IDQgMTEuNjU4IDQuMTU4MDQgMTEuOTM5MyA0LjQzOTM0TDE2LjY3NjEgOS4xNzYwNUMxNS43OTA5IDkuNTM0NzggMTUuMTY2NyAxMC40MDI4IDE1LjE2NjcgMTEuNDE2N1YxMy4xNjY3SDEzLjQxNjdDMTIuMDgxOSAxMy4xNjY3IDExIDE0LjI0ODYgMTEgMTUuNTgzM1YxNi40MTY3QzExIDE3LjU5MzEgMTEuODQwNCAxOC41NzMgMTIuOTUzNiAxOC43ODlMMTIuMTgyIDE5LjU2MDdDMTEuNTk2MiAyMC4xNDY0IDEwLjY0NjQgMjAuMTQ2NCAxMC4wNjA3IDE5LjU2MDdMMy40MzkzNCAxMi45MzkzQzMuMTU4MDQgMTIuNjU4IDMgMTIuMjc2NSAzIDExLjg3ODdaTTYuNSA2QzUuNjcxNTYgNiA1IDYuNjcxNTYgNSA3LjVDNSA4LjMyODQ0IDUuNjcxNTYgOSA2LjUgOUM3LjMyODQ0IDkgOCA4LjMyODQ0IDggNy41QzggNi42NzE1NiA3LjMyODQ0IDYgNi41IDZaTTE4LjgzMzMgMTUuMTY2N0gyMi41ODMzQzIyLjgxMzUgMTUuMTY2NyAyMyAxNS4zNTMxIDIzIDE1LjU4MzNWMTYuNDE2N0MyMyAxNi42NDY5IDIyLjgxMzUgMTYuODMzMyAyMi41ODMzIDE2LjgzMzNIMTguODMzM1YyMC41ODMzQzE4LjgzMzMgMjAuODEzNSAxOC42NDY5IDIxIDE4LjQxNjcgMjFIMTcuNTgzM0MxNy4zNTMxIDIxIDE3LjE2NjcgMjAuODEzNSAxNy4xNjY3IDIwLjU4MzNWMTYuODMzM0gxMy40MTY3QzEzLjE4NjUgMTYuODMzMyAxMyAxNi42NDY5IDEzIDE2LjQxNjdWMTUuNTgzM0MxMyAxNS4zNTMxIDEzLjE4NjUgMTUuMTY2NyAxMy40MTY3IDE1LjE2NjdIMTcuMTY2N1YxMS40MTY3QzE3LjE2NjcgMTEuMTg2NSAxNy4zNTMxIDExIDE3LjU4MzMgMTFIMTguNDE2N0MxOC42NDY5IDExIDE4LjgzMzMgMTEuMTg2NSAxOC44MzMzIDExLjQxNjdWMTUuMTY2N1oiIC8+Cjwvc3ZnPgo=" width="24" height="24" alt="" aria-hidden="true">',
       },
       {
-        key: 'negociacao',
-        label: 'Criar negociação',
-        icon: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.25 14.6875C14.25 14.9983 13.9983 15.25 13.6875 15.25H10.3125C10.0017 15.25 9.75 14.9983 9.75 14.6875V13H3V18.0625C3 18.9625 3.7875 19.75 4.6875 19.75H19.3125C20.2125 19.75 21 18.9625 21 18.0625V13H14.25V14.6875ZM19.3125 7.375H16.5V5.6875C16.5 4.7875 15.7125 4 14.8125 4H9.1875C8.2875 4 7.5 4.7875 7.5 5.6875V7.375H4.6875C3.7875 7.375 3 8.1625 3 9.0625V11.875H21V9.0625C21 8.1625 20.2125 7.375 19.3125 7.375ZM14.25 7.375H9.75V6.25H14.25V7.375Z" fill="#596B7A"/></svg>',
+        key: 'remover-tag',
+        label: 'Remover Tag',
+        icon: '<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zIDExLjg3ODdWNS41QzMgNC42NzE1NiAzLjY3MTU2IDQgNC41IDRIMTAuODc4N0MxMS4yNzY1IDQgMTEuNjU4IDQuMTU4MDQgMTEuOTM5MyA0LjQzOTM0TDE4LjU2MDcgMTEuMDYwN0MxOS4wODkxIDExLjU4OSAxOS4xNDA4IDEyLjQxMzYgMTguNzE2IDEzSDEzLjQxNjdDMTIuMDgxOSAxMyAxMSAxNC4wODE5IDExIDE1LjQxNjdWMTYuMjVDMTEgMTcuNDc2NCAxMS45MTMzIDE4LjQ4OTMgMTMuMDk2OSAxOC42NDU3TDEyLjE4MiAxOS41NjA3QzExLjU5NjIgMjAuMTQ2NCAxMC42NDY0IDIwLjE0NjQgMTAuMDYwNyAxOS41NjA3TDMuNDM5MzQgMTIuOTM5M0MzLjE1ODA0IDEyLjY1OCAzIDEyLjI3NjUgMyAxMS44Nzg3Wk02LjUgNkM1LjY3MTU2IDYgNSA2LjY3MTU2IDUgNy41QzUgOC4zMjg0NCA1LjY3MTU2IDkgNi41IDlDNy4zMjg0NCA5IDggOC4zMjg0NCA4IDcuNUM4IDYuNjcxNTYgNy4zMjg0NCA2IDYuNSA2Wk0yMyAxNS40MTY3QzIzIDE1LjE4NjUgMjIuODEzNSAxNSAyMi41ODMzIDE1SDEzLjQxNjdDMTMuMTg2NSAxNSAxMyAxNS4xODY1IDEzIDE1LjQxNjdWMTYuMjVDMTMgMTYuNDgwMiAxMy4xODY1IDE2LjY2NjcgMTMuNDE2NyAxNi42NjY3SDIyLjU4MzNDMjIuODEzNSAxNi42NjY3IDIzIDE2LjQ4MDIgMjMgMTYuMjVWMTUuNDE2N1oiIC8+Cjwvc3ZnPgo=" width="24" height="24" alt="" aria-hidden="true">',
+      },
+      {
+        key: 'adicionar-segmentacao',
+        label: 'Adicionar em segmentação',
+        icon: '<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNSA4YTQgNCAwIDEgMSA4IDAgNCA0IDAgMCAxLTggMHpNMiAxOS4wNzJBNS41NyA1LjU3IDAgMCAxIDcuNTcyIDEzLjVoMi44NTZBNS41NyA1LjU3IDAgMCAxIDE2IDE5LjA3MmEuOTI4LjkyOCAwIDAgMS0uOTI4LjkyOEgyLjkyOEEuOTI4LjkyOCAwIDAgMSAyIDE5LjA3MnpNMjEuMDQgMjBoLTQuMzA2Yy4xNy0uMjk0LjI3LS42MzQuMjctMXYtLjI1YzAtMS44OTctLjg0OC0zLjYtMi4xODItNC43NDQuMDc1LS4wMDMuMTQ3LS4wMDYuMjIyLS4wMDZoMS45MThBNS4wNCA1LjA0IDAgMCAxIDIyIDE5LjA0YS45Ni45NiAwIDAgMS0uOTYuOTZ6bS01LjU0LThhMy40OTMgMy40OTMgMCAwIDEtMi40NzgtMS4wMjhDMTMuNjM3IDEwLjE0IDE0IDkuMTEyIDE0IDhjMC0uODM4LS4yMDYtMS42MjgtLjU3Mi0yLjMyMkEzLjQ5OCAzLjQ5OCAwIDAgMSAxOSA4LjVjMCAxLjkzNC0xLjU2NiAzLjUtMy41IDMuNXoiIC8+PC9zdmc+Cg==" width="24" height="24" alt="" aria-hidden="true">',
+      },
+      {
+        key: 'adicionar-automacao',
+        label: 'Adicionar em automação',
+        icon: '<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIxIDE0QzIyLjE0MjIgMTQgMjMgMTQuODU3OCAyMyAxNlYyMEMyMyAyMS4xNDIyIDIyLjE0MjIgMjIgMjEgMjJIMTdDMTUuODU3OCAyMiAxNSAyMS4xNDIyIDE1IDIwVjE2QzE1IDE0Ljg1NzggMTUuODU3OCAxNCAxNyAxNEgyMVoiIC8+CjxwYXRoIGQ9Ik0xNCA3QzEzLjQ0NzcgNyAxMyA3LjQ0NzcyIDEzIDhWMTZDMTMgMTYuNTUyMyAxMy40NDc3IDE3IDE0IDE3VjE5QzEyLjM0MzEgMTkgMTEgMTcuNjU2OSAxMSAxNlYxM0g5VjE0QzkgMTUuMTQyMiA4LjE0MjI0IDE2IDcgMTZIM0MxLjg1Nzc2IDE2IDEgMTUuMTQyMiAxIDE0VjEwQzEgOC44NTc3NiAxLjg1Nzc2IDggMyA4SDdDOC4xNDIyNCA4IDkgOC44NTc3NiA5IDEwVjExSDExVjhDMTEgNi4zNDMxNSAxMi4zNDMxIDUgMTQgNVY3WiIgLz4KPHBhdGggZD0iTTIxIDJDMjIuMTQyMiAyIDIzIDIuODU3NzYgMjMgNFY4QzIzIDkuMTQyMjQgMjIuMTQyMiAxMCAyMSAxMEgxN0MxNS44NTc4IDEwIDE1IDkuMTQyMjQgMTUgOFY0QzE1IDIuODU3NzYgMTUuODU3OCAyIDE3IDJIMjFaIiAvPgo8L3N2Zz4K" width="24" height="24" alt="" aria-hidden="true">',
+      },
+      {
+        key: 'enviar-campanha',
+        label: 'Enviar campanha',
+        icon: '<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTkuODc1IDQuMzc1djUuMjAzYy42MzMuMzE3IDEuMTI1IDEuMTI1IDEuMTI1IDIuMTEgMCAuOTg0LS40OTIgMS44MjgtMS4xMjUgMi4xNDRWMTljMCAuNDU3LS4yODEuODc5LS43MDMgMS4wNTUtLjQyMi4xNzUtLjkxNC4wNy0xLjIzLS4yNDZsLTEuNTQ3LTEuNTQ3YTguOTkzIDguOTkzIDAgMCAwLTYuMzY0LTIuNjM3SDkuNzV2NC41YzAgLjYzMy0uNTI3IDEuMTI1LTEuMTI1IDEuMTI1aC0yLjI1YTEuMTEgMS4xMSAwIDAgMS0xLjEyNS0xLjEyNXYtNC41QTIuMjIxIDIuMjIxIDAgMCAxIDMgMTMuMzc1VjEwYzAtMS4yMy45ODQtMi4yNSAyLjI1LTIuMjVoNC43ODFjMi4zOSAwIDQuNjc2LS45NSA2LjM2NC0yLjYzN2wxLjU0Ni0xLjUxMWExLjEzNyAxLjEzNyAwIDAgMSAxLjIzLS4yNDdjLjQyMy4xNzYuNzA0LjU5OC43MDQgMS4wMnptLTIuMjUgMi43MDdDMTUuNTUxIDguOTggMTIuODQ0IDEwIDEwLjAzMSAxMEg5Ljc1djMuMzc1aC4yODFjMi44MTMgMCA1LjUyIDEuMDU1IDcuNTk0IDIuOTUzVjcuMDgyeiIgLz48L3N2Zz4K" width="24" height="24" alt="" aria-hidden="true">',
       },
     ];
 
@@ -6361,7 +7616,7 @@
       if (link) {
         e.preventDefault();
         const contactId = link.dataset.contactId;
-        if (contactId) window.location.href = `../perfil/index.html?id=${contactId}`;
+        if (contactId) window.location.href = __gasPage('marketing-perfil', {id: contactId});
         return;
       }
       const btn = e.target.closest('.actions-btn');
@@ -7369,6 +8624,113 @@
 })();
 </script>
 
-<script src="../shared/products.js"></script>
+<script>
+
+(function () {
+  const PRODUCT_LABELS = {
+    vendas: 'RD Vendas',
+    marketing: 'RD Marketing',
+    conversas: 'RD Atendimento',
+  };
+
+  function getMenuEl() {
+    return document.getElementById('products-menu');
+  }
+
+  function getCurrentProduct() {
+    const menu = getMenuEl();
+    return menu?.dataset.currentProduct || 'vendas';
+  }
+
+  function getPageType() {
+    const menu = getMenuEl();
+    return menu?.dataset.page || 'contatos';
+  }
+
+  function buildProductUrl(productId, pageType) {
+    return __gasPage(productId + '-' + pageType);
+  }
+
+  function navigateToProduct(productId) {
+    if (productId === getCurrentProduct()) return;
+    const pageType = getPageType();
+    const params = {};
+    if (pageType === 'perfil') {
+      const id = new URLSearchParams(window.location.search).get('id');
+      if (id) params.id = id;
+    }
+    window.location.href = __gasPage(productId + '-' + pageType, params);
+  }
+
+  function closeMenu() {
+    const menu = getMenuEl();
+    const trigger = document.getElementById('products-menu-trigger');
+    const drop = document.getElementById('products-dropdown');
+    if (!menu || !trigger || !drop) return;
+    drop.classList.remove('open');
+    trigger.classList.remove('open');
+    trigger.setAttribute('aria-expanded', 'false');
+  }
+
+  function initProductsMenu() {
+    const menu = getMenuEl();
+    const trigger = document.getElementById('products-menu-trigger');
+    const drop = document.getElementById('products-dropdown');
+    if (!menu || !trigger || !drop) return;
+
+    const current = getCurrentProduct();
+    menu.querySelectorAll('[data-product-id]').forEach(item => {
+      if (item.dataset.productId === current) {
+        item.classList.add('active');
+        item.setAttribute('aria-current', 'true');
+      }
+      item.addEventListener('click', e => {
+        e.stopPropagation();
+        navigateToProduct(item.dataset.productId);
+      });
+    });
+
+    trigger.addEventListener('click', e => {
+      e.stopPropagation();
+      const isOpen = drop.classList.toggle('open');
+      trigger.classList.toggle('open', isOpen);
+      trigger.setAttribute('aria-expanded', String(isOpen));
+      const accountDrop = document.getElementById('account-dropdown');
+      if (isOpen && accountDrop) accountDrop.classList.remove('open');
+    });
+
+    document.addEventListener('click', e => {
+      if (!menu.contains(e.target)) closeMenu();
+    });
+
+    const accountMenu = document.getElementById('account-menu');
+    const accountDrop = document.getElementById('account-dropdown');
+    if (accountMenu && accountDrop) {
+      accountMenu.addEventListener('click', e => {
+        if (e.target.closest('#logout-btn')) return;
+        const isOpen = accountDrop.classList.toggle('open');
+        if (isOpen) closeMenu();
+      });
+      document.addEventListener('click', e => {
+        if (!accountMenu.contains(e.target)) accountDrop.classList.remove('open');
+      });
+    }
+  }
+
+  window.__products = {
+    PRODUCT_LABELS,
+    buildProductUrl,
+    navigateToProduct,
+    initProductsMenu,
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProductsMenu);
+  } else {
+    initProductsMenu();
+  }
+})();
+
+</script>
 </body>
 </html>

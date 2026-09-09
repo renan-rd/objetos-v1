@@ -35,6 +35,8 @@
 
     init(db) {
       this._db = db;
+      if (this._bound) return;
+      this._bound = true;
       this._bindEvents();
     },
 
@@ -142,13 +144,13 @@
       input.addEventListener('keydown', async e => {
         if (e.key === 'Enter') {
           e.preventDefault();
-          await this._createFromQuery();
+          this.openCreateForm(this._getQuery());
         }
       });
 
       createBtn.addEventListener('click', async e => {
         e.preventDefault();
-        await this._createFromQuery();
+        this.openCreateForm(this._getQuery());
       });
 
       optionsEl.addEventListener('change', e => {
@@ -212,7 +214,7 @@
         const tags = selected.filter(tag => tag.produto === product);
         const chips = tags.length
           ? tags.map(tag => `
-              <span class="tag-picker-chip">
+              <span class="tag-picker-chip" data-edit-tag-id="${escHtml(tag.id)}" role="button" tabindex="0" title="Editar etiqueta">
                 <span class="tag-picker-chip-dot" style="background:${escHtml(tag.color || '#405466')}"></span>
                 <span>${escHtml(tag.label)}</span>
                 <button type="button" class="tag-picker-chip-remove" data-tag-id="${tag.id}" title="Remover" aria-label="Remover etiqueta">&times;</button>
@@ -227,10 +229,25 @@
       }).join('');
 
       chipsEl.querySelectorAll('.tag-picker-chip-remove').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
           this._selected.delete(String(btn.dataset.tagId || ''));
           this._renderChips();
           this._renderDropdown();
+        });
+      });
+      chipsEl.querySelectorAll('[data-edit-tag-id]').forEach(chip => {
+        const openEdit = () => {
+          const tag = this._selected.get(String(chip.dataset.editTagId || ''))
+            || this._allTags.find(item => String(item.id) === String(chip.dataset.editTagId));
+          if (tag) this.openEditForm(tag);
+        };
+        chip.addEventListener('click', openEdit);
+        chip.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openEdit();
+          }
         });
       });
     },
@@ -273,46 +290,117 @@
       }).join('');
     },
 
+    openCreateForm(name, product) {
+      const currentProduct = getCurrentProduct();
+      const label = String(name || this._getQuery() || '').trim();
+      if (!label || (product && product !== currentProduct) || !window.__tagCreateForm) return;
+      this._closeDropdown();
+      window.__tagCreateForm.open({
+        mode: 'create',
+        name: label,
+        product: currentProduct,
+        onSave: payload => this._createWithColor(payload),
+      });
+    },
+
+    openEditForm(tag) {
+      if (!tag || !window.__tagCreateForm) return;
+      this._closeDropdown();
+      window.__tagCreateForm.open({
+        mode: 'edit',
+        id: tag.id,
+        name: tag.label,
+        color: tag.color,
+        product: tag.produto || getCurrentProduct(),
+        onSave: payload => this._updateTag(payload),
+      });
+    },
+
     async _createFromQuery() {
-      const label = this._getQuery();
-      if (!label || !this._db) return;
+      this.openCreateForm(this._getQuery());
+    },
+
+    async _createWithColor({ label, color, product }) {
+      const currentProduct = getCurrentProduct();
+      const name = String(label || '').trim();
+      if (!name || !this._db || (product && product !== currentProduct)) return;
 
       await this.ensureTagsLoaded();
-      const currentProduct = getCurrentProduct();
 
       const existing = this._allTags.find(t =>
-        t.produto === currentProduct && normalizeLabel(t.label) === normalizeLabel(label)
+        t.produto === currentProduct && normalizeLabel(t.label) === normalizeLabel(name)
       );
       if (existing) {
         this._selected.set(String(existing.id), { id: String(existing.id), label: existing.label, color: existing.color, produto: existing.produto });
         this._renderChips();
         this._renderDropdown();
-        document.getElementById('dc-tag-input').value = '';
+        const input = document.getElementById('dc-tag-input');
+        if (input) input.value = '';
         return;
       }
 
-      const color = TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)];
       let { data, error } = await this._db
         .from('claude_tags')
-        .insert([{ label, color, produto: currentProduct }])
+        .insert([{ label: name, color, produto: currentProduct }])
         .select('id, label, color, produto')
         .single();
       if (error?.code === '42703') {
         const fallback = await this._db
           .from('claude_tags')
-          .insert([{ label, color }])
+          .insert([{ label: name, color }])
           .select('id, label, color')
           .single();
         data = fallback.data ? { ...fallback.data, produto: currentProduct } : null;
         error = fallback.error;
       }
 
-      if (error || !data) return;
+      if (error || !data) throw error || new Error('Não foi possível criar a etiqueta');
 
       this._allTags.push(data);
       this._allTags.sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
       this._selected.set(String(data.id), { id: String(data.id), label: data.label, color: data.color, produto: data.produto });
-      document.getElementById('dc-tag-input').value = '';
+      const input = document.getElementById('dc-tag-input');
+      if (input) input.value = '';
+      this._renderChips();
+      this._renderDropdown();
+    },
+
+    async _updateTag({ id, label, color, product }) {
+      const name = String(label || '').trim();
+      const tagId = String(id || '');
+      if (!name || !tagId || !this._db) return;
+
+      await this.ensureTagsLoaded();
+      const current = this._allTags.find(t => String(t.id) === tagId);
+      const tagProduct = current?.produto || product || getCurrentProduct();
+      const duplicate = this._allTags.find(t =>
+        String(t.id) !== tagId
+        && t.produto === tagProduct
+        && normalizeLabel(t.label) === normalizeLabel(name)
+      );
+      if (duplicate) throw new Error('Já existe uma etiqueta com esse nome');
+
+      let { data, error } = await this._db
+        .from('claude_tags')
+        .update({ label: name, color })
+        .eq('id', tagId)
+        .select('id, label, color, produto')
+        .single();
+      if (error?.code === '42703') {
+        const fallback = await this._db
+          .from('claude_tags')
+          .update({ label: name, color })
+          .eq('id', tagId)
+          .select('id, label, color')
+          .single();
+        data = fallback.data ? { ...fallback.data, produto: tagProduct } : null;
+        error = fallback.error;
+      }
+      if (error || !data) throw error || new Error('Não foi possível salvar a etiqueta');
+
+      const next = { id: String(data.id), label: data.label, color: data.color, produto: data.produto || tagProduct };
+      this._allTags = this._allTags.map(tag => String(tag.id) === tagId ? next : tag);
+      if (this._selected.has(tagId)) this._selected.set(tagId, next);
       this._renderChips();
       this._renderDropdown();
     },

@@ -9,6 +9,7 @@
   <title>Template de Lista — RD Station</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/inline-edit.css?v=20260831-actions-fade-2">
+  <link rel="stylesheet" href="../../shared/profile-tags.css">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
@@ -17,6 +18,7 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZWtsaGVmanhsZGt3ZXFqdHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5Mzc5NjcsImV4cCI6MjA2NzUxMzk2N30.9oxYKZHfRNjbXJzQ17POORk_5Z12DDdkPUqAbeIdMcQ'
     );
   </script>
+  <script src="../../shared/auth.js" data-login="../../login.html" data-require-auth="true"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1151,6 +1153,7 @@
       display: none !important;
     }
 
+
     .drawer-header {
       display: flex; align-items: flex-start; gap: 8px;
       min-height: 56px;
@@ -1806,120 +1809,6 @@
     .detail-panel .drawer .empresa-autocomplete-dropdown,
     .detail-panel .drawer .resp-autocomplete-dropdown {
       z-index: 9600;
-    }
-
-    /* ─── TAG PICKER ───────────────────────────────────── */
-    .tag-picker {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .tag-picker-input-wrap { position: relative; }
-
-    .tag-picker-chips {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .tag-picker-chips:empty { display: none; }
-
-    .tag-picker-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 8px;
-      background: var(--color-surface-low);
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 900;
-      color: var(--color-text-high);
-      text-transform: uppercase;
-    }
-
-    .tag-picker-chip-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-
-    .tag-picker-chip-remove {
-      border: none;
-      background: none;
-      cursor: pointer;
-      padding: 0;
-      line-height: 1;
-      font-size: 16px;
-      color: var(--color-text-low);
-    }
-
-    .tag-picker-product-group,
-    .tag-picker-dropdown-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .tag-picker-product-title {
-      color: var(--color-text-low);
-      font-family: var(--font);
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 19.6px;
-      overflow-wrap: break-word;
-    }
-
-    .tag-picker-product-divider + .tag-picker-dropdown-group > .tag-picker-product-title {
-      padding-top: 8px;
-    }
-
-    .tag-picker-product-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tag-picker-product-divider {
-      width: 100%;
-      height: 1px;
-      background: var(--color-border);
-    }
-
-    .tag-picker-product-empty {
-      color: var(--color-text-low);
-      font: 500 14px/1.4 var(--font);
-      letter-spacing: -.14px;
-    }
-
-    .tag-picker-create-products {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .tag-picker-dropdown {
-      display: none;
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0;
-      right: 0;
-      z-index: 9600;
-      max-height: 176px;
-      padding: 8px;
-      overflow-y: auto;
-      border: none;
-      border-radius: var(--radius-md);
-      background: var(--color-surface);
-      box-shadow: 0 4px 12px rgba(0, 34, 51, .14);
-    }
-
-    .tag-picker-dropdown.open { display: block; }
-
-    .tag-picker-empty {
-      padding: 12px 16px;
-      font-size: 14px;
-      color: var(--color-text-low);
     }
 
     /* ─── MULTI-FIELD ───────────────────────────────────── */
@@ -3417,140 +3306,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* Tags */
-.profile-tags-list { display: flex; flex-wrap: wrap; gap: 8px; }
-.profile-tag {
-  background: var(--color-surface-low);
-  padding: 4px 8px;
-  border-radius: var(--radius-xs);
-  font-size: 12px; font-weight: 900;
-  color: var(--color-text-high);
-  letter-spacing: -0.12px; line-height: 1.3;
-}
-/* Card de tags da coluna de perfil */
-.profile-tags-card-body { gap: 10px !important; overflow: visible; }
-.profile-tags-autocomplete { position: relative; width: 100%; }
-.profile-tags-input-shell {
-  display: flex; align-items: center; width: 100%; height: 40px;
-  padding: 8px 8px 8px 12px; border: 1px solid var(--color-border-interactive);
-  border-radius: var(--radius-md); background: var(--color-surface);
-  transition: border-color .15s, box-shadow .15s;
-}
-.profile-tags-input-shell:focus-within,
-.profile-tags-input-shell.is-open {
-  border-color: var(--color-primary-border);
-  box-shadow: 0 0 0 2px rgba(0, 219, 255, .15);
-}
-.profile-tags-autocomplete-input {
-  flex: 1; min-width: 0; height: 24px; padding: 0; border: 0; outline: 0;
-  background: transparent; color: var(--color-text-high);
-  font: 500 16px/1.5 var(--font); letter-spacing: -.16px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.profile-tags-autocomplete-input::placeholder {
-  color: var(--color-text-low); opacity: 1;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.profile-tags-autocomplete-caret {
-  width: 24px; height: 24px; border: 0; border-radius: var(--radius-xs);
-  background: transparent; color: var(--color-text-low); cursor: pointer;
-  display: grid; place-items: center; flex-shrink: 0;
-}
-.profile-tags-autocomplete-caret svg {
-  width: 16px; height: 16px; display: block;
-  fill: currentColor; transition: transform .15s;
-}
-.profile-tags-input-shell.is-open .profile-tags-autocomplete-caret svg { transform: rotate(180deg); }
-.profile-tags-dropdown {
-  display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-  z-index: 500; max-height: 176px; padding: 8px; overflow-y: auto;
-  border-radius: var(--radius-md); background: var(--color-surface);
-  box-shadow: 0 4px 12px rgba(0, 34, 51, .14);
-}
-.profile-tags-dropdown.open { display: block; }
-.profile-tags-option {
-  width: 100%; min-height: 40px; padding: 8px 12px; border: 0;
-  border-radius: var(--radius-sm); background: transparent; display: flex;
-  align-items: center; gap: 12px; color: var(--color-text-high);
-  font: 700 16px/1.5 var(--font); letter-spacing: -.16px;
-  text-align: left; cursor: pointer;
-}
-.profile-tags-option:hover { background: var(--color-surface-low); }
-.profile-tags-checkbox {
-  width: 18px; height: 18px; border: 1px solid var(--color-border-interactive);
-  border-radius: var(--radius-xs); background: var(--color-surface);
-  display: grid; place-items: center; flex-shrink: 0;
-}
-.profile-tags-option.is-selected .profile-tags-checkbox {
-  border-color: var(--color-primary-surface-high);
-  background: var(--color-primary-surface-high);
-}
-.profile-tags-checkbox svg {
-  width: 16px; height: 16px; display: none;
-  fill: var(--color-text-high);
-}
-.profile-tags-option.is-selected .profile-tags-checkbox svg { display: block; }
-.profile-tags-dropdown-empty {
-  padding: 8px 12px; color: var(--color-text-low);
-  font: 500 14px/1.4 var(--font); letter-spacing: -.14px;
-}
-.profile-tags-create-divider { height: 1px; margin: 4px 0; background: var(--color-border); }
-.profile-tags-create {
-  width: 100%; height: 32px; padding: 6px 12px 6px 8px; border: 0;
-  border-radius: var(--radius-sm); background: transparent; display: flex;
-  align-items: center; justify-content: center; gap: 4px;
-  color: var(--color-primary-text); font: 700 14px/1.4 var(--font);
-  letter-spacing: -.14px; cursor: pointer;
-}
-.profile-tags-create:hover { background: var(--color-primary-surface-low); }
-.profile-tags-create svg {
-  width: 20px; height: 20px; display: block;
-  fill: currentColor; flex-shrink: 0;
-}
-.profile-tags-added-title {
-  display: flex; align-items: center; gap: 4px; color: var(--color-text-high);
-  font: 700 16px/1.5 var(--font); letter-spacing: -.16px;
-}
-.profile-tags-count {
-  min-width: 24px; height: 16px; padding: 0 8px; border-radius: var(--radius-pill);
-  background: #e5e8ea; display: inline-flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 900; line-height: 1.3; letter-spacing: -.12px;
-}
-.profile-tags-selected {
-  display: flex; flex-direction: column; width: 100%;
-}
-.profile-tags-selected:empty::after {
-  content: "Nenhuma etiqueta adicionada"; color: var(--color-text-low);
-  font: 500 14px/1.4 var(--font);
-}
-.profile-tags-product-group {
-  display: flex; flex-direction: column; gap: 8px; width: 100%;
-}
-.profile-tags-product-chips {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
-}
-.profile-tags-group-divider {
-  margin: 8px 0;
-}
-.profile-tags-chip {
-  min-height: 24px; padding: 4px 8px; border-radius: var(--radius-xs);
-  background: var(--color-surface-low); display: inline-flex; align-items: center;
-  gap: 4px; color: var(--color-text-high); font: 900 12px/1.3 var(--font);
-  letter-spacing: -.12px; text-transform: uppercase;
-}
-.profile-tag-color {
-  width: 16px; height: 16px; display: block; flex-shrink: 0;
-  fill: var(--tag-color, #405466);
-}
-.profile-tag-remove {
-  width: 20px; height: 16px; margin-left: 4px; padding: 0 0 0 4px;
-  border: 0; background: transparent; color: var(--color-text-low);
-  cursor: pointer; display: grid; place-items: center;
-}
-.profile-tag-remove svg {
-  width: 16px; height: 16px; display: block; fill: currentColor;
-}
-.profile-tags-view-all { margin-top: 0 !important; }
 /* Tabs card */
 .profile-card-tabs {
   padding: 24px;
@@ -3953,140 +3708,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* Tags */
-.profile-tags-list { display: flex; flex-wrap: wrap; gap: 8px; }
-.profile-tag {
-  background: var(--color-surface-low);
-  padding: 4px 8px;
-  border-radius: var(--radius-xs);
-  font-size: 12px; font-weight: 900;
-  color: var(--color-text-high);
-  letter-spacing: -0.12px; line-height: 1.3;
-}
-/* Card de tags da coluna de perfil */
-.profile-tags-card-body { gap: 10px !important; overflow: visible; }
-.profile-tags-autocomplete { position: relative; width: 100%; }
-.profile-tags-input-shell {
-  display: flex; align-items: center; width: 100%; height: 40px;
-  padding: 8px 8px 8px 12px; border: 1px solid var(--color-border-interactive);
-  border-radius: var(--radius-md); background: var(--color-surface);
-  transition: border-color .15s, box-shadow .15s;
-}
-.profile-tags-input-shell:focus-within,
-.profile-tags-input-shell.is-open {
-  border-color: var(--color-primary-border);
-  box-shadow: 0 0 0 2px rgba(0, 219, 255, .15);
-}
-.profile-tags-autocomplete-input {
-  flex: 1; min-width: 0; height: 24px; padding: 0; border: 0; outline: 0;
-  background: transparent; color: var(--color-text-high);
-  font: 500 16px/1.5 var(--font); letter-spacing: -.16px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.profile-tags-autocomplete-input::placeholder {
-  color: var(--color-text-low); opacity: 1;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.profile-tags-autocomplete-caret {
-  width: 24px; height: 24px; border: 0; border-radius: var(--radius-xs);
-  background: transparent; color: var(--color-text-low); cursor: pointer;
-  display: grid; place-items: center; flex-shrink: 0;
-}
-.profile-tags-autocomplete-caret svg {
-  width: 16px; height: 16px; display: block;
-  fill: currentColor; transition: transform .15s;
-}
-.profile-tags-input-shell.is-open .profile-tags-autocomplete-caret svg { transform: rotate(180deg); }
-.profile-tags-dropdown {
-  display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-  z-index: 500; max-height: 176px; padding: 8px; overflow-y: auto;
-  border-radius: var(--radius-md); background: var(--color-surface);
-  box-shadow: 0 4px 12px rgba(0, 34, 51, .14);
-}
-.profile-tags-dropdown.open { display: block; }
-.profile-tags-option {
-  width: 100%; min-height: 40px; padding: 8px 12px; border: 0;
-  border-radius: var(--radius-sm); background: transparent; display: flex;
-  align-items: center; gap: 12px; color: var(--color-text-high);
-  font: 700 16px/1.5 var(--font); letter-spacing: -.16px;
-  text-align: left; cursor: pointer;
-}
-.profile-tags-option:hover { background: var(--color-surface-low); }
-.profile-tags-checkbox {
-  width: 18px; height: 18px; border: 1px solid var(--color-border-interactive);
-  border-radius: var(--radius-xs); background: var(--color-surface);
-  display: grid; place-items: center; flex-shrink: 0;
-}
-.profile-tags-option.is-selected .profile-tags-checkbox {
-  border-color: var(--color-primary-surface-high);
-  background: var(--color-primary-surface-high);
-}
-.profile-tags-checkbox svg {
-  width: 16px; height: 16px; display: none;
-  fill: var(--color-text-high);
-}
-.profile-tags-option.is-selected .profile-tags-checkbox svg { display: block; }
-.profile-tags-dropdown-empty {
-  padding: 8px 12px; color: var(--color-text-low);
-  font: 500 14px/1.4 var(--font); letter-spacing: -.14px;
-}
-.profile-tags-create-divider { height: 1px; margin: 4px 0; background: var(--color-border); }
-.profile-tags-create {
-  width: 100%; height: 32px; padding: 6px 12px 6px 8px; border: 0;
-  border-radius: var(--radius-sm); background: transparent; display: flex;
-  align-items: center; justify-content: center; gap: 4px;
-  color: var(--color-primary-text); font: 700 14px/1.4 var(--font);
-  letter-spacing: -.14px; cursor: pointer;
-}
-.profile-tags-create:hover { background: var(--color-primary-surface-low); }
-.profile-tags-create svg {
-  width: 20px; height: 20px; display: block;
-  fill: currentColor; flex-shrink: 0;
-}
-.profile-tags-added-title {
-  display: flex; align-items: center; gap: 4px; color: var(--color-text-high);
-  font: 700 16px/1.5 var(--font); letter-spacing: -.16px;
-}
-.profile-tags-count {
-  min-width: 24px; height: 16px; padding: 0 8px; border-radius: var(--radius-pill);
-  background: #e5e8ea; display: inline-flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 900; line-height: 1.3; letter-spacing: -.12px;
-}
-.profile-tags-selected {
-  display: flex; flex-direction: column; width: 100%;
-}
-.profile-tags-selected:empty::after {
-  content: "Nenhuma etiqueta adicionada"; color: var(--color-text-low);
-  font: 500 14px/1.4 var(--font);
-}
-.profile-tags-product-group {
-  display: flex; flex-direction: column; gap: 8px; width: 100%;
-}
-.profile-tags-product-chips {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
-}
-.profile-tags-group-divider {
-  margin: 8px 0;
-}
-.profile-tags-chip {
-  min-height: 24px; padding: 4px 8px; border-radius: var(--radius-xs);
-  background: var(--color-surface-low); display: inline-flex; align-items: center;
-  gap: 4px; color: var(--color-text-high); font: 900 12px/1.3 var(--font);
-  letter-spacing: -.12px; text-transform: uppercase;
-}
-.profile-tag-color {
-  width: 16px; height: 16px; display: block; flex-shrink: 0;
-  fill: var(--tag-color, #405466);
-}
-.profile-tag-remove {
-  width: 20px; height: 16px; margin-left: 4px; padding: 0 0 0 4px;
-  border: 0; background: transparent; color: var(--color-text-low);
-  cursor: pointer; display: grid; place-items: center;
-}
-.profile-tag-remove svg {
-  width: 16px; height: 16px; display: block; fill: currentColor;
-}
-.profile-tags-view-all { margin-top: 0 !important; }
 /* Tabs card */
 .profile-card-tabs {
   padding: 24px;
@@ -6234,8 +5855,10 @@
 <script src="profile-responsible-edit.js"></script>
 <script src="../../shared/contact-delete-modal.js"></script>
 <script src="profile-more-menu.js?v=20260901-menu-3"></script>
+<script src="../../shared/tag-create-form.js"></script>
 <script src="../../contatos/tag-picker.js"></script>
 <script src="../../shared/profile-tags-card.js"></script>
+<script src="../../shared/profile-tags-panel.js"></script>
 <script>
   // ─── TABLE COLUMNS STATE ─────────────────────────────────
   window.__tableColumns = [
@@ -6815,90 +6438,6 @@
     });
   })();
 
-  // ─── PAINEL: EDITAR TAGS ──────────────────────────────────
-  (function() { try {
-    const drawer      = document.getElementById('drawer-edit-tags');
-    const content     = document.querySelector('.content');
-    const detailPanel = document.getElementById('detail-panel');
-    const closeBtn    = document.getElementById('tags-drawer-close-btn');
-    const cancelBtn   = document.getElementById('tags-drawer-cancel-btn');
-    const saveBtn     = document.getElementById('tags-drawer-save-btn');
-    const errorEl     = document.getElementById('tags-drawer-form-error');
-    if (!drawer || !detailPanel) return;
-
-    const db = window.__sbClient;
-    window.__tagPicker.init(db);
-
-    let editContactId = null;
-
-    drawer.classList.remove('open');
-    detailPanel.appendChild(drawer);
-
-    function getProfileContactId() {
-      return window.__profileContactId || new URLSearchParams(window.location.search).get('id');
-    }
-
-    async function openTagsPanel(contactId) {
-      if (!contactId) return;
-      if (content?.classList.contains('detail-edit')) return;
-      editContactId = contactId;
-      errorEl.style.display = 'none';
-      window.__tagPicker.reset();
-      detailPanel.appendChild(drawer);
-      content.classList.add('detail-open');
-      detailPanel.setAttribute('aria-hidden', 'false');
-      drawer.classList.add('open');
-
-      saveBtn.disabled = true;
-      await window.__tagPicker.loadForContact(contactId);
-      saveBtn.disabled = false;
-    }
-
-    function closeTagsPanel() {
-      content?.classList.remove('detail-open');
-      detailPanel?.setAttribute('aria-hidden', 'true');
-      drawer.classList.remove('open');
-      editContactId = null;
-      window.__tagPicker.reset();
-    }
-
-    window.__openContactEditTags = (id) => {
-      const cid = id || getProfileContactId();
-      if (cid) openTagsPanel(cid);
-    };
-
-    document.getElementById('profile-edit-tags-btn')?.addEventListener('click', () => {
-      window.__openContactEditTags(getProfileContactId());
-    });
-
-    closeBtn.addEventListener('click', closeTagsPanel);
-    cancelBtn.addEventListener('click', closeTagsPanel);
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && drawer.classList.contains('open') && !content?.classList.contains('detail-edit')) closeTagsPanel();
-    });
-
-    saveBtn.addEventListener('click', async () => {
-      if (!editContactId) return;
-      errorEl.style.display = 'none';
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'Salvando...';
-      const savedContactId = editContactId;
-      const savedTags = window.__tagPicker.getSelectedTags ? window.__tagPicker.getSelectedTags() : [];
-      const tagError = await window.__tagPicker.saveForContact(savedContactId);
-      saveBtn.disabled = false;
-      saveBtn.textContent = 'Salvar etiquetas';
-      if (tagError) {
-        errorEl.textContent = 'Erro ao salvar etiquetas: ' + tagError.message;
-        errorEl.style.display = 'block';
-        return;
-      }
-      if (window.__renderProfileTagsList) window.__renderProfileTagsList(savedTags);
-      closeTagsPanel();
-      if (window.__refreshProfileTags) await window.__refreshProfileTags(savedContactId);
-      if (window.__refreshProfileTagCard) await window.__refreshProfileTagCard();
-    });
-  } catch(e) { console.error('[Tags panel] Erro:', e.message, e.stack); }
-  })();
 
   // ─── QUICK FILTER SELECT ────────────────────────────────
   (function() {
@@ -7493,7 +7032,7 @@
       const { data: authData } = await db.auth.getSession();
       if (!authData?.session) {
         console.warn('[Perfil] Sem sessão ativa. Redirecionando...');
-        window.location.href = '../contatos/index.html';
+        window.location.href = '../../login.html';
         return;
       }
       console.log('[Perfil] Sessão OK:', authData.session.user.email);

@@ -15,7 +15,12 @@
     if (!root || !input || !dropdown || !selectedEl) return;
 
     const db = window.__sbClient;
-    const contactId = new URLSearchParams(window.location.search).get('id');
+    function getContactId() {
+      return window.__selectedContactId
+        || window.__profileContactId
+        || new URLSearchParams(window.location.search).get('id')
+        || null;
+    }
     const productId = document.getElementById('products-menu')?.dataset.currentProduct || 'vendas';
     const currentProduct = PRODUCT_LABELS[productId] || 'RD Vendas';
     const state = { all: [], selected: new Map(), open: false, busy: false };
@@ -120,6 +125,7 @@
     }
 
     async function persistSelection(tag, shouldSelect) {
+      const contactId = getContactId();
       if (!contactId || !db || state.busy) return;
       if (shouldSelect && tag.produto !== currentProduct) return;
       state.busy = true;
@@ -146,9 +152,29 @@
 
     async function createTag(product) {
       const label = input.value.trim();
-      if (!label || !db || state.busy || product !== currentProduct) return;
+      if (!label || product !== currentProduct) return;
+      if (window.__openContactEditTags && window.__tagPicker?.openCreateForm) {
+        window.__openContactEditTags(getContactId());
+        window.__tagPicker.openCreateForm(label, product);
+        return;
+      }
+      if (window.__tagCreateForm) {
+        window.__tagCreateForm.open({
+          name: label,
+          product,
+          onSave: payload => createTagWithColor(payload),
+        });
+        return;
+      }
+      const color = TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)];
+      await createTagWithColor({ label, color, product });
+    }
+
+    async function createTagWithColor({ label, color, product }) {
+      const name = String(label || '').trim();
+      if (!name || !db || state.busy || (product && product !== currentProduct)) return;
       const exact = state.all.find(tag =>
-        tag.produto === currentProduct && normalize(tag.label) === normalize(label)
+        tag.produto === currentProduct && normalize(tag.label) === normalize(name)
       );
       if (exact) {
         if (!state.selected.has(String(exact.id))) await persistSelection(exact, true);
@@ -158,25 +184,24 @@
       }
 
       state.busy = true;
-      const color = TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)];
       let { data, error } = await db
         .from('claude_tags')
-        .insert([{ label, color, produto: product }])
+        .insert([{ label: name, color, produto: currentProduct }])
         .select('id,label,color,produto')
         .single();
       if (error?.code === '42703') {
         const fallback = await db
           .from('claude_tags')
-          .insert([{ label, color }])
+          .insert([{ label: name, color }])
           .select('id,label,color')
           .single();
-        data = fallback.data ? { ...fallback.data, produto: product } : null;
+        data = fallback.data ? { ...fallback.data, produto: currentProduct } : null;
         error = fallback.error;
       }
       state.busy = false;
       if (error || !data) {
         console.error('[Card de etiquetas] Erro ao criar etiqueta:', error?.message);
-        return;
+        throw error || new Error('Não foi possível criar a etiqueta');
       }
       state.all.push(data);
       state.all.sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
@@ -185,7 +210,13 @@
     }
 
     async function load() {
-      if (!contactId || !db) return;
+      const contactId = getContactId();
+      if (!contactId || !db) {
+        state.selected.clear();
+        renderSelected();
+        renderDropdown();
+        return;
+      }
       let [{ data: allTags, error: tagsError }, { data: links, error: linksError }] = await Promise.all([
         db.from('claude_tags').select('id,label,color,produto').order('produto').order('label'),
         db.from('claude_contato_tags').select('tag_id, claude_tags(id,label,color,produto)').eq('contato_id', contactId),
@@ -253,7 +284,23 @@
       }
       if (event.target.closest('[data-create-tag]')) {
         event.stopPropagation();
-        await createTag(event.target.closest('[data-create-tag]').dataset.createProduct);
+        const product = event.target.closest('[data-create-tag]').dataset.createProduct;
+        const name = input.value.trim();
+        setOpen(false);
+        if (window.__openContactEditTags && window.__tagPicker?.openCreateForm) {
+          window.__openContactEditTags(getContactId());
+          window.__tagPicker.openCreateForm(name, product);
+          return;
+        }
+        if (!window.__tagCreateForm) {
+          await createTag(product);
+          return;
+        }
+        window.__tagCreateForm.open({
+          name,
+          product,
+          onSave: payload => createTagWithColor(payload),
+        });
       }
     });
     selectedEl.addEventListener('click', async event => {
@@ -265,7 +312,7 @@
     document.addEventListener('click', event => {
       if (!event.target.closest('#profile-tags-autocomplete')) setOpen(false);
     });
-    viewAllBtn?.addEventListener('click', () => window.__openContactEditTags?.(contactId));
+    viewAllBtn?.addEventListener('click', () => window.__openContactEditTags?.(getContactId()));
 
     window.__refreshProfileTagCard = load;
     load();

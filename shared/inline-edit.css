@@ -980,3 +980,63 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ── Skeleton de carregamento ──────────────────────────────────────────── */
+@keyframes profile-skeleton-wave {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* A linha inteira (label + valor) vira o skeleton; o campo só aparece pronto */
+.profile-ident-item.is-loading,
+.profile-detail-item.is-loading,
+.profile-privacy-item.is-loading {
+  position: relative;
+  min-height: 40px;
+  border-radius: 4px;
+  pointer-events: none;
+  background: none !important;
+}
+
+.profile-ident-item.is-loading > *,
+.profile-detail-item.is-loading > *,
+.profile-privacy-item.is-loading > * {
+  visibility: hidden;
+}
+
+.profile-ident-item.is-loading::after,
+.profile-detail-item.is-loading::after,
+.profile-privacy-item.is-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #ECEEEF 25%, #f4f5f6 50%, #ECEEEF 75%);
+  background-size: 200% 100%;
+  animation: profile-skeleton-wave 1.4s infinite ease-in-out;
+}
+
+.profile-skeleton-line {
+  height: 20px;
+  border-radius: 4px;
+}
+
+.profile-company-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-company-skeleton-logo {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.profile-company-skeleton-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}

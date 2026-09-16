@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Template de Lista — RD Station</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../shared/inline-edit.css?v=20260916-figma-card-10">
+  <link rel="stylesheet" href="../../shared/inline-edit.css?v=20260916-skeleton-2">
   <link rel="stylesheet" href="../../shared/profile-tags.css">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -5837,8 +5837,8 @@
 <script src="../contatos/empresa-autocomplete.js"></script>
 <script src="../contatos/legal-basis-picker.js"></script>
 <script src="profile-edit-slot.js"></script>
-<script src="../../shared/profile-more-info-layout.js?v=20260916-figma-card-3"></script>
-<script src="../../shared/inline-edit.js?v=20260916-figma-card-9"></script>
+<script src="../../shared/profile-more-info-layout.js?v=20260916-skeleton-2"></script>
+<script src="../../shared/inline-edit.js?v=20260916-skeleton-2"></script>
 <script src="profile-contact-edit.js"></script>
 <script src="profile-company-edit.js"></script>
 <script src="profile-responsible-edit.js"></script>
@@ -6707,6 +6707,40 @@
     document.querySelectorAll('.profile-detail-item[data-field] .profile-detail-value').forEach(span => {
       span.classList.add('skeleton');
     });
+
+    // Linha inteira (label + valor) em carregamento
+    document.querySelectorAll('.profile-ident-item[data-field], .profile-detail-item[data-field], .profile-privacy-item[data-field]').forEach(row => {
+      row.classList.add('is-loading');
+    });
+
+    // Listas preenchidas de forma assíncrona (base legal e empresa)
+    const privacyList = document.getElementById('profile-privacy-list');
+    if (privacyList && !privacyList.children.length) {
+      privacyList.innerHTML = '<div class="skeleton profile-skeleton-line" data-skeleton-placeholder="1" style="width:160px"></div>';
+    }
+
+    const companiesList = document.getElementById('profile-companies-list');
+    if (companiesList && !companiesList.children.length) {
+      companiesList.innerHTML = [
+        '<div class="profile-company-skeleton" data-skeleton-placeholder="1">',
+        '  <div class="skeleton skeleton--circle profile-company-skeleton-logo"></div>',
+        '  <div class="profile-company-skeleton-lines">',
+        '    <div class="skeleton profile-skeleton-line" style="width:60%"></div>',
+        '    <div class="skeleton profile-skeleton-line" style="width:35%"></div>',
+        '  </div>',
+        '</div>'
+      ].join('');
+    }
+
+    window.__clearProfileSkeletons = function() {
+      document.querySelectorAll('[data-skeleton-placeholder]').forEach(el => el.remove());
+      document.querySelectorAll('.skeleton').forEach(el => {
+        el.classList.remove('skeleton', 'skeleton--circle');
+      });
+      document.querySelectorAll('.inline-field.is-loading, .profile-detail-item.is-loading, .profile-ident-item.is-loading, .profile-privacy-item.is-loading').forEach(el => {
+        el.classList.remove('is-loading');
+      });
+    };
   })();
 
   // ── Troca de abas (profile-tabs-nav) ─────────────────────────────────────
@@ -7053,8 +7087,8 @@
       .eq('id', contactId)
       .single();
 
-    if (error) { console.error('[Perfil] Erro na query:', error.message); return; }
-    if (!c)    { console.warn('[Perfil] Contato não encontrado:', contactId); return; }
+    if (error) { console.error('[Perfil] Erro na query:', error.message); window.__clearProfileSkeletons?.(); return; }
+    if (!c)    { console.warn('[Perfil] Contato não encontrado:', contactId); window.__clearProfileSkeletons?.(); return; }
     console.log('[Perfil] Contato carregado:', c.nome);
 
     // ── Helpers ─────────────────────────────────────────────────────────────
@@ -7074,6 +7108,7 @@
       if (el) {
         el.textContent = val || '—';
         el.classList.remove('skeleton');
+        el.closest('.profile-detail-item, .profile-ident-item, .profile-privacy-item')?.classList.remove('is-loading');
       }
       if (id === 'profile-name') {
         const headerTitle = document.getElementById('page-header-title');
@@ -7172,6 +7207,7 @@
         span.classList.remove('skeleton');
         span.classList.toggle('is-empty', !value);
       }
+      item.classList.remove('is-loading');
       item.style.display = '';
     }
     window.__formatProfilePhone = formatPhone;
@@ -7369,9 +7405,7 @@
     window.__profileDb        = db;
 
     // ── Remover skeletons remanescentes (ex: campos sem valor) ───────────────
-    document.querySelectorAll('.skeleton').forEach(el => {
-      el.classList.remove('skeleton', 'skeleton--circle');
-    });
+    window.__clearProfileSkeletons?.();
   })();
 
   // ─── PROFILE STATUS BADGE DROPDOWN ────────────────────────────────────────

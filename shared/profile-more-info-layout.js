@@ -36,7 +36,7 @@
     return `
       <div class="profile-detail-item more-info-row" id="pi-${field}" data-field="${field}"${typeAttr}>
         <span class="profile-detail-label">${label}</span>
-        <span class="profile-detail-value is-empty" id="pi-${field}-val" data-placeholder="${esc(placeholder)}">${esc(placeholder)}</span>
+        <span class="profile-detail-value is-empty skeleton" id="pi-${field}-val" data-placeholder="${esc(placeholder)}">${esc(placeholder)}</span>
       </div>`;
   }
 
@@ -48,7 +48,7 @@
            data-social-index="${index}"
            data-social-rede="${rede}">
         <span class="profile-detail-label">${label}</span>
-        <span class="profile-detail-value is-empty" data-placeholder="${placeholder}">${placeholder}</span>
+        <span class="profile-detail-value is-empty skeleton" data-placeholder="${placeholder}">${placeholder}</span>
       </div>`;
   }
 
@@ -91,7 +91,9 @@
     const shown = field === 'data_nascimento' ? displayDate(value) : String(value || '');
     const placeholder = el.dataset.placeholder || '—';
     el.textContent = shown || placeholder;
+    el.classList.remove('skeleton');
     el.classList.toggle('is-empty', !shown);
+    el.closest('.profile-detail-item, .profile-ident-item, .profile-privacy-item')?.classList.remove('is-loading');
   }
 
   function socialMap(contact) {
@@ -131,7 +133,9 @@
         ? (rede === 'site_pessoal' || String(value).startsWith('@') ? String(value) : `@${value}`)
         : placeholder;
       valueEl.textContent = shown;
+      valueEl.classList.remove('skeleton');
       valueEl.classList.toggle('is-empty', !value);
+      item.classList.remove('is-loading');
       window.InlineField?.bindItem(item, { type: 'text' });
     });
 

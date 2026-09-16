@@ -616,6 +616,8 @@
         return;
       }
       const text = valueEl.textContent.trim();
+      valueEl.classList.remove('skeleton');
+      this.el.classList.remove('is-loading');
       valueEl.classList.toggle('is-empty', !text || text === '—');
     }
 
@@ -640,6 +642,7 @@
       const existingValue = item.querySelector('.profile-detail-value, .profile-privacy-value, .profile-ident-value, .inline-field__value');
       const currentText = existingValue?.textContent.trim() || '—';
       const currentIsEmpty = existingValue?.classList.contains('is-empty') || !currentText || currentText === '—';
+      const loading = existingValue?.classList.contains('skeleton');
       const placeholder = existingValue?.dataset.placeholder || '';
       const valueId = existingValue?.id ? ` id="${esc(existingValue.id)}"` : '';
       const placeholderAttr = placeholder ? ` data-placeholder="${esc(placeholder)}"` : '';
@@ -662,7 +665,7 @@
       const valueInner = (this.type === 'phone' || this.field === 'telefone')
         ? phoneValueHtml(getRawFromStore(item), currentText)
         : esc(currentText);
-      const valueHtml = `<span class="inline-field__value ${valueKind}${currentIsEmpty ? ' is-empty' : ''}"${valueId}${placeholderAttr}>${valueInner}</span>`;
+      const valueHtml = `<span class="inline-field__value ${valueKind}${currentIsEmpty ? ' is-empty' : ''}${loading ? ' skeleton' : ''}"${valueId}${placeholderAttr}>${valueInner}</span>`;
       const inputHtml = this.type === 'phone'
         ? `<div class="inline-field__phone-text" hidden>
             <span class="inline-field__dial">${esc(this.selectedCountry?.dial || '+55')}</span>
@@ -671,6 +674,7 @@
         : `<input class="inline-field__input" type="text" autocomplete="off" hidden>`;
 
       row.innerHTML = `${leading}${valueHtml}${inputHtml}${actions}`;
+      if (loading) item.classList.add('is-loading');
 
       if (item.classList.contains('profile-ident-item')) {
         Array.from(item.children).forEach(child => {
@@ -1030,6 +1034,8 @@
     _restoreDisplay(raw) {
       const valueEl = this._valueEl();
       if (!valueEl) return;
+      valueEl.classList.remove('skeleton');
+      this.el.classList.remove('is-loading');
       if (this.type === 'phone' || this.field === 'telefone') {
         const display = formatPhone(raw) || '';
         valueEl.innerHTML = phoneValueHtml(raw, display);

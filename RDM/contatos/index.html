@@ -5354,7 +5354,7 @@
           }
           case 'telefone': {
             const phoneArr = Array.isArray(row.telefones) && row.telefones.length ? row.telefones : (row.telefone ? [row.telefone] : []);
-            const primaryPhone = formatPhone(phoneArr[0]) || '—';
+            const primaryPhone = formatPhone(phoneArr[0]?.numero || phoneArr[0]) || '—';
             const extraPhones = phoneArr.length > 1 ? phoneArr.length - 1 : 0;
             cells += `<td class="col-telefone"><div class="cell-text"><span class="cell-plain cell-text-main">${primaryPhone}</span>${extraPhones ? `<span class="cell-text-sub">+${extraPhones} telefone${extraPhones > 1 ? 's' : ''}</span>` : ''}</div></td>`; break;
           }

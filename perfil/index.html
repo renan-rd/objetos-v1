@@ -9,7 +9,7 @@
   <title>Template de Lista — RD Station</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
-  <link rel="stylesheet" href="../shared/inline-edit.css?v=20260831-actions-fade-2">
+  <link rel="stylesheet" href="../shared/inline-edit.css?v=20260916-figma-card-10">
   <link rel="stylesheet" href="../shared/profile-tags.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
@@ -2688,7 +2688,7 @@
 /* ─── PROFILE PAGE ──────────────────────────────────── */
 .profile-layout {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 368px 1fr;
   gap: 16px;
   min-height: 100%;
   align-items: start;
@@ -4022,7 +4022,7 @@
             <div class="profile-ident-group" id="profile-group-email">
               <div class="profile-ident-group-label">E-mail</div>
               <div class="profile-ident-values" id="profile-email-values">
-                <div class="overview-info-item profile-ident-item" data-field="email">
+                <div class="overview-info-item profile-ident-item" data-field="email" data-email-index="0">
                   <span class="profile-ident-value"></span>
                   <div class="profile-ident-actions">
                     <button class="profile-ident-edit">
@@ -4042,11 +4042,15 @@
                   </div>
                 </div>
               </div>
+              <button type="button" class="btn-tertiary-sm" id="profile-add-email-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/></svg>
+                Adicionar e-mail
+              </button>
             </div>
             <div class="profile-ident-group" id="profile-group-telefone">
               <div class="profile-ident-group-label">Telefones</div>
               <div class="profile-ident-values" id="profile-phone-values">
-                <div class="overview-info-item profile-ident-item" data-field="telefone" data-inline-type="phone">
+                <div class="overview-info-item profile-ident-item" data-field="telefone" data-inline-type="phone" data-phone-index="0">
                   <div class="profile-ident-flag" id="profile-phone-flag" aria-hidden="true"></div>
                   <span class="profile-ident-value"></span>
                   <div class="profile-ident-actions">
@@ -4067,30 +4071,14 @@
                   </div>
                 </div>
               </div>
+              <button type="button" class="btn-tertiary-sm" id="profile-add-phone-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/></svg>
+                Adicionar telefone
+              </button>
             </div>
-            <div class="profile-ident-group" id="profile-group-cpf">
-              <div class="profile-ident-group-label">CPF</div>
-              <div class="profile-ident-values">
-                <div class="overview-info-item profile-ident-item" data-field="cpf">
-                  <span class="profile-ident-value"></span>
-                  <div class="profile-ident-actions">
-                    <button class="profile-ident-edit">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9048 5.76122L14.2387 9.09513L6.99924 16.3346L4.02679 16.6627C3.62887 16.7067 3.29266 16.3702 3.33694 15.9723L3.66767 12.9978L10.9048 5.76122V5.76122ZM16.3007 5.26486L14.7353 3.69947C14.247 3.21118 13.4551 3.21118 12.9668 3.69947L11.4941 5.17215L14.828 8.50606L16.3007 7.03338C16.789 6.54483 16.789 5.75315 16.3007 5.26486V5.26486Z" fill="currentColor"/></svg>
-                      <div class="profile-tooltip">
-                        <div class="profile-tooltip-arrow"></div>
-                        <div class="profile-tooltip-box">Editar</div>
-                      </div>
-                    </button>
-                    <button class="profile-ident-copy">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5002 15.625V16.6667C12.5002 17.0833 12.0835 17.5 11.6668 17.5H4.5835C3.75016 17.5 3.3335 17.0833 3.3335 16.25V5.83333C3.3335 5.41667 3.75016 5 4.16683 5H6.19064V13.9844C6.19064 14.889 6.93829 15.625 7.85731 15.625H12.5002ZM12.8573 5.54687V2.5H7.85731C7.46281 2.5 7.14302 2.81479 7.14302 3.20312V13.9844C7.14302 14.3727 7.46281 14.6875 7.85731 14.6875H15.9525C16.347 14.6875 16.6668 14.3727 16.6668 13.9844V6.25H13.5716C13.1787 6.25 12.8573 5.93359 12.8573 5.54687ZM16.4576 4.63782L14.4951 2.70593C14.3611 2.57407 14.1794 2.5 13.99 2.5H13.8097V5.3125H16.6668V5.13499C16.6668 4.94852 16.5916 4.76968 16.4576 4.63782Z" fill="currentColor"/></svg>
-                      <div class="profile-tooltip">
-                        <div class="profile-tooltip-arrow"></div>
-                        <div class="profile-tooltip-box">Copiar</div>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              </div>
+            <div class="overview-info-item profile-ident-item" id="profile-group-cpf" data-field="cpf">
+              <span class="profile-detail-label">CPF</span>
+              <span class="profile-ident-value"></span>
             </div>
           </div>
           </div>
@@ -5453,7 +5441,8 @@
 <script src="../contatos/empresa-autocomplete.js"></script>
 <script src="../contatos/legal-basis-picker.js"></script>
 <script src="profile-edit-slot.js"></script>
-<script src="../shared/inline-edit.js?v=20260831-tooltip-3"></script>
+<script src="../shared/profile-more-info-layout.js?v=20260916-figma-card-3"></script>
+<script src="../shared/inline-edit.js?v=20260916-figma-card-9"></script>
 <script src="profile-contact-edit.js"></script>
 <script src="profile-company-edit.js"></script>
 <script src="profile-responsible-edit.js"></script>
@@ -6171,7 +6160,9 @@
     const nameField = btn.closest('.profile-name-field');
     let text = '';
     if (identItem) {
-      text = identItem.querySelector('span')?.textContent.trim() || '';
+      const valueEl = identItem.querySelector('.inline-field__value, .profile-ident-value')
+        || identItem.querySelector('span:not(.profile-detail-label)');
+      text = valueEl?.textContent.trim() || '';
     } else if (nameField) {
       text = nameField.querySelector('.profile-name, .profile-role')?.textContent.trim() || '';
     }
@@ -6312,7 +6303,7 @@
     if (roleEl) { roleEl.textContent = ''; roleEl.classList.add('skeleton'); }
 
     // Ident items (email, telefone, rede social)
-    document.querySelectorAll('.profile-ident-item[data-field] span').forEach(span => {
+    document.querySelectorAll('.profile-ident-item[data-field] span:not(.profile-detail-label)').forEach(span => {
       span.classList.add('skeleton');
     });
 
@@ -6540,9 +6531,14 @@
       }
 
       const siteValue = contact.empresa_site || '—';
-      const phoneRaw = contact.empresa_telefone || '';
+      const empPhones = Array.isArray(contact.empresa_telefones) && contact.empresa_telefones.length
+        ? contact.empresa_telefones
+        : (contact.empresa_telefone
+          ? [{ numero: contact.empresa_telefone, tipo: contact.empresa_telefone_tipo || 'Comercial' }]
+          : []);
+      const phoneRaw = empPhones[0]?.numero || '';
       const phoneValue = formatPhone(phoneRaw) || '—';
-      const phoneTipo = contact.empresa_telefone_tipo || 'Comercial';
+      const phoneTipo = empPhones[0]?.tipo || 'Comercial';
 
       const fieldsHtml = `
           <div class="profile-company-fields">
@@ -6555,14 +6551,14 @@
                 </div>
               </div>
             </div>
-            <div class="profile-company-field">
+            <div class="profile-company-field" id="profile-group-empresa-telefone">
               <div class="profile-company-field-label">Telefone</div>
-              <div class="profile-company-field-group">
-                <div class="profile-company-field-sublabel">${escTagHtml(phoneTipo)}</div>
-                <div class="profile-ident-item" data-field="empresa_telefone" data-inline-type="phone">
+              <div class="profile-company-field-values" id="profile-empresa-phone-values">
+                <div class="overview-info-item profile-ident-item" data-field="empresa_telefone" data-inline-type="phone" data-phone-index="0" data-phone-tipo="${escTagHtml(phoneTipo)}">
                   <span class="profile-ident-value${phoneValue === '—' ? ' is-empty' : ''}">${escTagHtml(phoneValue)}</span>
                 </div>
               </div>
+              <button type="button" class="btn-tertiary-sm" id="profile-add-empresa-phone-btn">Adicionar telefone</button>
             </div>
           </div>`;
 
@@ -6580,6 +6576,8 @@
       `;
 
       window.InlineField?.mountCard('#profile-company-card');
+      window.__syncEmpresaPhones?.(window.__profileFieldRaw?.empresa_telefones);
+      window.__bindAddEmpresaPhoneButton?.();
     }
 
     window.__renderProfileCompanies = renderProfileCompanies;
@@ -6639,7 +6637,7 @@
     // ── Carregar contato ────────────────────────────────────────────────────
     const { data: c, error } = await db
       .from('claude_contatos')
-      .select('id,nome,cargo,status,email,emails,telefone,telefones,foto_perfil,cpf,rg,data_nascimento,cep,rua,complemento,bairro,cidade,estado,pais,rede_social,rede_social_usuario,redes_sociais,empresa_id,empresa_nome,empresa_cnpj')
+      .select('id,nome,cargo,status,email,emails,telefone,telefones,foto_perfil,cpf,rg,data_nascimento,cep,rua,numero,complemento,bairro,cidade,estado,pais,origem,rede_social,rede_social_usuario,redes_sociais,empresa_id,empresa_nome,empresa_cnpj')
       .eq('id', contactId)
       .single();
 
@@ -6722,7 +6720,8 @@
 
     // ── Identificação ────────────────────────────────────────────────────────
     const emailPrimary  = (Array.isArray(c.emails) && c.emails.length ? c.emails[0] : c.email) || '';
-    const fonePrimary   = (Array.isArray(c.telefones) && c.telefones.length ? c.telefones[0] : c.telefone) || '';
+    const phonesNorm    = window.__normalizePhones ? window.__normalizePhones(c) : [];
+    const fonePrimary   = phonesNorm[0]?.numero || c.telefone || '';
     const socialUsuario = (buildSocialList(c)[0]?.usuario) || c.rede_social_usuario || '';
     const socialRede    = (buildSocialList(c)[0]?.rede) || c.rede_social || 'instagram';
     window.__profileContactSocials = buildSocialList(c);
@@ -6769,25 +6768,30 @@
       nome: c.nome || '',
       cargo: c.cargo || '',
       email: emailPrimary,
+      emails: (Array.isArray(c.emails) && c.emails.length ? c.emails : [c.email]).filter(Boolean),
       telefone: fonePrimary,
+      telefones: phonesNorm,
       rede_social: socialRede,
       rede_social_usuario: socialUsuario,
       data_nascimento: c.data_nascimento || '',
       rg: c.rg || '',
       cpf: c.cpf || '',
       rua: c.rua || '',
+      numero: c.numero || '',
       complemento: c.complemento || '',
       bairro: c.bairro || '',
       cidade: c.cidade || '',
       estado: c.estado || '',
       cep: c.cep || '',
       pais: c.pais || '',
+      origem: c.origem || '',
       empresa_id: c.empresa_id || '',
       empresa_nome: c.empresa_nome || '',
       empresa_cnpj: c.empresa_cnpj || '',
       empresa_site: c.empresa_site || '',
       empresa_telefone: c.empresa_telefone || '',
       empresa_telefone_tipo: c.empresa_telefone_tipo || '',
+      empresa_telefones: [],
     };
     window.__profileIdentRaw = window.__profileFieldRaw;
 
@@ -6827,29 +6831,21 @@
     }
 
     const allEmails = (Array.isArray(c.emails) && c.emails.length ? c.emails : [c.email]).filter(Boolean);
-    const allPhones = (Array.isArray(c.telefones) && c.telefones.length ? c.telefones : [c.telefone]).filter(Boolean);
+    const allPhones = phonesNorm;
 
     setIdentSpan('email', emailPrimary);
     toggleIdentGroup('profile-group-email', true);
-    allEmails.slice(1).forEach(email => {
-      appendSecondaryValue(document.getElementById('profile-email-values'), email, null);
-    });
+    window.__syncProfileEmails?.(allEmails);
 
     setIdentSpan('telefone', formatPhone(fonePrimary));
     toggleIdentGroup('profile-group-telefone', true);
-    const phoneFlagHost = document.getElementById('profile-phone-flag');
-    if (phoneFlagHost) {
-      const country = countryForPhone(fonePrimary);
-      phoneFlagHost.innerHTML = country ? country.flag : '';
-    }
-    allPhones.slice(1).forEach(phone => {
-      appendSecondaryValue(document.getElementById('profile-phone-values'), formatPhone(phone), phone);
-    });
+    window.__syncProfilePhones?.(allPhones);
 
     setIdentSpan('cpf', c.cpf);
     toggleIdentGroup('profile-group-cpf', true);
 
     renderProfileSocials(c);
+    window.__renderMoreInfoCard?.(c);
 
     // ── Outros e-mails ───────────────────────────────────────────────────────
     const extraEmails = Array.isArray(c.emails) && c.emails.length > 1 ? c.emails.slice(1) : [];
@@ -6868,14 +6864,14 @@
     }
 
     // ── Outros telefones ─────────────────────────────────────────────────────
-    const extraFones = Array.isArray(c.telefones) && c.telefones.length > 1 ? c.telefones.slice(1) : [];
+    const extraFones = phonesNorm.slice(1);
     const piFones = document.getElementById('pi-outros-fones');
     if (piFones) {
       if (extraFones.length) {
         extraFones.forEach(f => {
           const span = document.createElement('span');
           span.className = 'profile-detail-value';
-          span.textContent = formatPhone(f);
+          span.textContent = formatPhone(f.numero);
           piFones.appendChild(span);
         });
       } else {
@@ -6920,19 +6916,34 @@
     if (c.empresa_id) {
       const { data: emp, error: empErr } = await db
         .from('claude_empresas')
-        .select('site,telefone,telefone_tipo')
+        .select('site,telefone,telefone_tipo,telefones')
         .eq('id', c.empresa_id)
         .maybeSingle();
       if (empErr) console.error('[Perfil] Erro ao carregar empresa:', empErr.message);
+      const empPhones = (Array.isArray(emp?.telefones) && emp.telefones.length
+        ? emp.telefones
+        : (emp?.telefone ? [{ numero: emp.telefone, tipo: emp.telefone_tipo || 'Comercial' }] : []))
+        .map(item => {
+          if (item && typeof item === 'object') {
+            const numero = String(item.numero || item.telefone || '').trim();
+            if (!numero) return null;
+            return { numero, tipo: item.tipo || emp?.telefone_tipo || 'Comercial' };
+          }
+          const numero = String(item || '').trim();
+          return numero ? { numero, tipo: emp?.telefone_tipo || 'Comercial' } : null;
+        })
+        .filter(Boolean);
       window.__profileFieldRaw.empresa_id             = c.empresa_id || '';
       window.__profileFieldRaw.empresa_site           = emp?.site || '';
-      window.__profileFieldRaw.empresa_telefone       = emp?.telefone || '';
-      window.__profileFieldRaw.empresa_telefone_tipo  = emp?.telefone_tipo || '';
+      window.__profileFieldRaw.empresa_telefone       = empPhones[0]?.numero || emp?.telefone || '';
+      window.__profileFieldRaw.empresa_telefone_tipo  = empPhones[0]?.tipo || emp?.telefone_tipo || '';
+      window.__profileFieldRaw.empresa_telefones      = empPhones;
     }
     renderProfileCompanies({ ...c, ...window.__profileFieldRaw });
 
     // ── Privacidade de dados ─────────────────────────────────────────────────
     await renderProfilePrivacy(contactId);
+    window.__renderMoreInfoCard?.(c);
     window.__profileContactId = contactId;
     window.__profileDb        = db;
     window.InlineField?.mountCard('#profile-more-info-card');

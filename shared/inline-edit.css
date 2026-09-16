@@ -41,24 +41,67 @@
   overflow: visible;
 }
 
-#profile-contact-card .overview-info-item.inline-field {
+#profile-contact-card .overview-info-item.inline-field,
+#profile-company-card .overview-info-item.inline-field {
   flex-direction: column;
   align-items: stretch;
   gap: 8px;
 }
 
-#profile-contact-card .inline-field .profile-ident-actions:not(.inline-field__actions) {
+/* CPF: mesmo grid do RG (label 155px + input) */
+#profile-contact-card #profile-group-cpf,
+#profile-contact-card #profile-group-cpf.inline-field {
+  display: grid;
+  grid-template-columns: 155px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 0;
+  width: 100%;
+  min-height: 40px;
+  height: 40px;
+  flex-direction: unset;
+}
+
+#profile-contact-card #profile-group-cpf > .profile-detail-label,
+#profile-contact-card #profile-group-cpf > .inline-field__label {
+  grid-column: 1;
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -0.16px;
+  color: var(--color-text-high);
+  white-space: nowrap;
+}
+
+#profile-contact-card #profile-group-cpf > .inline-field__control,
+#profile-contact-card #profile-group-cpf > .profile-ident-value {
+  grid-column: 2;
+  min-width: 0;
+}
+
+#profile-contact-card #profile-group-cpf:hover > .profile-detail-label,
+#profile-contact-card #profile-group-cpf:hover > .inline-field__label {
+  padding-right: 0 !important;
+}
+
+#profile-contact-card .inline-field .profile-ident-actions:not(.inline-field__actions),
+#profile-company-card .inline-field .profile-ident-actions:not(.inline-field__actions) {
   display: none !important;
 }
 
 #profile-contact-card .profile-ident-values .profile-ident-item.inline-field:hover,
-#profile-contact-card .overview-info-item.profile-ident-item.inline-field:hover {
+#profile-contact-card .overview-info-item.profile-ident-item.inline-field:hover,
+#profile-company-card .profile-company-field-values .profile-ident-item.inline-field:hover,
+#profile-company-card .overview-info-item.profile-ident-item.inline-field:hover {
   padding: 0 !important;
   margin: 0 !important;
 }
 
 #profile-contact-card .overview-info-item.profile-ident-item.inline-field:hover span,
-#profile-contact-card .profile-ident-values .profile-ident-item.inline-field:hover span.profile-ident-value {
+#profile-contact-card .profile-ident-values .profile-ident-item.inline-field:hover span.profile-ident-value,
+#profile-company-card .overview-info-item.profile-ident-item.inline-field:hover span,
+#profile-company-card .profile-company-field-values .profile-ident-item.inline-field:hover span.profile-ident-value {
   padding-right: 0 !important;
 }
 
@@ -71,11 +114,15 @@
 #profile-contact-card .inline-field span.inline-field__leading,
 #profile-contact-card .inline-field .inline-field__flag-trigger,
 #profile-contact-card .inline-field .inline-field__flag,
+#profile-contact-card .inline-field .inline-field__type-trigger,
+#profile-contact-card .inline-field .inline-field__type-label,
 #profile-contact-card .inline-field .inline-field__caret,
 #profile-contact-card .inline-field .inline-field__dial,
 #profile-company-card .inline-field span.inline-field__leading,
 #profile-company-card .inline-field .inline-field__flag-trigger,
 #profile-company-card .inline-field .inline-field__flag,
+#profile-company-card .inline-field .inline-field__type-trigger,
+#profile-company-card .inline-field .inline-field__type-label,
 #profile-company-card .inline-field .inline-field__caret,
 #profile-company-card .inline-field .inline-field__dial {
   flex: 0 0 auto !important;
@@ -170,6 +217,11 @@
   position: relative;
 }
 
+/* Phone: 4px only between country caret and DDI/number. Type + flag stay 8px inside leading. */
+.inline-field__control--phone {
+  gap: 4px;
+}
+
 .inline-field:hover:not(.is-editing):not(.is-error) .inline-field__control {
   border-bottom-color: #8c9ba3;
   border-bottom-style: dashed;
@@ -194,7 +246,7 @@
   width: max-content;
   min-width: 0;
   overflow: visible;
-  gap: 0;
+  gap: 8px;
 }
 
 .inline-field__icon {
@@ -203,6 +255,11 @@
   height: 24px;
   flex-shrink: 0;
   fill: currentColor;
+}
+
+.inline-field__action--copy .inline-field__icon {
+  width: 20px;
+  height: 20px;
 }
 
 .inline-field__calendar-icon {
@@ -223,6 +280,36 @@
   background: transparent;
   cursor: pointer;
   color: var(--color-icon-low);
+}
+
+.inline-field__type-trigger {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 0;
+  max-width: 108px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-high);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.14px;
+}
+
+.inline-field__type-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inline-field__type-menu {
+  width: max-content;
+  min-width: 168px;
+  max-width: 220px;
 }
 
 .inline-field__flag {
@@ -364,7 +451,6 @@
   cursor: pointer;
 }
 
-.inline-field:hover:not(.is-editing) .inline-field__action--edit,
 .inline-field:hover:not(.is-editing) .inline-field__action--copy,
 .inline-field.is-editing .inline-field__action--caret,
 .inline-field[data-inline-type="select"]:hover:not(.is-editing) .inline-field__action--caret,
@@ -379,7 +465,6 @@
   display: flex;
 }
 
-.inline-field.is-editing .inline-field__action--edit,
 .inline-field.is-editing .inline-field__action--copy {
   display: none;
 }
@@ -389,7 +474,7 @@
 }
 
 .inline-field__action.copied {
-  color: var(--color-success-text);
+  color: #0077B2;
 }
 
 .inline-field__action:hover .inline-field__tooltip {
@@ -748,4 +833,150 @@
 .inline-toast__close .inline-field__icon {
   width: 20px;
   height: 20px;
+}
+
+/* Tertiary small — Figma Button kind=Tertiary size=Small */
+.btn-tertiary-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 12px 6px 8px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  color: var(--color-primary-text, #0077B2);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 19.6px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.btn-tertiary-sm svg,
+.btn-tertiary-sm .inline-field__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-primary-icon, #0077B2);
+}
+
+.btn-tertiary-sm:hover {
+  background: var(--color-primary-surface-low, #E6F4F8);
+}
+
+#profile-group-email .btn-tertiary-sm,
+#profile-group-telefone .btn-tertiary-sm,
+#profile-group-empresa-telefone .btn-tertiary-sm {
+  margin-top: 4px;
+}
+
+/* Mais informações — layout horizontal do Figma (368px) */
+#profile-more-info-card .overview-card-body {
+  gap: 12px;
+  padding-top: 12px;
+}
+
+#profile-more-info-card .more-info-fields,
+#profile-more-info-card .more-info-socials,
+#profile-more-info-card .more-info-footer-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+#profile-more-info-card .more-info-row,
+#profile-more-info-card .more-info-base-legal {
+  display: grid;
+  grid-template-columns: 155px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 8px;
+  width: 100%;
+  min-height: 40px;
+}
+
+#profile-more-info-card .more-info-row.inline-field {
+  display: grid;
+}
+
+#profile-more-info-card .more-info-row > .profile-detail-label,
+#profile-more-info-card .more-info-row > .inline-field__label,
+#profile-more-info-card .more-info-base-legal > .profile-detail-label {
+  grid-column: 1;
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -0.16px;
+  color: var(--color-text-high, #002233);
+  white-space: nowrap;
+}
+
+#profile-more-info-card .more-info-row > .inline-field__control,
+#profile-more-info-card .more-info-row > .profile-detail-value {
+  grid-column: 2;
+  min-width: 0;
+}
+
+#profile-more-info-card .more-info-row > .profile-detail-value {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+#profile-more-info-card .more-info-row .inline-field__control {
+  padding: 8px 0;
+}
+
+#profile-more-info-card .more-info-row .inline-field__value {
+  color: var(--color-text-high, #002233);
+}
+
+#profile-more-info-card .more-info-row .inline-field__value.is-empty,
+#profile-more-info-card .more-info-row > .profile-detail-value.is-empty {
+  color: var(--color-text-low, #405466);
+}
+
+#profile-more-info-card .more-info-divider {
+  width: 100%;
+  margin: 4px 0;
+  background: var(--color-border, #D6DBDE);
+}
+
+#profile-more-info-card .more-info-base-legal > .profile-privacy-list {
+  grid-column: 2;
+  min-width: 0;
+}
+
+#profile-more-info-card .more-info-base-legal .profile-privacy-item:not(:first-child) {
+  display: none;
+}
+
+#profile-more-info-card .more-info-base-legal .profile-privacy-body {
+  display: block;
+  width: 100%;
+}
+
+#profile-more-info-card .more-info-base-legal .profile-privacy-body > .profile-detail-label {
+  display: none;
+}
+
+#profile-more-info-card .more-info-base-legal .profile-privacy-value-row,
+#profile-more-info-card .more-info-base-legal .profile-privacy-item.inline-field {
+  width: 100%;
+}
+
+#profile-more-info-card .profile-privacy-empty {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-low, #405466);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

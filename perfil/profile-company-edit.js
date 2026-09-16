@@ -163,7 +163,7 @@
 
       const { data: empresa } = await db
         .from('claude_empresas')
-        .select('id, cnpj, segmento, site, telefone, telefone_tipo')
+        .select('id, cnpj, segmento, site, telefone, telefone_tipo, telefones')
         .ilike('nome', escapeLike(nome))
         .limit(1)
         .maybeSingle();
@@ -227,7 +227,7 @@
 
       const { data: empresa, error: empresaError } = await db
         .from('claude_empresas')
-        .select('nome, cnpj, segmento, site, telefone, telefone_tipo')
+        .select('nome, cnpj, segmento, site, telefone, telefone_tipo, telefones')
         .eq('id', empresaId)
         .maybeSingle();
 
@@ -289,13 +289,19 @@
       saveBtn.disabled = true;
       saveBtn.textContent = 'Salvando...';
 
+      const extras = (Array.isArray(window.__profileFieldRaw?.empresa_telefones)
+        ? window.__profileFieldRaw.empresa_telefones
+        : []).slice(1).filter(phone => phone && phone.numero);
+      const telefones = telefone ? [{ numero: telefone, tipo }, ...extras] : extras;
+
       const empresaPayload = {
         nome,
         cnpj: cnpj || null,
         segmento: segmento || null,
         site: site || null,
-        telefone: telefone || null,
-        telefone_tipo: telefone ? tipo : null,
+        telefone: telefones[0]?.numero || null,
+        telefone_tipo: telefones[0]?.tipo || null,
+        telefones,
       };
 
       let targetId = empresaId;
@@ -349,8 +355,9 @@
       raw.empresa_nome          = nome;
       raw.empresa_cnpj          = cnpj;
       raw.empresa_site          = site;
-      raw.empresa_telefone      = telefone;
-      raw.empresa_telefone_tipo = telefone ? tipo : '';
+      raw.empresa_telefone      = telefones[0]?.numero || '';
+      raw.empresa_telefone_tipo = telefones[0]?.tipo || '';
+      raw.empresa_telefones     = telefones;
       window.__profileIdentRaw = raw;
       window.__renderProfileCompanies?.({ ...raw });
 

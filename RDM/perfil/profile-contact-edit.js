@@ -116,6 +116,17 @@
       });
     });
 
+    function phoneNumero(value) {
+      if (!value) return '';
+      if (typeof value === 'object') return String(value.numero || value.telefone || '').trim();
+      return String(value).trim();
+    }
+
+    function phoneTipo(value) {
+      const tipo = value && typeof value === 'object' ? value.tipo : '';
+      return tipo || 'Residencial';
+    }
+
     function addExtraEmailRow(value) {
       const row = document.createElement('div');
       row.className = 'multi-field-row';
@@ -305,8 +316,8 @@
 
       // Multi-field: phones
       const phonesArr = Array.isArray(data.telefones) && data.telefones.length ? data.telefones : (data.telefone ? [data.telefone] : []);
-      if (window.__phoneFieldSet) { window.__phoneFieldSet(phonesArr[0] || ''); } else { setField('dc-telefone', phonesArr[0] || ''); }
-      phonesArr.slice(1).forEach(p => addExtraPhoneRow(p));
+      if (window.__phoneFieldSet) { window.__phoneFieldSet(phoneNumero(phonesArr[0]) || ''); } else { setField('dc-telefone', phoneNumero(phonesArr[0]) || ''); }
+      phonesArr.slice(1).forEach(p => addExtraPhoneRow(phoneNumero(p)));
 
       // Multi-field: social networks
       const redesArr = Array.isArray(data.redes_sociais) && data.redes_sociais.length ? data.redes_sociais : (data.rede_social ? [{ rede: data.rede_social, usuario: data.rede_social_usuario || '' }] : []);
@@ -338,11 +349,16 @@
         ...[...emailsContainer.querySelectorAll('.dc-extra-email')].map(i => i.value.trim())
       ].filter(Boolean);
 
+      const existingPhones = Array.isArray(window.__profileFieldRaw?.telefones) ? window.__profileFieldRaw.telefones : [];
       const primaryPhone = window.__phoneFieldGet ? window.__phoneFieldGet() : document.getElementById('dc-telefone').value.trim();
-      const allPhones = [
+      const allPhoneNumbers = [
         primaryPhone,
         ...[...phonesContainer.querySelectorAll('.dc-extra-phone-row')].map(r => r._getPhoneValue ? r._getPhoneValue() : null)
       ].filter(Boolean);
+      const allPhones = allPhoneNumbers.map((numero, i) => ({
+        numero,
+        tipo: phoneTipo(existingPhones[i]),
+      }));
 
       const socialsList = [];
       const primaryUsuario = document.getElementById('dc-social-usuario').value.trim();
@@ -357,7 +373,7 @@
         foto_perfil:          dcAvatarData    || null,
         email:                allEmails[0]    || null,
         emails:               allEmails.length ? allEmails : [],
-        telefone:             allPhones[0]    || null,
+        telefone:             allPhones[0]?.numero || null,
         telefones:            allPhones.length ? allPhones : [],
         rede_social:          socialsList[0]?.rede    || null,
         rede_social_usuario:  socialsList[0]?.usuario || null,

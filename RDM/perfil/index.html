@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/inline-edit.css?v=20260916-skeleton-2">
   <link rel="stylesheet" href="../../shared/profile-tags.css">
+  <link rel="stylesheet" href="../../shared/profile-card-empty.css">
+  <link rel="stylesheet" href="../../shared/company-drawer.css">
+  <link rel="stylesheet" href="../../shared/app-toast.css">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
@@ -1581,6 +1584,7 @@
       font-size: 13px; color: var(--color-danger);
       margin-top: -8px; margin-bottom: 8px;
     }
+    .drawer-field > .drawer-error { margin: 0; }
 
     /* ─── DRAWER AVATAR ────────────────────────────────── */
     .drawer-avatar-field {
@@ -4129,7 +4133,15 @@
   outline: none;
 }
 .resp-autocomplete-item.is-selected {
-  background: var(--color-primary-surface-low);
+  background: none;
+}
+.resp-autocomplete-item.is-selected .company-autocomplete-check,
+.resp-autocomplete-item.is-selected:hover .company-autocomplete-check {
+  border-color: #00dbff;
+  background: #00dbff;
+}
+.resp-autocomplete-item.is-selected .company-autocomplete-check svg {
+  opacity: 1;
 }
 .resp-autocomplete-item-text {
   display: flex;
@@ -4773,25 +4785,11 @@
           </button>
           <div class="overview-card-body">
             <div class="profile-responsible-list" id="profile-responsible-list">
-              <div class="profile-responsible-item">
-                <div class="profile-resp-avatar"><img src="Avatar-Guilherme.png" alt="Guilherme Bossa"></div>
-                <div class="profile-resp-info">
-                  <span class="profile-resp-role">Responsável de Vendas</span>
-                  <span class="profile-resp-name">Guilherme Bossa</span>
-                </div>
-              </div>
-              <div class="profile-responsible-item">
-                <div class="profile-resp-avatar"><img src="Avatar-Renata.png" alt="Renata Alves"></div>
-                <div class="profile-resp-info">
-                  <span class="profile-resp-role">Responsável de Marketing</span>
-                  <span class="profile-resp-name">Renata Alves</span>
-                </div>
-              </div>
-              <div class="profile-responsible-item">
-                <div class="profile-resp-avatar"><img src="Avatar-Victor.png" alt="Victor Felipe"></div>
-                <div class="profile-resp-info">
-                  <span class="profile-resp-role">Responsável por Atendimento</span>
-                  <span class="profile-resp-name">Victor Felipe</span>
+              <div class="profile-company-skeleton" data-responsible-loading="1">
+                <div class="skeleton skeleton--circle profile-company-skeleton-logo"></div>
+                <div class="profile-company-skeleton-lines">
+                  <div class="skeleton profile-skeleton-line" style="width:55%"></div>
+                  <div class="skeleton profile-skeleton-line" style="width:40%"></div>
                 </div>
               </div>
             </div>
@@ -5620,7 +5618,13 @@
   </div>
 
   <div class="drawer-body">
-    <form id="edit-company-form" novalidate>
+    <div class="company-drawer-tabs" id="company-drawer-tabs" hidden>
+      <div class="company-drawer-tabs-nav" role="tablist" aria-label="Como adicionar a empresa">
+        <button class="company-drawer-tab" id="company-tab-create" type="button" role="tab" data-company-tab="create" aria-selected="false" aria-controls="edit-company-form">Criar novo</button>
+        <button class="company-drawer-tab is-active" id="company-tab-existing" type="button" role="tab" data-company-tab="existing" aria-selected="true" aria-controls="company-panel-existing">Adicionar existente</button>
+      </div>
+    </div>
+    <form id="edit-company-form" role="tabpanel" aria-labelledby="company-tab-create" novalidate>
 
       <div class="drawer-section-title">Identificação da empresa</div>
 
@@ -5681,6 +5685,23 @@
 
       <div id="company-drawer-form-error" class="drawer-error" style="display:none"></div>
     </form>
+
+    <div id="company-panel-existing" role="tabpanel" aria-labelledby="company-tab-existing" hidden>
+      <div class="drawer-field">
+        <label class="drawer-label" for="ce-existing-search">Buscar empresa</label>
+        <div class="company-autocomplete" id="ce-existing-autocomplete">
+          <div class="company-autocomplete-control">
+            <input class="company-autocomplete-input" id="ce-existing-search" type="text" placeholder="Digite o nome ou CNPJ" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ce-existing-list">
+            <button class="company-autocomplete-clear" id="ce-existing-clear" type="button" hidden aria-label="Limpar">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4z"/></svg>
+            </button>
+          </div>
+          <div class="company-autocomplete-dropdown" id="ce-existing-list" role="listbox" aria-label="Empresas cadastradas" hidden></div>
+        </div>
+      </div>
+      <div class="drawer-section-title">Empresas selecionadas</div>
+      <div class="company-selected-list" id="ce-selected-list" aria-live="polite"></div>
+    </div>
   </div>
 
   <div class="drawer-footer">
@@ -5701,26 +5722,53 @@
   </div>
 
   <div class="drawer-body">
-    <div class="drawer-field">
-      <label class="drawer-label" for="re-search">Buscar responsável</label>
-      <div class="resp-autocomplete">
-        <input
-          class="drawer-input"
-          id="re-search"
-          type="text"
-          placeholder="Digite um nome ou e-mail"
-          autocomplete="off"
-          role="combobox"
-          aria-autocomplete="list"
-          aria-controls="re-search-dropdown"
-          aria-expanded="false"
-        >
-        <div class="resp-autocomplete-dropdown" id="re-search-dropdown" role="listbox" aria-label="Responsáveis disponíveis" hidden></div>
+    <div class="company-drawer-tabs" id="responsible-drawer-tabs" hidden>
+      <div class="company-drawer-tabs-nav" role="tablist" aria-label="Como adicionar o responsável">
+        <button class="company-drawer-tab" id="responsible-tab-create" type="button" role="tab" data-responsible-tab="create" aria-selected="false" aria-controls="edit-responsible-form">Criar novo</button>
+        <button class="company-drawer-tab is-active" id="responsible-tab-existing" type="button" role="tab" data-responsible-tab="existing" aria-selected="true" aria-controls="responsible-panel-existing">Adicionar existente</button>
       </div>
     </div>
+    <div id="responsible-panel-existing" role="tabpanel" aria-labelledby="responsible-tab-existing">
+      <div class="drawer-field">
+        <label class="drawer-label" for="re-search">Buscar responsável</label>
+        <div class="resp-autocomplete">
+          <input
+            class="drawer-input"
+            id="re-search"
+            type="text"
+            placeholder="Digite um nome ou e-mail"
+            autocomplete="off"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-controls="re-search-dropdown"
+            aria-expanded="false"
+          >
+          <div class="resp-autocomplete-dropdown" id="re-search-dropdown" role="listbox" aria-label="Responsáveis disponíveis" hidden></div>
+        </div>
+      </div>
 
-    <div class="drawer-section-title">Responsáveis selecionados</div>
-    <div class="resp-selected-list" id="re-selected-list" aria-live="polite"></div>
+      <div class="drawer-section-title">Responsáveis selecionados</div>
+      <div class="resp-selected-list company-selected-list" id="re-selected-list" aria-live="polite"></div>
+    </div>
+
+    <form id="edit-responsible-form" role="tabpanel" aria-labelledby="responsible-tab-create" hidden novalidate>
+      <div class="drawer-section-title">Identificação</div>
+      <div class="drawer-field">
+        <label class="drawer-label" for="re-nome">Nome <span style="color:var(--color-danger)">*</span></label>
+        <input class="drawer-input" id="re-nome" type="text" placeholder="Digite o nome" autocomplete="off">
+        <div id="re-nome-error" class="drawer-error" style="display:none"></div>
+      </div>
+      <div class="drawer-field">
+        <label class="drawer-label" for="re-email">E-mail <span style="color:var(--color-danger)">*</span></label>
+        <input class="drawer-input" id="re-email" type="email" placeholder="nome@empresa.com" autocomplete="off">
+        <div id="re-email-error" class="drawer-error" style="display:none"></div>
+      </div>
+      <div class="drawer-field">
+        <label class="drawer-label" for="re-papel">Cargo</label>
+        <input class="drawer-input" id="re-papel" type="text" placeholder="Digite o cargo" autocomplete="off">
+      </div>
+      <div id="responsible-drawer-form-error" class="drawer-error" style="display:none"></div>
+    </form>
   </div>
 
   <div class="drawer-footer">
@@ -5840,6 +5888,7 @@
 <script src="../../shared/profile-more-info-layout.js?v=20260916-skeleton-2"></script>
 <script src="../../shared/inline-edit.js?v=20260916-skeleton-2"></script>
 <script src="profile-contact-edit.js"></script>
+<script src="../../shared/app-toast.js"></script>
 <script src="profile-company-edit.js"></script>
 <script src="profile-responsible-edit.js"></script>
 <script src="../../shared/contact-delete-modal.js"></script>
@@ -5847,6 +5896,7 @@
 <script src="../../shared/tag-create-form.js"></script>
 <script src="../../contatos/tag-picker.js"></script>
 <script src="../../shared/profile-tags-card.js"></script>
+<script src="../../shared/profile-card-empty.js"></script>
 <script src="../../shared/profile-tags-panel.js"></script>
 <script>
   // ─── TABLE COLUMNS STATE ─────────────────────────────────
@@ -6967,63 +7017,42 @@
       });
     }
 
+    function companyPhoneList(company) {
+      const source = company?.telefones ?? company?.empresa_telefones;
+      const list = Array.isArray(source) && source.length
+        ? source
+        : ((company?.telefone || company?.empresa_telefone)
+          ? [{ numero: company.telefone || company.empresa_telefone, tipo: company.telefone_tipo || company.empresa_telefone_tipo || 'Comercial' }]
+          : []);
+      return list.filter(phone => phone && phone.numero);
+    }
+
     function renderProfileCompanies(contact) {
       const listEl = document.getElementById('profile-companies-list');
       if (!listEl) return;
 
-      if (!contact?.empresa_nome) {
+      const companies = (Array.isArray(contact?.empresas) ? contact.empresas : [])
+        .filter(company => company && company.nome);
+      if (!companies.length && contact?.empresa_nome) {
+        companies.push({
+          nome: contact.empresa_nome,
+          cnpj: contact.empresa_cnpj,
+          site: contact.empresa_site,
+          telefone: contact.empresa_telefone,
+          telefone_tipo: contact.empresa_telefone_tipo,
+          telefones: contact.empresa_telefones,
+        });
+      }
+      const addBtn = document.getElementById('profile-add-company-btn');
+      if (addBtn) addBtn.textContent = companies.length > 1 ? 'Editar empresas' : 'Editar empresa';
+      if (!companies.length) {
         listEl.innerHTML = '';
         return;
       }
 
-      const siteValue = contact.empresa_site || '—';
-      const empPhones = Array.isArray(contact.empresa_telefones) && contact.empresa_telefones.length
-        ? contact.empresa_telefones
-        : (contact.empresa_telefone
-          ? [{ numero: contact.empresa_telefone, tipo: contact.empresa_telefone_tipo || 'Comercial' }]
-          : []);
-      const phoneRaw = empPhones[0]?.numero || '';
-      const phoneValue = formatPhone(phoneRaw) || '—';
-      const phoneTipo = empPhones[0]?.tipo || 'Comercial';
-
-      const fieldsHtml = `
-          <div class="profile-company-fields">
-            <div class="profile-divider profile-company-divider"></div>
-            <div class="profile-company-field">
-              <div class="profile-detail-item" data-field="empresa_site">
-                <span class="profile-detail-label">Site</span>
-                <div class="profile-detail-value-row">
-                  <span class="profile-detail-value${siteValue === '—' ? ' is-empty' : ''}">${escTagHtml(siteValue)}</span>
-                </div>
-              </div>
-            </div>
-            <div class="profile-company-field" id="profile-group-empresa-telefone">
-              <div class="profile-company-field-label">Telefone</div>
-              <div class="profile-company-field-values" id="profile-empresa-phone-values">
-                <div class="overview-info-item profile-ident-item" data-field="empresa_telefone" data-inline-type="phone" data-phone-index="0" data-phone-tipo="${escTagHtml(phoneTipo)}">
-                  <span class="profile-ident-value${phoneValue === '—' ? ' is-empty' : ''}">${escTagHtml(phoneValue)}</span>
-                </div>
-              </div>
-              <button type="button" class="btn-tertiary-sm" id="profile-add-empresa-phone-btn">Adicionar telefone</button>
-            </div>
-          </div>`;
-
-      listEl.innerHTML = `
-        <div class="profile-company-item" data-field="empresa">
-          <div class="profile-company-head">
-            <div class="profile-company-logo">${renderCompanyLogo(contact.empresa_nome)}</div>
-            <div class="profile-company-info">
-              <span class="profile-company-name">${escTagHtml(contact.empresa_nome)}</span>
-              ${contact.empresa_cnpj ? `<span class="profile-company-cnpj">CNPJ: ${escTagHtml(contact.empresa_cnpj)}</span>` : ''}
-            </div>
-          </div>
-          ${fieldsHtml}
-        </div>
-      `;
-
-      window.InlineField?.mountCard('#profile-company-card');
-      window.__syncEmpresaPhones?.(window.__profileFieldRaw?.empresa_telefones);
-      window.__bindAddEmpresaPhoneButton?.();
+      const marked = companies.find(company => company.principal)?.id || contact?.empresa_id || companies[0]?.id || null;
+      listEl.classList.add('company-selected-list');
+      listEl.innerHTML = companies.map(company => window.__profileCompanyRowHtml?.(company, Boolean(company.id) && company.id === marked) || '').join('');
     }
 
     window.__renderProfileCompanies = renderProfileCompanies;
@@ -7387,6 +7416,33 @@
       window.__profileFieldRaw.empresa_telefones      = empPhones;
     }
     renderProfileCompanies({ ...c, ...window.__profileFieldRaw });
+
+    const { data: linkedRows, error: linkedError } = await db
+      .from('claude_contato_empresas')
+      .select('principal, claude_empresas(id, nome, cnpj, site, telefone, telefone_tipo, telefones)')
+      .eq('contato_id', contactId);
+    if (!linkedError && linkedRows?.length) {
+      const empresas = linkedRows
+        .map(row => {
+          const company = Array.isArray(row.claude_empresas) ? row.claude_empresas[0] : row.claude_empresas;
+          return company?.nome ? { ...company, principal: row.principal === true } : null;
+        })
+        .filter(Boolean)
+        .sort((a, b) => Number(b.principal) - Number(a.principal));
+      if (empresas.length) {
+        const first = empresas.find(company => company.principal) || empresas[0];
+        const phones = companyPhoneList(first);
+        window.__profileFieldRaw.empresas = empresas;
+        window.__profileFieldRaw.empresa_id = first.id || c.empresa_id || '';
+        window.__profileFieldRaw.empresa_nome = first.nome || '';
+        window.__profileFieldRaw.empresa_cnpj = first.cnpj || '';
+        window.__profileFieldRaw.empresa_site = first.site || '';
+        window.__profileFieldRaw.empresa_telefone = phones[0]?.numero || '';
+        window.__profileFieldRaw.empresa_telefone_tipo = phones[0]?.tipo || '';
+        window.__profileFieldRaw.empresa_telefones = phones;
+        renderProfileCompanies({ ...c, ...window.__profileFieldRaw, empresas });
+      }
+    }
 
     // ── Privacidade de dados ─────────────────────────────────────────────────
     await renderProfilePrivacy(contactId);

@@ -64,6 +64,11 @@
         </span>`;
     }
 
+    function markTagsReady() {
+      document.getElementById('profile-tags-card')?.setAttribute('data-empty-ready', '1');
+      window.__syncProfileCardEmpty?.();
+    }
+
     function renderSelected() {
       const selected = [...state.selected.values()];
       if (!selected.length) {
@@ -215,6 +220,7 @@
         state.selected.clear();
         renderSelected();
         renderDropdown();
+        markTagsReady();
         return;
       }
       let [{ data: allTags, error: tagsError }, { data: links, error: linksError }] = await Promise.all([
@@ -243,6 +249,7 @@
       (links || []).map(row => withProduct(row.claude_tags)).filter(Boolean).forEach(tag => state.selected.set(String(tag.id), tag));
       renderSelected();
       renderDropdown();
+      markTagsReady();
     }
 
     input.addEventListener('focus', () => {

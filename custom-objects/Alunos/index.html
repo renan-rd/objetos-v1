@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Objetos personalizados — RD Station</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    window.__sbClient = supabase.createClient(
+      'https://deeklhefjxldkweqjtsa.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZWtsaGVmanhsZGt3ZXFqdHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5Mzc5NjcsImV4cCI6MjA2NzUxMzk2N30.9oxYKZHfRNjbXJzQ17POORk_5Z12DDdkPUqAbeIdMcQ'
+    );
+  </script>
+  <script src="../../shared/auth.js" data-login="../../login.html" data-require-auth="true"></script>
+  <link rel="stylesheet" href="../../shared/custom-objects-menu.css">
+  <link rel="stylesheet" href="../../shared/app-toast.css">
+  <script src="../../shared/custom-objects-menu.js"></script>
+  <style>
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-nav-bg: #001927;
+      --color-surface: #ffffff;
+      --color-surface-low: #eceeef;
+      --color-border: #d6dbde;
+      --color-border-interactive: #b2bcc1;
+      --color-text-high: #002233;
+      --color-text-low: #405466;
+      --color-text-disabled: #7f8d99;
+      --color-primary-border: #00dbff;
+      --color-primary-text: #0077b2;
+      --color-primary-text-on: #00dbff;
+      --color-primary-inverse: #003d5c;
+      --color-primary-surface-low: #b2f4ff;
+      --color-icon-low: #596b7a;
+      --color-danger: #e60f57;
+      --radius-xs: 4px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --sp-1: 4px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-7: 40px;
+      --font: "DM Sans", sans-serif;
+    }
+    button, input { font-family: inherit; }
+    body { font-family: var(--font); background: var(--color-nav-bg); min-height: 100vh; color: var(--color-text-high); }
+    .layout { display: grid; grid-template-rows: 64px 1fr; grid-template-columns: 64px 1fr; grid-template-areas: "navbar navbar" "sidebar content"; height: 100vh; overflow: hidden; }
+    .navbar { grid-area: navbar; background: var(--color-nav-bg); display: flex; align-items: center; justify-content: space-between; padding: var(--sp-3); height: 64px; position: relative; z-index: 9600; }
+    .navbar-logo { display: flex; align-items: center; gap: var(--sp-3); position: relative; }
+    .products-menu { position: relative; }
+    .products-menu-trigger { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; flex-shrink: 0; background: none; border: none; padding: 0; }
+    .products-menu-trigger:hover, .products-menu-trigger.open { background: rgba(255,255,255,0.08); }
+    .products-dropdown { position: absolute; top: calc(100% + 8px); left: 0; min-width: 200px; padding: 12px; background: rgba(0, 34, 51, 0.96); box-shadow: 0 12px 24px rgba(0, 34, 51, 0.20); border-radius: 16px; backdrop-filter: blur(8px); display: flex; flex-direction: column; opacity: 0; pointer-events: none; transform: translateY(-6px); transition: opacity .15s, transform .15s; z-index: 9700; }
+    .products-dropdown.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+    .products-dropdown-section { padding: 8px 12px; color: #fff; font-size: 12px; font-weight: 500; text-transform: uppercase; line-height: 15.6px; }
+    .products-dropdown-item { min-height: 40px; padding: 8px 12px; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 700; line-height: 19.6px; cursor: pointer; display: flex; align-items: center; }
+    .products-dropdown-item:hover { background: rgba(255,255,255,0.08); }
+    .products-dropdown-item.active { background: rgba(255,255,255,0.12); }
+    .navbar-logo img { height: 32px; }
+    .navbar-secondary { display: flex; align-items: center; gap: var(--sp-2); }
+    .navbar-icons { display: flex; align-items: center; }
+    .navbar-icon-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); cursor: pointer; position: relative; }
+    .navbar-icon-btn svg { width: 24px; height: 24px; }
+    .navbar-icon-btn:hover { background: rgba(255,255,255,0.08); }
+    .badge-dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: var(--color-danger); border-radius: 50%; }
+    .navbar-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.15); margin: 0 4px; }
+    .account-menu { position: relative; display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2); border-radius: var(--radius-sm); cursor: pointer; }
+    .account-menu:hover { background: rgba(255,255,255,0.08); }
+    .account-avatar { width: 24px; height: 24px; border-radius: var(--radius-sm); background: #00f2c9; overflow: hidden; flex-shrink: 0; }
+    .account-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .account-name { color: #fff; font-size: 14px; font-weight: 700; white-space: nowrap; letter-spacing: -0.14px; }
+    .account-menu svg { fill: #fff; width: 20px; height: 20px; }
+    .account-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #fff; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.14); min-width: 180px; overflow: hidden; opacity: 0; pointer-events: none; transform: translateY(-6px); transition: opacity .15s, transform .15s; z-index: 500; }
+    .account-dropdown.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+    .account-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; font-size: 14px; font-weight: 500; color: #002233; }
+    .account-dropdown-item:hover { background: #f2f4f6; }
+    .account-dropdown-item svg { width: 18px; height: 18px; fill: #405466; flex-shrink: 0; }
+    .sidebar { grid-area: sidebar; background: var(--color-nav-bg); display: flex; flex-direction: column; gap: var(--sp-2); padding-top: var(--sp-3); }
+    .sidebar-item { display: flex; align-items: center; justify-content: center; padding: var(--sp-3); position: relative; cursor: pointer; }
+    .sidebar-item svg, .sidebar-item img { width: 24px; height: 24px; }
+    .sidebar-indicator { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 6px; height: 40px; background: var(--color-primary-border); border-radius: 4px 0 0 4px; }
+    .sidebar-item-inner { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); }
+    .content { grid-area: content; background: var(--color-surface); border-top-left-radius: 20px; overflow: hidden; height: 100%; min-height: 0; display: flex; flex-direction: row; }
+    .content-main { flex: 1; min-width: 0; min-height: 0; height: 100%; overflow-y: auto; padding: 0 24px 24px; }
+    .content-inner { width: 100%; }
+    .empty-state-row { border-bottom: none; }
+    .empty-state-row td { overflow: visible; white-space: normal; padding: 0; border: none; }
+    .page-header { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-7) 0; }
+    .page-header-main { display: flex; align-items: flex-start; gap: var(--sp-4); }
+    .page-title { flex: 1; font-size: 28px; font-weight: 700; color: var(--color-text-high); letter-spacing: -0.28px; line-height: 1.3; }
+    .header-actions { display: flex; align-items: center; gap: var(--sp-3); flex-shrink: 0; }
+    .btn-secondary, .btn-primary { height: 40px; padding: var(--sp-2) var(--sp-4); font-size: 16px; font-weight: 700; letter-spacing: -0.16px; border: none; border-radius: var(--radius-md); cursor: pointer; white-space: nowrap; }
+    .btn-secondary { background: var(--color-primary-surface-low); color: var(--color-primary-text); }
+    .btn-secondary:hover { background: #66EBFF; color: #005580; }
+    .btn-primary { background: var(--color-primary-inverse); color: var(--color-primary-text-on); }
+    .btn-primary:hover { background: #005A87; color: #66E9FF; }
+    .page-aux-text { margin: 0; font-size: 16px; font-weight: 500; color: var(--color-text-low); letter-spacing: -0.16px; line-height: 1.5; }
+    .search-filters { display: flex; align-items: center; padding: var(--sp-4) 0; }
+    .filters-left { display: flex; align-items: center; gap: var(--sp-2); }
+    .search-input { height: 40px; width: 260px; display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-1) var(--sp-1) var(--sp-1) var(--sp-3); background: var(--color-surface); border: 1px solid var(--color-border-interactive); border-radius: var(--radius-md); }
+    .search-input:focus-within { border-color: var(--color-primary-border); box-shadow: 0 0 0 2px rgba(0,219,255,0.15); }
+    .search-input-field { flex: 1; border: none; outline: none; background: transparent; font-size: 14px; color: var(--color-text-high); min-width: 0; }
+    .search-input-field::placeholder { color: var(--color-text-low); }
+    .search-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: none; background: none; border-radius: var(--radius-sm); cursor: pointer; }
+    .search-btn:hover { background: var(--color-surface-low); }
+    .search-btn svg { width: 20px; height: 20px; fill: var(--color-text-low); }
+    .btn-text { height: 40px; display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2) var(--sp-4) var(--sp-2) var(--sp-3); border: none; background: none; border-radius: var(--radius-md); cursor: pointer; color: var(--color-primary-text); font-size: 16px; font-weight: 700; letter-spacing: -0.16px; white-space: nowrap; }
+    .btn-text:hover { background: var(--color-primary-surface-low); }
+    .btn-text svg { width: 24px; height: 24px; flex-shrink: 0; fill: var(--color-primary-text); }
+    .table-wrapper { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    tbody td { padding: 16px; border-bottom: 1px solid var(--color-border); color: var(--color-text-high); font-size: 16px; font-weight: 500; line-height: 1.5; vertical-align: middle; }
+    .drawer-overlay { position: fixed; inset: 0; background: rgba(0, 34, 51, 0.4); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+    .drawer-overlay.open { opacity: 1; pointer-events: all; }
+    .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 400px; background: var(--color-surface); box-shadow: 0 8px 18px rgba(0, 34, 51, 0.16); z-index: 9700; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.25s ease; }
+    .drawer.open { transform: translateX(0); }
+    .drawer-header { display: flex; align-items: flex-start; gap: 24px; padding: 24px; border-bottom: 1px solid var(--color-border); flex-shrink: 0; }
+    .drawer-title { flex: 1; padding-top: 4px; font-size: 20px; font-weight: 700; color: var(--color-text-high); letter-spacing: -0.2px; line-height: 1.5; }
+    .drawer-close { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none; background: none; cursor: pointer; border-radius: var(--radius-md); flex-shrink: 0; }
+    .drawer-close:hover { background: var(--color-surface-low); }
+    .drawer-close svg { width: 24px; height: 24px; fill: var(--color-text-high); }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 24px; }
+    .drawer-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .drawer-field:last-child { margin-bottom: 0; }
+    .drawer-label { font-size: 16px; font-weight: 700; color: var(--color-text-high); letter-spacing: -0.16px; line-height: 1.5; }
+    .drawer-required { color: var(--color-danger); }
+    .drawer-input { width: 100%; height: 40px; padding: 8px 12px; border: 1px solid var(--color-border-interactive); border-radius: var(--radius-md); background: var(--color-surface); font-family: inherit; font-size: 16px; font-weight: 500; color: var(--color-text-high); letter-spacing: -0.16px; outline: none; }
+    .drawer-input::placeholder { color: var(--color-text-low); }
+    .drawer-input:focus { border-color: var(--color-primary-border); box-shadow: 0 0 0 2px rgba(0, 219, 255, 0.15); }
+    .record-select { position: relative; }
+    .record-select.is-open { z-index: 3; }
+    .record-select-trigger {
+      width: 100%;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 8px 8px 12px;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      cursor: pointer;
+      text-align: left;
+    }
+    .record-select-trigger:hover { border-color: #8c9ba3; }
+    .record-select-trigger:focus-visible { outline: 4px solid rgba(0, 18, 36, 0.16); outline-offset: 0; }
+    .record-select-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; font-weight: 500; letter-spacing: -0.16px; color: var(--color-text-low); }
+    .record-select-value.is-selected { color: var(--color-text-high); }
+    .record-select-trigger svg { width: 24px; height: 24px; flex-shrink: 0; }
+    .record-select.is-open .record-select-trigger svg { transform: rotate(180deg); }
+    .record-select-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      max-height: 240px;
+      padding: 8px;
+      overflow-y: auto;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 12px rgba(0, 34, 51, 0.14);
+    }
+    .record-select-menu[hidden] { display: none; }
+    .record-select-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 40px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-text-high);
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: -0.16px;
+      text-align: left;
+      cursor: pointer;
+    }
+    .record-select-option:hover,
+    .record-select-option[aria-selected="true"] { background: var(--color-surface-low); }
+    .record-check { position: absolute; width: 18px; height: 18px; margin: 0; opacity: 0; cursor: pointer; }
+    .record-select-option { position: relative; }
+    .record-check-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-xs);
+      background: var(--color-surface);
+    }
+    .record-check-box svg { display: none; fill: var(--color-text-high); }
+    .record-select-option:hover .record-check-box { border-color: #8c9ba3; }
+    .record-check:checked + .record-check-box,
+    .record-select-option:hover .record-check:checked + .record-check-box { border-color: var(--color-primary-border); background: var(--color-primary-border); }
+    .record-check:checked + .record-check-box svg { display: block; }
+    .drawer-footer { border-top: 1px solid var(--color-border); padding: 24px; display: flex; justify-content: flex-end; flex-shrink: 0; }
+    .drawer-actions { display: flex; gap: 12px; align-items: center; }
+    .drawer-btn-cancel, .drawer-btn-save { height: 40px; padding: 8px 16px; border: none; border-radius: var(--radius-md); font-family: inherit; font-size: 16px; font-weight: 700; letter-spacing: -0.16px; cursor: pointer; }
+    .drawer-btn-cancel { background: var(--color-primary-surface-low); color: var(--color-primary-text); }
+    .drawer-btn-cancel:hover { background: #66ebff; color: #005580; }
+    .drawer-btn-save { background: var(--color-primary-inverse); color: var(--color-primary-text-on); }
+    .drawer-btn-save:hover { background: #005a87; color: #66e9ff; }
+    thead tr { background: var(--color-surface); border-bottom: 1px solid var(--color-border); }
+    thead th { padding: var(--sp-3) var(--sp-4); text-align: left; font-size: 12px; font-weight: 700; color: var(--color-text-low); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+    thead th:first-child { width: 44px; }
+    .th-inner { display: flex; align-items: center; gap: 4px; }
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-xs);
+      background: var(--color-surface);
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .checkbox.checked { background: #00dbff; border-color: #00dbff; }
+    .checkbox.checked::after {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 5px;
+      width: 10px;
+      height: 6px;
+      border-left: 2.5px solid #002233;
+      border-bottom: 2.5px solid #002233;
+      transform: rotate(-45deg);
+    }
+    .checkbox.indeterminate { background: #00dbff; border-color: #00dbff; }
+    .checkbox.indeterminate::after {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 7.5px;
+      width: 12px;
+      height: 0;
+      border-bottom: 2.5px solid #002233;
+    }
+    tbody tr.is-checked td,
+    tbody tr.is-checked td.col-actions { background: #f5f7f8; }
+    .bulk-actions {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #002233;
+      border-radius: 12px 12px 0 0;
+    }
+    .bulk-actions.visible { display: flex; }
+    .bulk-actions-left, .bulk-actions-right { display: flex; align-items: center; }
+    .bulk-actions-left { gap: 12px; }
+    .bulk-count { color: #fff; font-size: 16px; font-weight: 700; line-height: 24px; }
+    .bulk-clear, .bulk-btn {
+      height: 32px;
+      padding: 0 16px;
+      background: none;
+      border: none;
+      border-radius: 8px;
+      color: #00dbff;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: var(--font);
+      line-height: 24px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .bulk-clear:hover, .bulk-btn:hover { background: #005a87; color: #66e9ff; }
+    .bulk-btn--danger { color: #f94e7f; }
+    .bulk-btn--danger:hover { background: #e60f57; color: #fff; }
+    .delete-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 34, 51, 0.4);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s;
+    }
+    .delete-modal-overlay.open { opacity: 1; visibility: visible; }
+    .delete-modal {
+      width: 100%;
+      max-width: 560px;
+      background: var(--color-surface);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 12px 24px rgba(0, 34, 51, 0.2);
+    }
+    .delete-modal-header { display: flex; align-items: flex-start; gap: 12px; padding-bottom: 16px; }
+    .delete-modal-title {
+      flex: 1;
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.28px;
+      color: var(--color-text-high);
+    }
+    .delete-modal-close {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--color-text-low);
+      cursor: pointer;
+    }
+    .delete-modal-close:hover { background: var(--color-surface-low); }
+    .delete-modal-close svg { width: 24px; height: 24px; fill: currentColor; }
+    .delete-modal-body { font-size: 16px; font-weight: 500; line-height: 1.5; letter-spacing: -0.16px; color: var(--color-text-high); }
+    .delete-modal-body p { margin: 0 0 8px; }
+    .delete-modal-body ul { margin: 0; padding-left: 24px; }
+    .delete-modal-body li { margin-bottom: 8px; }
+    .delete-modal-body li:last-child { margin-bottom: 0; }
+    .delete-modal-body strong { font-weight: 700; }
+    .delete-modal-confirm { display: flex; align-items: flex-start; gap: 12px; padding-top: 24px; cursor: pointer; user-select: none; }
+    .tg-checkbox-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      margin-top: 3px;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: 4px;
+      background: var(--color-surface);
+    }
+    .tg-checkbox-box svg { display: none; width: 24px; height: 24px; fill: var(--color-nav-bg); }
+    .tg-checkbox-input { display: none; }
+    .tg-checkbox-input:checked + .tg-checkbox-box { background: var(--color-primary-border); border-color: var(--color-primary-border); }
+    .tg-checkbox-input:checked + .tg-checkbox-box svg { display: block; }
+    .delete-modal-confirm-text { flex: 1; font-size: 16px; font-weight: 500; line-height: 1.5; letter-spacing: -0.16px; color: var(--color-text-high); }
+    .delete-modal-footer { display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding-top: 24px; }
+    .delete-modal-btn {
+      height: 40px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .delete-modal-btn-trash { background: var(--color-primary-surface-low); color: var(--color-primary-text); }
+    .delete-modal-btn-trash:hover { background: #99ecff; }
+    .delete-modal-btn-permanent { background: #edeff1; color: var(--color-text-disabled); cursor: not-allowed; }
+    .delete-modal-btn-permanent:not(:disabled) { background: #e60f57; color: #fff; cursor: pointer; }
+    .delete-modal-btn-permanent:not(:disabled):hover { background: #c90d4a; }
+    .empty-state-box { width: 100%; min-height: 420px; padding: 32px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .empty-state-copy { display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: 520px; padding: 24px 0; text-align: center; }
+    .empty-state-title { color: var(--color-text-high); font-size: 20px; font-weight: 700; line-height: 30px; }
+    .empty-state-text { color: var(--color-text-high); font-size: 16px; font-weight: 500; line-height: 24px; }
+    @keyframes skeleton-wave {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .skeleton {
+      display: block;
+      height: 16px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #eceeef 25%, #f4f5f6 50%, #eceeef 75%);
+      background-size: 200% 100%;
+      animation: skeleton-wave 1.4s infinite ease-in-out;
+    }
+    .skeleton-check { width: 18px; height: 18px; }
+    .skeleton-head { height: 12px; }
+    .skeleton-cell { max-width: 240px; }
+    @media (prefers-reduced-motion: reduce) {
+      .skeleton { animation: none; }
+    }
+    th.col-actions, td.col-actions {
+      position: sticky;
+      right: 0;
+      z-index: 2;
+      width: 72px;
+      background: var(--color-surface);
+      text-align: right;
+    }
+    thead th.col-actions { z-index: 3; text-transform: none; }
+    tbody tr.row-selected td { background: #f5f7f8; }
+    .actions-btn {
+      width: 40px;
+      height: 40px;
+      padding: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: #b2f4ff;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .actions-btn:hover, .actions-btn.is-active { background: #66ebff; }
+    .actions-btn svg { width: 24px; height: 24px; display: block; }
+    .detail-panel {
+      width: 0;
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--color-surface);
+      border-left: 0 solid var(--color-border);
+      transition: width 0.25s ease;
+    }
+    .content.detail-open .detail-panel {
+      width: min(400px, 38vw);
+      border-left-width: 1px;
+    }
+    .detail-panel-preview {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
+    .overview-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      min-height: 56px;
+      padding: 16px 24px 8px;
+      flex-shrink: 0;
+    }
+    .overview-title {
+      flex: 1;
+      min-height: 32px;
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text-high);
+      letter-spacing: -0.16px;
+      line-height: 1.5;
+    }
+    .overview-header .drawer-close { width: 32px; height: 32px; }
+    .overview-header .drawer-close svg { width: 20px; height: 20px; }
+    .overview-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+    }
+    .overview-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+    .overview-accordion-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 0;
+      border: none;
+      background: none;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+    }
+    .overview-accordion-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--color-icon-low);
+    }
+    .overview-accordion-icon svg { width: 24px; height: 24px; display: block; fill: currentColor; }
+    .overview-accordion-title {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text-high);
+      letter-spacing: -0.16px;
+      line-height: 1.5;
+    }
+    .overview-accordion-chevron {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      fill: var(--color-icon-low);
+      transition: transform 0.2s ease;
+    }
+    .overview-card.is-collapsed .overview-accordion-chevron { transform: rotate(180deg); }
+    .overview-card.is-collapsed .overview-card-body { display: none; }
+    .overview-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 12px;
+    }
+    .overview-fields { display: flex; flex-direction: column; gap: 12px; }
+    .overview-field { display: flex; flex-direction: column; gap: 4px; }
+    .overview-field-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-text-low);
+      letter-spacing: -0.12px;
+      line-height: 1.3;
+    }
+    .overview-field-value {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--color-text-high);
+      letter-spacing: -0.16px;
+      line-height: 1.5;
+    }
+    .overview-association-empty {
+      margin: 0;
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    .overview-btn-secondary {
+      width: 100%;
+      height: 40px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--color-primary-surface-low);
+      color: var(--color-primary-text);
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+    }
+    .overview-btn-secondary:hover { background: #66ebff; color: #005580; }
+    .overview-timeline { display: flex; flex-direction: column; }
+    .overview-timeline-item { display: flex; align-items: stretch; }
+    .overview-timeline-rail {
+      width: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding-top: 4px;
+      flex-shrink: 0;
+    }
+    .overview-timeline-mark { display: block; flex-shrink: 0; }
+    .overview-timeline-line {
+      flex: 1;
+      width: 4px;
+      min-height: 1px;
+      background: var(--color-border);
+    }
+    .overview-timeline-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px 0 12px 12px;
+    }
+    .overview-timeline-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .overview-timeline-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #212429;
+      letter-spacing: -0.16px;
+      line-height: 1.5;
+    }
+    .overview-timeline-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: var(--radius-xs);
+      background: var(--color-surface-low);
+      color: var(--color-text-high);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: -0.12px;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+    .overview-timeline-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .overview-timeline-meta {
+      font-size: 14px;
+      font-weight: 400;
+      color: #636e7c;
+      letter-spacing: -0.14px;
+      line-height: 1.4;
+    }
+    .overview-timeline-details {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--color-text-high);
+      letter-spacing: -0.14px;
+      line-height: 1.4;
+    }
+    .overview-timeline-details p { margin: 0; }
+    .overview-timeline-details strong { font-weight: 700; }
+
+  </style>
+</head>
+<body>
+<div class="layout">
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <img src="../../shared/logos/logo-rdvendas.svg" width="162" height="32" alt="RD Vendas" style="flex-shrink:0;">
+      <div class="products-menu" id="products-menu" data-current-product="vendas" data-page="custom-objects" data-base="../../">
+        <button type="button" class="products-menu-trigger" id="products-menu-trigger" aria-expanded="false" aria-haspopup="true" aria-label="Trocar produto">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.61138 13.4077L5.16098 8.95728C4.94634 8.74264 4.94634 8.39466 5.16098 8.18004L5.68005 7.66097C5.89432 7.4467 6.24159 7.44629 6.45637 7.66006L10 11.1871L13.5436 7.66006C13.7584 7.44629 14.1057 7.4467 14.32 7.66097L14.839 8.18004C15.0537 8.39468 15.0537 8.74267 14.839 8.95728L10.3886 13.4077C10.174 13.6223 9.82602 13.6223 9.61138 13.4077Z" fill="white"/></svg>
+        </button>
+        <div class="products-dropdown" id="products-dropdown" role="menu">
+          <div class="products-dropdown-section">Produtos</div>
+          <div class="products-dropdown-item" data-product-id="vendas" role="menuitem">RD Vendas</div>
+          <div class="products-dropdown-item" data-product-id="marketing" role="menuitem">RD Marketing</div>
+          <div class="products-dropdown-item" data-product-id="conversas" role="menuitem">RD Atendimento</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navbar-secondary">
+      <div class="navbar-icons">
+        <!-- RD Station -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_382_2076)"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 0C12 6.62741 17.3726 12 24 12C17.3726 12 12 17.3726 12 24C12 17.3726 6.62744 12 0 12C6.62744 12 12 6.62741 12 0ZM12 5.80645C12 8.36104 8.33148 12 5.71429 12C8.33148 12 12 15.639 12 18.1935C12 15.639 15.6685 12 18.2857 12C15.6685 12 12 8.36104 12 5.80645Z" fill="white"/><path d="M2.28564 13.9852C2.89332 14.1253 3.47973 14.3209 4.03974 14.5659V15.6002L4.04234 15.7378C4.09244 17.0507 4.89237 18.2342 6.12642 18.8039L9.46273 20.344C9.70706 21.0151 9.88155 21.7196 9.97873 22.4488C9.93125 22.4304 9.88404 22.4111 9.83698 22.3914L9.69376 22.329L9.66474 22.3158L9.66176 22.3142L5.37009 20.333C3.54463 19.4903 2.36197 17.739 2.28936 15.7964L2.28899 15.785V15.7737L2.28602 15.6278L2.28564 15.6183V13.9852Z" fill="#00DBFF"/><path d="M21.7142 15.6066C21.7142 17.6243 20.5144 19.463 18.6298 20.333L14.3381 22.3142C14.2334 22.3626 14.1273 22.407 14.0204 22.4484C14.1176 21.7195 14.2922 21.0152 14.5364 20.3444L17.8734 18.8039C19.1485 18.2153 19.9601 16.9714 19.9601 15.6066V14.5659C20.5201 14.3209 21.1065 14.1253 21.7142 13.9852V15.6066Z" fill="#00DBFF"/><path d="M9.91585 1.55127C9.78336 2.30526 9.56674 3.03008 9.27672 3.71621L6.12642 5.17085C4.85136 5.75945 4.03975 7.00333 4.03974 8.36818V9.02141C3.47972 9.26639 2.89333 9.46203 2.28564 9.60205V8.36818C2.28566 6.35048 3.48547 4.5118 5.37009 3.64174L9.66176 1.66052L9.66474 1.65901L9.69376 1.64578L9.69487 1.6454L9.69636 1.64464C9.76892 1.61175 9.84221 1.58089 9.91585 1.55127Z" fill="#00DBFF"/><path d="M14.3039 1.64502L14.3381 1.66052L18.6298 3.64174C20.5144 4.51181 21.7142 6.35049 21.7142 8.36818V9.60205C21.1065 9.46202 20.5201 9.2664 19.9601 9.02141V8.36818C19.9601 7.01398 19.1611 5.77896 17.9032 5.18484L17.8734 5.17085L14.722 3.71584C14.4322 3.02992 14.2165 2.305 14.084 1.55127C14.1578 1.58093 14.2312 1.61207 14.3039 1.64502Z" fill="#00DBFF"/></g><defs><clipPath id="clip0_382_2076"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
+        </div>
+        <!-- Apps -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 15V19H9V15H5ZM3 15C3 13.9353 3.93527 13 5 13H9C10.0647 13 11 13.9353 11 15V19C11 20.0647 10.0647 21 9 21H5C3.93527 21 3 20.0647 3 19V15ZM19 5H15V9H19V5ZM15 3H19C20.0647 3 21 3.93527 21 5V9C21 10.0647 20.0647 11 19 11H15C13.9353 11 13 10.0647 13 9V5C13 3.93527 13.9353 3 15 3ZM15 15V19H19V15H15ZM13 15C13 13.9353 13.9353 13 15 13H19C20.0647 13 21 13.9353 21 15V19C21 20.0647 20.0647 21 19 21H15C13.9353 21 13 20.0647 13 19V15Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9 3C10.0647 3 11 3.93527 11 5V9C11 10.0647 10.0647 11 9 11H5C3.93527 11 3 10.0647 3 9V5C3 3.93527 3.93527 3 5 3H9ZM5 5V9H9V5H5Z" fill="#00DBFF"/></svg>
+        </div>
+        <!-- Notificações -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.9999 3.25C12.5976 3.25 13.1249 3.77734 13.1249 4.375V5.07812C15.6913 5.57031 17.6249 7.85547 17.6249 10.5625V11.4766C17.6249 13.0586 18.1522 14.6055 19.1366 15.8711L19.664 16.5039C19.8749 16.7852 19.9101 17.1367 19.7694 17.418C19.6288 17.6992 19.3476 17.875 19.0312 17.875H4.96865C4.61709 17.875 4.33584 17.6992 4.19521 17.418C4.05459 17.1367 4.08975 16.7852 4.30068 16.5039L4.82803 15.8711C5.8124 14.6055 6.3749 13.0586 6.3749 11.4766V10.5625C6.3749 7.85547 8.3085 5.57031 10.8749 5.07812V4.375C10.8749 3.77734 11.3671 3.25 11.9999 3.25ZM11.9999 6.625C9.82021 6.625 8.0624 8.41797 8.0624 10.5625V11.4766C8.0624 13.1641 7.57021 14.7812 6.65615 16.1875H17.3085C16.3944 14.7812 15.9374 13.1641 15.9374 11.4766V10.5625C15.9374 8.41797 14.1444 6.625 11.9999 6.625Z" fill="white"/><path d="M13.582 20.6172C14.0039 20.1953 14.25 19.5977 14.25 19H12H9.75C9.75 19.5977 9.96094 20.1953 10.3828 20.6172C10.8047 21.0391 11.4023 21.25 12 21.25C12.5977 21.25 13.1602 21.0391 13.582 20.6172Z" fill="#00DBFF"/></svg>
+          <div class="badge-dot"></div>
+        </div>
+        <!-- Configurações -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.25C12.5977 3.25 13.1602 3.32031 13.7227 3.42578C14.0039 3.49609 14.4961 3.63672 14.7773 4.12891C14.8477 4.26953 14.8828 4.41016 14.918 4.55078L15.2695 5.92188C15.3047 6.09766 15.6562 6.30859 15.8672 6.23828L17.2031 5.85156C17.3438 5.81641 17.4844 5.78125 17.625 5.78125C18.1875 5.78125 18.5742 6.13281 18.75 6.34375C19.5234 7.22266 20.1211 8.24219 20.5078 9.36719C20.6133 9.64844 20.7188 10.1406 20.4023 10.5977C20.332 10.7383 20.2266 10.8438 20.1211 10.9492L19.1367 11.9336C18.9609 12.0742 18.9609 12.4609 19.1367 12.6016L20.1211 13.5859C20.2266 13.6914 20.332 13.7969 20.4023 13.9375C20.6836 14.3945 20.5781 14.8867 20.5078 15.168C20.1211 16.293 19.5234 17.3125 18.75 18.1914C18.5742 18.4023 18.1875 18.7539 17.625 18.7539C17.4844 18.7539 17.3438 18.7188 17.2031 18.6836L15.8672 18.2617C15.6562 18.2266 15.3047 18.4023 15.2695 18.6133L14.918 19.9844C14.8828 20.125 14.8477 20.2656 14.7773 20.4062C14.4961 20.8984 14.0039 21.0391 13.7227 21.1094C13.1602 21.2148 12.5977 21.25 12 21.25C11.4023 21.25 10.8047 21.2148 10.2422 21.1094C9.96094 21.0391 9.46875 20.8984 9.1875 20.4062C9.11719 20.2656 9.08203 20.125 9.04688 19.9844L8.69531 18.6133C8.66016 18.4023 8.30859 18.2266 8.13281 18.2617L6.79688 18.6836C6.65625 18.7188 6.48047 18.7188 6.33984 18.7539C5.77734 18.7539 5.39062 18.4023 5.21484 18.1914C4.44141 17.3125 3.84375 16.293 3.45703 15.168C3.38672 14.8867 3.28125 14.3945 3.5625 13.9023C3.63281 13.7969 3.73828 13.6562 3.84375 13.5508L4.86328 12.6016C5.00391 12.4609 5.00391 12.0742 4.86328 11.9336L3.84375 10.9492C3.73828 10.8438 3.63281 10.7383 3.5625 10.5977C3.28125 10.1406 3.38672 9.64844 3.45703 9.36719C3.84375 8.24219 4.44141 7.22266 5.21484 6.34375C5.39062 6.13281 5.77734 5.78125 6.33984 5.78125C6.48047 5.78125 6.65625 5.81641 6.79688 5.85156L8.13281 6.23828C8.30859 6.30859 8.66016 6.09766 8.69531 5.92188L9.04688 4.55078C9.08203 4.41016 9.11719 4.26953 9.1875 4.12891C9.46875 3.63672 9.96094 3.49609 10.2422 3.42578C10.8047 3.32031 11.4023 3.25 12 3.25ZM10.6641 5.07812L10.3477 6.30859C10.0664 7.43359 8.76562 8.20703 7.64062 7.89062L6.41016 7.50391C5.84766 8.20703 5.39062 8.98047 5.07422 9.82422L6.02344 10.7031C6.86719 11.5117 6.86719 13.0234 6.02344 13.832L5.07422 14.7109C5.39062 15.5547 5.84766 16.3281 6.41016 17.0312L7.64062 16.6445C8.76562 16.3281 10.0664 17.1016 10.3477 18.2266L10.6641 19.457C11.5078 19.6328 12.457 19.6328 13.3359 19.457L13.6172 18.2266C13.8984 17.1016 15.1992 16.3281 16.3242 16.6445L17.5547 17.0312C18.1172 16.3281 18.5742 15.5547 18.8906 14.7109L17.9766 13.832C17.1328 13.0234 17.1328 11.5117 17.9766 10.7031L18.8906 9.82422C18.5742 8.98047 18.1172 8.20703 17.5547 7.50391L16.3242 7.89062C15.2344 8.20703 13.8984 7.43359 13.6172 6.30859L13.3359 5.07812C12.457 4.90234 11.5078 4.90234 10.6641 5.07812Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M12 8.875C13.1953 8.875 14.2852 9.54297 14.918 10.5625C15.5156 11.6172 15.5156 12.918 14.918 13.9375C14.2852 14.9922 13.1953 15.625 12 15.625C10.7695 15.625 9.67969 14.9922 9.04688 13.9375C8.44922 12.918 8.44922 11.6172 9.04688 10.5625C9.67969 9.54297 10.7695 8.875 12 8.875ZM12.8438 10.8086C12.3164 10.4922 11.6484 10.4922 11.1562 10.8086C10.6289 11.125 10.3125 11.6523 10.3125 12.25C10.3125 12.8828 10.6289 13.4102 11.1562 13.7266C11.6484 14.043 12.3164 14.043 12.8438 13.7266C13.3359 13.4102 13.6875 12.8828 13.6875 12.25C13.6875 11.6523 13.3359 11.125 12.8438 10.8086Z" fill="#00DBFF"/></svg>
+        </div>
+      </div>
+
+      <div class="navbar-divider"></div>
+
+      <div class="account-menu" id="account-menu">
+        <div class="account-avatar">
+          <img src="../../contatos/avatar-navbar.png" alt="Avatar">
+        </div>
+        <span class="account-name" id="account-name">Agência RD</span>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.61138 13.4077L5.16098 8.95728C4.94634 8.74264 4.94634 8.39466 5.16098 8.18004L5.68005 7.66097C5.89432 7.4467 6.24159 7.44629 6.45637 7.66006L10 11.1871L13.5436 7.66006C13.7584 7.44629 14.1057 7.4467 14.32 7.66097L14.839 8.18004C15.0537 8.39468 15.0537 8.74267 14.839 8.95728L10.3886 13.4077C10.174 13.6223 9.82602 13.6223 9.61138 13.4077Z" fill="white"/></svg>
+        <div class="account-dropdown" id="account-dropdown">
+          <div class="account-dropdown-item" id="logout-btn">
+            <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            Sair
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <aside class="sidebar">
+    <!-- Home -->
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5399 3.19791C12.2274 2.93403 11.7726 2.93403 11.4601 3.19791L2.29359 10.9755C1.9429 11.2741 1.90124 11.7984 2.19637 12.1491C2.4915 12.4998 3.01927 12.5415 3.36996 12.2464L4.22411 11.5241V17.9997C4.22411 19.5344 5.46714 20.7774 7.00183 20.7774H17.0016C18.5363 20.7774 19.7794 19.5344 19.7794 17.9997V11.5241L20.63 12.2464C20.9807 12.545 21.5085 12.4998 21.8036 12.1491C22.0988 11.7984 22.0571 11.2707 21.7064 10.9755L12.5399 3.19791ZM5.89074 17.9997V10.111L12.0017 4.92705L18.1127 10.111V17.9997C18.1127 18.6143 17.6162 19.1108 17.0016 19.1108H15.335V13.8331C15.335 13.0658 14.7135 12.4443 13.9461 12.4443H10.0573C9.28998 12.4443 8.66847 13.0658 8.66847 13.8331V19.1108H7.00183C6.38726 19.1108 5.89074 18.6143 5.89074 17.9997ZM10.3351 19.1108V14.1109H13.6684V19.1108H10.3351Z" fill="white"/><path d="M15.335 13.8332V19.1109H13.6684V14.111H10.3351V19.1109H8.66846V13.8332C8.66846 13.0659 9.28997 12.4443 10.0573 12.4443H13.9461C14.7135 12.4443 15.335 13.0659 15.335 13.8332Z" fill="#00DBFF"/></svg>
+      </div>
+    </div>
+    <!-- Contatos -->
+    <a href="../../contatos/index.html" style="display:contents; text-decoration:none;">
+      <div class="sidebar-item">
+        <div class="sidebar-item-inner">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.375 3.25H16.5C17.7305 3.25 18.75 4.26953 18.75 5.5V19C18.75 20.2656 17.7305 21.25 16.5 21.25H6.375C5.10938 21.25 4.125 20.2656 4.125 19V5.5C4.125 4.26953 5.10938 3.25 6.375 3.25ZM10.3125 13.375C8.73047 13.375 7.5 14.6406 7.5 16.1875C7.5 16.5039 7.74609 16.75 8.0625 16.75H14.8125C15.0938 16.75 15.375 16.5039 15.375 16.1875C15.375 14.6406 14.1094 13.375 12.5625 13.375H10.3125ZM9.1875 10C9.1875 10.8086 9.60938 11.5469 10.3125 11.9688C10.9805 12.3555 11.8594 12.3555 12.5625 11.9688C13.2305 11.5469 13.6875 10.8086 13.6875 10C13.6875 9.22656 13.2305 8.48828 12.5625 8.06641C11.8594 7.67969 10.9805 7.67969 10.3125 8.06641C9.60938 8.48828 9.1875 9.22656 9.1875 10ZM21 6.0625V8.3125C21 8.62891 20.7188 8.875 20.4375 8.875C20.1211 8.875 19.875 8.62891 19.875 8.3125V6.0625C19.875 5.78125 20.1211 5.5 20.4375 5.5C20.7188 5.5 21 5.78125 21 6.0625ZM20.4375 10C20.7188 10 21 10.2812 21 10.5625V12.8125C21 13.1289 20.7188 13.375 20.4375 13.375C20.1211 13.375 19.875 13.1289 19.875 12.8125V10.5625C19.875 10.2812 20.1211 10 20.4375 10ZM21 15.0625V17.3125C21 17.6289 20.7188 17.875 20.4375 17.875C20.1211 17.875 19.875 17.6289 19.875 17.3125V15.0625C19.875 14.7812 20.1211 14.5 20.4375 14.5C20.7188 14.5 21 14.7812 21 15.0625Z" fill="#00DBFF"/></svg>
+        </div>
+      </div>
+    </a>
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <img src="../../perfil/icons/hands.svg" width="24" height="24" alt="" aria-hidden="true">
+      </div>
+    </div>
+    <!-- Atrair -->
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <img src="../../perfil/icons/predio.svg" width="24" height="24" alt="" aria-hidden="true">
+      </div>
+    </div>
+    <!-- Converter -->
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <img src="../../perfil/icons/tasks.svg" width="24" height="24" alt="" aria-hidden="true">
+      </div>
+    </div>
+    <!-- Analisar -->
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.0312 18.4375V12.8125C10.0312 12.6719 9.89062 12.5312 9.75 12.5312C9.57422 12.5312 9.46875 12.6719 9.46875 12.8125V18.4375C9.46875 18.6133 9.57422 18.7188 9.75 18.7188C9.89062 18.7188 10.0312 18.6133 10.0312 18.4375ZM9.75 11.125C10.6641 11.125 11.4375 11.8984 11.4375 12.8125V18.4375C11.4375 19.3867 10.6641 20.125 9.75 20.125C8.80078 20.125 8.0625 19.3867 8.0625 18.4375V12.8125C8.0625 11.8984 8.80078 11.125 9.75 11.125ZM5.53125 18.4375V16.1875C5.53125 16.0469 5.39062 15.9062 5.25 15.9062C5.07422 15.9062 4.96875 16.0469 4.96875 16.1875V18.4375C4.96875 18.6133 5.07422 18.7188 5.25 18.7188C5.39062 18.7188 5.53125 18.6133 5.53125 18.4375ZM5.25 14.5C6.16406 14.5 6.9375 15.2734 6.9375 16.1875V18.4375C6.9375 19.3867 6.16406 20.125 5.25 20.125C4.30078 20.125 3.5625 19.3867 3.5625 18.4375V16.1875C3.5625 15.2734 4.30078 14.5 5.25 14.5ZM14.5312 15.0625C14.5312 14.9219 14.3906 14.7812 14.25 14.7812C14.0742 14.7812 13.9688 14.9219 13.9688 15.0625V18.4375C13.9688 18.6133 14.0742 18.7188 14.25 18.7188C14.3906 18.7188 14.5312 18.6133 14.5312 18.4375V15.0625ZM12.5625 15.0625C12.5625 14.1484 13.3008 13.375 14.25 13.375C15.1641 13.375 15.9375 14.1484 15.9375 15.0625V18.4375C15.9375 19.3867 15.1641 20.125 14.25 20.125C13.3008 20.125 12.5625 19.3867 12.5625 18.4375V15.0625ZM19.0312 18.4375V12.8125C19.0312 12.6719 18.8906 12.5312 18.75 12.5312C18.5742 12.5312 18.4688 12.6719 18.4688 12.8125V18.4375C18.4688 18.6133 18.5742 18.7188 18.75 18.7188C18.8906 18.7188 19.0312 18.6133 19.0312 18.4375ZM18.75 11.125C19.6641 11.125 20.4375 11.8984 20.4375 12.8125V18.4375C20.4375 19.3867 19.6641 20.125 18.75 20.125C17.8008 20.125 17.0625 19.3867 17.0625 18.4375V12.8125C17.0625 11.8984 17.8008 11.125 18.75 11.125Z" fill="white"/><path d="M14.7773 10.9492L20.6836 5.88672C21.0351 5.57031 21.0703 5.04297 20.789 4.69141C20.4726 4.33984 19.9453 4.30469 19.5937 4.58594L14.25 9.19141L10.2773 5.71094C9.99606 5.46484 9.57418 5.42969 9.25778 5.64062L3.35153 9.57812C2.96481 9.85938 2.85934 10.3867 3.14059 10.7734C3.38668 11.1602 3.91403 11.2656 4.30075 10.9844L9.67965 7.43359L13.6875 10.9492C14.0039 11.1953 14.4609 11.1953 14.7773 10.9492Z" fill="#00DBFF"/></svg>
+      </div>
+    </div>
+    <!-- Objetos personalizados -->
+    <div class="sidebar-item sidebar-objects active" aria-current="page" aria-label="Objetos personalizados" aria-haspopup="true">
+      <div class="sidebar-item-inner">
+        <img src="../../shared/svg/custom-objects.svg" width="24" height="24" alt="" aria-hidden="true">
+      </div>
+        <div class="sidebar-indicator"></div>
+      <div class="objects-flyout" role="menu" aria-label="Objetos personalizados">
+        <div class="objects-flyout-section">Objetos personalizados</div>
+        <a class="objects-flyout-item" href="../Alunos/">Alunos</a>
+        <a class="objects-flyout-item" href="../Contratos/">Contratos</a>
+        <div class="objects-flyout-divider" aria-hidden="true"></div>
+        <a class="objects-flyout-item objects-flyout-create" href="../../custom-objects/">
+          Gerenciar Objetos
+        </a>
+      </div>
+    </div>
+  </aside>
+  <main class="content">
+    <div class="content-main">
+      <div class="content-inner">
+        <header class="page-header">
+          <div class="page-header-main">
+            <h1 class="page-title" id="listing-title"></h1>
+            <div class="header-actions">
+              <button type="button" class="btn-secondary" id="listing-import"></button>
+              <button type="button" class="btn-primary" id="listing-add"></button>
+            </div>
+          </div>
+          <p class="page-aux-text" id="listing-description"></p>
+        </header>
+        <div class="search-filters">
+          <div class="filters-left">
+            <div class="search-input">
+              <input class="search-input-field" id="listing-search" type="text">
+              <button class="search-btn" type="button" aria-label="Buscar">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              </button>
+            </div>
+            <button class="btn-text" type="button">
+              <svg viewBox="0 0 24 24"><path d="M4.5 8.25H19.5C19.7762 8.25 20 8.02616 20 7.75V6.5C20 6.22384 19.7762 6 19.5 6H4.5C4.22384 6 4 6.22384 4 6.5V7.75C4 8.02616 4.22384 8.25 4.5 8.25ZM6.5 13.25H17.5C17.7762 13.25 18 13.0262 18 12.75V11.5C18 11.2238 17.7762 11 17.5 11H6.5C6.22384 11 6 11.2238 6 11.5V12.75C6 13.0262 6.22384 13.25 6.5 13.25ZM8.5 18.25H15.5C15.7762 18.25 16 18.0262 16 17.75V16.5C16 16.2238 15.7762 16 15.5 16H8.5C8.22384 16 8 16.2238 8 16.5V17.75C8 18.0262 8.22384 18.25 8.5 18.25Z"/></svg>
+              Filtros
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <div class="bulk-actions" id="bulk-actions">
+          <div class="bulk-actions-left">
+            <span class="bulk-count"><span id="bulk-count">0</span> selecionado(s)</span>
+            <button class="bulk-clear" id="bulk-clear" type="button">Limpar seleção</button>
+          </div>
+          <div class="bulk-actions-right">
+            <button class="bulk-btn" id="bulk-edit-legal-btn" type="button">Editar base legal</button>
+            <button class="bulk-btn" type="button">Exportar</button>
+            <button class="bulk-btn bulk-btn--danger" id="bulk-delete-btn" type="button">Excluir</button>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr id="listing-head"></tr>
+          </thead>
+          <tbody id="listing-body"></tbody>
+        </table>
+      </div>
+    </div>
+  <aside class="detail-panel" id="detail-panel" aria-hidden="true" aria-label="Visão geral">
+    <div class="detail-panel-preview" id="detail-panel-preview"></div>
+  </aside>
+</main>
+</div>
+
+<div class="drawer-overlay" id="record-overlay"></div>
+<aside class="drawer" id="record-drawer" role="dialog" aria-modal="true" aria-labelledby="record-title" hidden>
+  <div class="drawer-header">
+    <span class="drawer-title" id="record-title"></span>
+    <button type="button" class="drawer-close" id="record-close" aria-label="Fechar">
+      <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body">
+    <form id="record-form" novalidate></form>
+  </div>
+  <div class="drawer-footer">
+    <div class="drawer-actions">
+      <button type="button" class="drawer-btn-cancel" id="record-cancel">Cancelar</button>
+      <button type="button" class="drawer-btn-save" id="record-save"></button>
+    </div>
+  </div>
+</aside>
+
+<div class="delete-modal-overlay" id="delete-modal-overlay" aria-hidden="true">
+  <div class="delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+    <div class="delete-modal-header">
+      <h2 class="delete-modal-title" id="delete-modal-title">Tem certeza que deseja excluir?</h2>
+      <button type="button" class="delete-modal-close" id="delete-modal-close" aria-label="Fechar">
+        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <div class="delete-modal-body">
+      <p>Você selecionou <strong id="delete-modal-count">0</strong> <span id="delete-modal-noun">registro(s)</span> para exclusão. Escolha o que deseja fazer:</p>
+      <ul>
+        <li><strong>Enviar para a lixeira:</strong> os registros saem da sua lista, mas um administrador poderá recuperá-los ou excluí-los definitivamente mais tarde.</li>
+        <li><strong>Excluir permanentemente:</strong> todos os dados e históricos serão apagados para sempre, sem chance de recuperação.</li>
+      </ul>
+    </div>
+    <label class="delete-modal-confirm" for="delete-modal-confirm">
+      <input class="tg-checkbox-input" type="checkbox" id="delete-modal-confirm">
+      <span class="tg-checkbox-box">
+        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </span>
+      <span class="delete-modal-confirm-text">Entendo que não conseguirei reverter a ação</span>
+    </label>
+    <div class="delete-modal-footer">
+      <button type="button" class="delete-modal-btn delete-modal-btn-trash" id="delete-modal-trash-btn">Enviar para lixeira</button>
+      <button type="button" class="delete-modal-btn delete-modal-btn-permanent" id="delete-modal-permanent-btn" disabled>Excluir permanentemente</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../shared/custom-objects-db.js"></script>
+<script>
+  (function () {
+  const CATALOG = {
+    Alunos: {
+      description: 'Informações gerais dos alunos da escola.',
+      singular: 'aluno',
+      plural: 'alunos',
+      columns: ['Nome do aluno', 'Data de nascimento', 'Endereço'],
+      fields: [
+        { name: 'Nome do aluno', type: 'text', required: true },
+        { name: 'Data de nascimento', type: 'date', required: true },
+        { name: 'Endereço', type: 'text', required: false },
+        { name: 'CPF', type: 'cpf', required: true }
+      ]
+    },
+    Contratos: {
+      description: 'Informações gerais dos contratos.',
+      singular: 'contrato',
+      plural: 'contratos',
+      columns: ['Nome do contrato', 'Data de nascimento', 'Endereço'],
+      fields: [
+        { name: 'Nome do contrato', type: 'text', required: true },
+        { name: 'Data de nascimento', type: 'date', required: true },
+        { name: 'Endereço', type: 'text', required: false },
+        { name: 'CPF', type: 'cpf', required: true }
+      ]
+    }
+  };
+
+  function objectName() {
+    const fromQuery = new URLSearchParams(location.search).get('objeto');
+    if (fromQuery) return fromQuery;
+    const parts = location.pathname.split('/').filter(Boolean);
+    const index = parts.lastIndexOf('custom-objects');
+    const slug = index >= 0 ? parts[index + 1] : '';
+    return slug && slug !== 'objeto' ? decodeURIComponent(slug) : '';
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[char]));
+  }
+
+  const PLACEHOLDERS = {
+    text: 'Digite aqui',
+    date: 'DD/MM/AAAA',
+    cpf: '000.000.000-00'
+  };
+
+  const name = objectName();
+  let object = CATALOG[name] || {
+    description: '',
+    singular: 'registro',
+    plural: 'registros',
+    columns: ['Nome'],
+    fields: [{ name: 'Nome', type: 'text', required: true }]
+  };
+  let records = [];
+  let objectLinks = [];
+  let selectedRecordId = null;
+  const selectedIds = new Set();
+  let pendingDeleteIds = [];
+  let objectId = null;
+  const drawer = document.getElementById('record-drawer');
+  const overlay = document.getElementById('record-overlay');
+  const form = document.getElementById('record-form');
+  const listingBody = document.getElementById('listing-body');
+  let listingLoaded = false;
+
+  function singularLabel() {
+    const label = object.singular || 'registro';
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  }
+
+  function columnName(column) {
+    return typeof column === 'string' ? column : column.name;
+  }
+
+  function recordValue(record, column) {
+    const value = record.data && column && column.id ? record.data[column.id] : record[columnName(column)];
+    if (Array.isArray(value)) return value.join(', ');
+    return value || '';
+  }
+
+  const recordCaret = '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.53907 10H15.4609C15.9402 10 16.1803 10.6386 15.8414 11.0121L12.3804 14.8264C12.1703 15.0579 11.8297 15.0579 11.6196 14.8264L8.15866 11.0121C7.81973 10.6386 8.05978 10 8.53907 10Z" fill="#596B7A"/></svg>';
+  const recordCheck = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1136 18.1592L3.26359 12.3092C2.91214 11.9577 2.91214 11.3879 3.26359 11.0364L4.53636 9.7636C4.88781 9.4121 5.4577 9.4121 5.80915 9.7636L9.75 13.7044L18.1908 5.26359C18.5423 4.91214 19.1122 4.91214 19.4636 5.26359L20.7364 6.53639C21.0879 6.88785 21.0879 7.4577 20.7364 7.80919L10.3864 18.1592C10.0349 18.5107 9.46506 18.5107 9.1136 18.1592Z"/></svg>';
+
+  function maskDate(value) {
+    const digits = String(value).replace(/\D/g, '').slice(0, 8);
+    const parts = [];
+    if (digits.length) parts.push(digits.slice(0, 2));
+    if (digits.length > 2) parts.push(digits.slice(2, 4));
+    if (digits.length > 4) parts.push(digits.slice(4, 8));
+    return parts.join('/');
+  }
+
+  function fieldOptions(field) {
+    return Array.isArray(field.options) ? field.options.filter(item => item) : [];
+  }
+
+  function recordControl(field, index) {
+    const required = field.required ? 'required' : '';
+    if (field.type === 'date') {
+      return `<input class="drawer-input" id="record-field-${index}" data-mask="date" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" autocomplete="off" ${required}>`;
+    }
+    if (field.type === 'option') {
+      const options = fieldOptions(field).map(option => (
+        `<button type="button" class="record-select-option" role="option" data-value="${escapeHtml(option)}">${escapeHtml(option)}</button>`
+      )).join('');
+      return `<div class="record-select" data-record-index="${index}" data-kind="option">
+        <button type="button" class="record-select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="record-label-${index}">
+          <span class="record-select-value">Selecione</span>${recordCaret}
+        </button>
+        <div class="record-select-menu" role="listbox" hidden>${options}</div>
+      </div>`;
+    }
+    if (field.type === 'multiple_choice') {
+      const options = fieldOptions(field).map(option => (
+        `<label class="record-select-option">
+          <input class="record-check" type="checkbox" value="${escapeHtml(option)}">
+          <span class="record-check-box" aria-hidden="true">${recordCheck}</span>
+          <span>${escapeHtml(option)}</span>
+        </label>`
+      )).join('');
+      return `<div class="record-select" data-record-index="${index}" data-kind="multiple">
+        <button type="button" class="record-select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="record-label-${index}">
+          <span class="record-select-value">Selecione</span>${recordCaret}
+        </button>
+        <div class="record-select-menu" role="listbox" aria-multiselectable="true" hidden>${options}</div>
+      </div>`;
+    }
+    return `<input class="drawer-input" id="record-field-${index}" name="${escapeHtml(field.name)}" type="text" placeholder="${PLACEHOLDERS[field.type] || 'Digite aqui'}" ${required}>`;
+  }
+
+  function closeRecordMenus() {
+    form.querySelectorAll('.record-select').forEach(select => {
+      const menu = select.querySelector('.record-select-menu');
+      const trigger = select.querySelector('.record-select-trigger');
+      if (menu) menu.hidden = true;
+      if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      select.classList.remove('is-open');
+    });
+  }
+
+  function syncMultipleLabel(select) {
+    const chosen = [...select.querySelectorAll('input:checked')].map(input => input.value);
+    const label = select.querySelector('.record-select-value');
+    label.textContent = chosen.length ? chosen.join(', ') : 'Selecione';
+    label.classList.toggle('is-selected', chosen.length > 0);
+  }
+
+  function applyChrome() {
+    document.title = name + ' — RD Station';
+    document.getElementById('listing-title').textContent = name || 'Objeto';
+    document.getElementById('listing-description').textContent = object.description;
+    document.getElementById('listing-search').placeholder = 'Buscar ' + object.plural;
+    document.getElementById('listing-import').textContent = 'Importar ' + object.plural;
+    document.getElementById('listing-add').textContent = 'Adicionar ' + object.singular;
+    document.getElementById('record-title').textContent = 'Adicionar ' + object.singular;
+    document.getElementById('record-save').textContent = 'Salvar ' + object.singular;
+    document.getElementById('listing-head').innerHTML = '<th><div class="checkbox"></div></th>' + object.columns.map(column => (
+      '<th><div class="th-inner">' + escapeHtml(columnName(column)) + '</div></th>'
+    )).join('') + '<th class="col-actions"></th>';
+    form.innerHTML = object.fields.map((field, index) => `
+      <div class="drawer-field" data-record-index="${index}">
+        <label class="drawer-label" id="record-label-${index}" for="record-field-${index}">${escapeHtml(field.name)}${field.required ? ' <span class="drawer-required">*</span>' : ''}</label>
+        ${recordControl(field, index)}
+      </div>
+    `).join('');
+    syncHeaderCheckbox();
+  }
+
+  function renderSkeleton() {
+    const count = Math.max(object.columns.length, 1);
+    const headWidths = [96, 140, 88, 120];
+    const cellWidths = [68, 42, 56, 34];
+    document.getElementById('listing-head').innerHTML = '<th><span class="skeleton skeleton-check"></span></th>' + Array.from({ length: count }, (_, index) => (
+      '<th><span class="skeleton skeleton-head" style="width:' + headWidths[index % headWidths.length] + 'px"></span></th>'
+    )).join('') + '<th class="col-actions"><span class="skeleton skeleton-head" style="width:40px;margin-left:auto"></span></th>';
+    listingBody.innerHTML = Array.from({ length: 6 }, (_, row) => `
+      <tr>
+        <td><span class="skeleton skeleton-check"></span></td>
+        ${Array.from({ length: count }, (_, column) => (
+          '<td><span class="skeleton skeleton-cell" style="width:' + cellWidths[(row + column) % cellWidths.length] + '%"></span></td>'
+        )).join('')}
+        <td class="col-actions"><span class="skeleton skeleton-check" style="width:40px;height:40px;border-radius:12px;margin-left:auto"></span></td>
+      </tr>
+    `).join('');
+    listingBody.closest('table').setAttribute('aria-busy', 'true');
+  }
+
+  function renderRecords() {
+    if (!listingLoaded) {
+      renderSkeleton();
+      return;
+    }
+    listingBody.closest('table').setAttribute('aria-busy', 'false');
+    if (!records.length) {
+      listingBody.innerHTML = `
+        <tr class="empty-state-row"><td colspan="${object.columns.length + 2}">
+          <div class="empty-state-box">
+            <img src="../../shared/empty-state-null.svg" width="360" height="156" alt="" style="display:block;width:100%;max-width:360px;height:auto;">
+            <div class="empty-state-copy">
+              <div class="empty-state-title">Você ainda não tem ${escapeHtml(object.plural)}</div>
+              <div class="empty-state-text">Que tal cadastrar o seu primeiro ${escapeHtml(object.singular)}?</div>
+            </div>
+            <button type="button" class="btn-primary" id="listing-empty-add">Cadastrar ${escapeHtml(object.singular)}</button>
+          </div>
+        </td></tr>`;
+      syncSelection();
+      return;
+    }
+    listingBody.innerHTML = records.map((record, index) => {
+      const recordId = String(record.id || index);
+      const selected = selectedRecordId === recordId;
+      const checked = selectedIds.has(recordId);
+      return `
+      <tr data-record-id="${escapeHtml(recordId)}" class="${[selected ? 'row-selected' : '', checked ? 'is-checked' : ''].filter(Boolean).join(' ')}">
+        <td><div class="checkbox${checked ? ' checked' : ''}"></div></td>
+        ${object.columns.map(column => `<td>${escapeHtml(recordValue(record, column))}</td>`).join('')}
+        <td class="col-actions">
+          <button type="button" class="actions-btn${selected ? ' is-active' : ''}" data-record-id="${escapeHtml(recordId)}" aria-pressed="${selected ? 'true' : 'false'}" aria-label="Ver visão geral" title="Ver visão geral">
+            <svg width="24" height="24" viewBox="0 -960 960 960" aria-hidden="true"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm360-80v-560H200v560h360Z" fill="#0077B2"/></svg>
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
+    syncSelection();
+  }
+
+  function syncHeaderCheckbox() {
+    const headerCb = document.querySelector('#listing-head .checkbox');
+    const boxes = [...listingBody.querySelectorAll('tr[data-record-id] .checkbox')];
+    if (!headerCb) return;
+    const checkedCount = boxes.filter(box => box.classList.contains('checked')).length;
+    headerCb.classList.remove('checked', 'indeterminate');
+    if (boxes.length && checkedCount === boxes.length) headerCb.classList.add('checked');
+    else if (checkedCount > 0) headerCb.classList.add('indeterminate');
+  }
+
+  function updateBulkBar() {
+    const bar = document.getElementById('bulk-actions');
+    const count = document.getElementById('bulk-count');
+    if (!bar || !count) return;
+    count.textContent = String(selectedIds.size);
+    bar.classList.toggle('visible', selectedIds.size > 0);
+  }
+
+  function syncSelection() {
+    syncHeaderCheckbox();
+    updateBulkBar();
+  }
+
+  function toggleRowSelection(row) {
+    const recordId = row?.dataset.recordId;
+    if (!recordId) return;
+    if (selectedIds.has(recordId)) selectedIds.delete(recordId);
+    else selectedIds.add(recordId);
+    row.querySelector('.checkbox')?.classList.toggle('checked', selectedIds.has(recordId));
+    row.classList.toggle('is-checked', selectedIds.has(recordId));
+    syncSelection();
+  }
+
+  function toggleAllRows() {
+    const rows = [...listingBody.querySelectorAll('tr[data-record-id]')];
+    if (!rows.length) return;
+    const allChecked = rows.every(row => selectedIds.has(row.dataset.recordId));
+    rows.forEach(row => {
+      const recordId = row.dataset.recordId;
+      if (allChecked) selectedIds.delete(recordId);
+      else selectedIds.add(recordId);
+      row.querySelector('.checkbox')?.classList.toggle('checked', !allChecked);
+      row.classList.toggle('is-checked', !allChecked);
+    });
+    syncSelection();
+  }
+
+  function clearSelection() {
+    selectedIds.clear();
+    listingBody.querySelectorAll('tr[data-record-id]').forEach(row => {
+      row.classList.remove('is-checked');
+      row.querySelector('.checkbox')?.classList.remove('checked');
+    });
+    syncSelection();
+  }
+
+  const content = document.querySelector('.content');
+  const detailPanel = document.getElementById('detail-panel');
+  const detailPreview = document.getElementById('detail-panel-preview');
+  const overviewChevron = '<svg class="overview-accordion-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.4663 7.91075L17.8068 13.2513C18.0644 13.5088 18.0644 13.9264 17.8068 14.1839L17.1839 14.8068C16.9268 15.064 16.5101 15.0645 16.2524 14.8079L12 10.5755L7.74765 14.8079C7.48991 15.0645 7.07318 15.064 6.81606 14.8068L6.19318 14.1839C5.93561 13.9264 5.93561 13.5088 6.19318 13.2513L11.5337 7.91078C11.7912 7.65321 12.2088 7.65321 12.4663 7.91075Z" fill="currentColor"/></svg>';
+  const objectCardIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3.569 2h4.138a2.07 2.07 0 0 1 2.069 2.069v4.138a2.07 2.07 0 0 1-2.07 2.069H3.57A2.07 2.07 0 0 1 1.5 8.206V4.07A2.07 2.07 0 0 1 3.569 2zm0 11.034h4.138a2.07 2.07 0 0 1 2.069 2.07v4.137a2.07 2.07 0 0 1-2.07 2.07H3.57A2.07 2.07 0 0 1 1.5 19.24v-4.138a2.07 2.07 0 0 1 2.069-2.069zm8.965-8.965A2.07 2.07 0 0 1 14.604 2h4.137a2.07 2.07 0 0 1 2.07 2.069v4.138a2.07 2.07 0 0 1-2.07 2.069h-4.138a2.07 2.07 0 0 1-2.069-2.07V4.07zm4.138 8.276c.574 0 1.035.461 1.035 1.034v2.759h2.758c.574 0 1.035.461 1.035 1.034 0 .574-.461 1.035-1.035 1.035h-2.758v2.758c0 .574-.461 1.035-1.035 1.035a1.032 1.032 0 0 1-1.034-1.035v-2.758h-2.759a1.032 1.032 0 0 1-1.034-1.035c0-.573.461-1.034 1.034-1.034h2.759v-2.759c0-.573.461-1.034 1.034-1.034z"/></svg>';
+  const historyCardIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C7.02823 3 3 7.02823 3 12C3 16.9718 7.02823 21 12 21C16.9718 21 21 16.9718 21 12C21 7.02823 16.9718 3 12 3ZM14.0722 15.7052L10.8714 13.379C10.7589 13.2956 10.6935 13.1649 10.6935 13.027V6.91935C10.6935 6.67984 10.8895 6.48387 11.129 6.48387H12.871C13.1105 6.48387 13.3065 6.67984 13.3065 6.91935V11.9165L15.6109 13.5931C15.8069 13.7347 15.8468 14.0069 15.7052 14.2028L14.6819 15.6109C14.5403 15.8032 14.2681 15.8468 14.0722 15.7052Z"/></svg>';
+  const ASSOCIATION_CARDS = [
+    {
+      name: 'Negociação',
+      empty: 'Nenhuma negociação vinculada',
+      edit: 'Editar negociação',
+      icon: '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 9.7915C9.5 9.99869 9.33219 10.1665 9.125 10.1665H6.875C6.66781 10.1665 6.5 9.99869 6.5 9.7915V8.6665H2V12.0415C2 12.6415 2.525 13.1665 3.125 13.1665H12.875C13.475 13.1665 14 12.6415 14 12.0415V8.6665H9.5V9.7915ZM12.875 4.9165H11V3.7915C11 3.1915 10.475 2.6665 9.875 2.6665H6.125C5.525 2.6665 5 3.1915 5 3.7915V4.9165H3.125C2.525 4.9165 2 5.4415 2 6.0415V7.9165H14V6.0415C14 5.4415 13.475 4.9165 12.875 4.9165ZM9.5 4.9165H6.5V4.1665H9.5V4.9165Z"/></svg>'
+    },
+    {
+      name: 'Empresa',
+      empty: 'Nenhuma empresa vinculada',
+      edit: 'Editar empresa',
+      icon: '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M13.0477 13.25H12.5715V2.5625C12.5715 2.25184 12.3157 2 12.0001 2H4.00008C3.68449 2 3.42865 2.25184 3.42865 2.5625V13.25H2.95246C2.79468 13.25 2.66675 13.3759 2.66675 13.5312V14H13.3334V13.5312C13.3334 13.3759 13.2055 13.25 13.0477 13.25ZM5.71437 3.78125C5.71437 3.62593 5.8423 3.5 6.00008 3.5H6.95246C7.11025 3.5 7.23818 3.62593 7.23818 3.78125V4.71875C7.23818 4.87407 7.11025 5 6.95246 5H6.00008C5.8423 5 5.71437 4.87407 5.71437 4.71875V3.78125ZM5.71437 6.03125C5.71437 5.87593 5.8423 5.75 6.00008 5.75H6.95246C7.11025 5.75 7.23818 5.87593 7.23818 6.03125V6.96875C7.23818 7.12407 7.11025 7.25 6.95246 7.25H6.00008C5.8423 7.25 5.71437 7.12407 5.71437 6.96875V6.03125ZM6.95246 9.5H6.00008C5.8423 9.5 5.71437 9.37407 5.71437 9.21875V8.28125C5.71437 8.12593 5.8423 8 6.00008 8H6.95246C7.11025 8 7.23818 8.12593 7.23818 8.28125V9.21875C7.23818 9.37407 7.11025 9.5 6.95246 9.5ZM8.76199 13.25H7.23818V11.2812C7.23818 11.1259 7.36611 11 7.52389 11H8.47627C8.63406 11 8.76199 11.1259 8.76199 11.2812V13.25ZM10.2858 9.21875C10.2858 9.37407 10.1579 9.5 10.0001 9.5H9.0477C8.88991 9.5 8.76199 9.37407 8.76199 9.21875V8.28125C8.76199 8.12593 8.88991 8 9.0477 8H10.0001C10.1579 8 10.2858 8.12593 10.2858 8.28125V9.21875ZM10.2858 6.96875C10.2858 7.12407 10.1579 7.25 10.0001 7.25H9.0477C8.88991 7.25 8.76199 7.12407 8.76199 6.96875V6.03125C8.76199 5.87593 8.88991 5.75 9.0477 5.75H10.0001C10.1579 5.75 10.2858 5.87593 10.2858 6.03125V6.96875ZM10.2858 4.71875C10.2858 4.87407 10.1579 5 10.0001 5H9.0477C8.88991 5 8.76199 4.87407 8.76199 4.71875V3.78125C8.76199 3.62593 8.88991 3.5 9.0477 3.5H10.0001C10.1579 3.5 10.2858 3.62593 10.2858 3.78125V4.71875Z"/></svg>'
+    },
+    {
+      name: 'Contato',
+      empty: 'Nenhum contato vinculado',
+      edit: 'Editar contato',
+      icon: '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8.00008 8C9.68341 8 11.0477 6.65703 11.0477 5C11.0477 3.34297 9.68341 2 8.00008 2C6.31675 2 4.95246 3.34297 4.95246 5C4.95246 6.65703 6.31675 8 8.00008 8ZM10.1334 8.75H9.7358C9.20722 8.98906 8.61913 9.125 8.00008 9.125C7.38103 9.125 6.79532 8.98906 6.26437 8.75H5.86675C4.10008 8.75 2.66675 10.1609 2.66675 11.9V12.875C2.66675 13.4961 3.17865 14 3.80961 14H12.1906C12.8215 14 13.3334 13.4961 13.3334 12.875V11.9C13.3334 10.1609 11.9001 8.75 10.1334 8.75Z"/></svg>'
+    }
+  ];
+
+  function formatCreated(value) {
+    const date = value ? new Date(value) : null;
+    if (!date || Number.isNaN(date.getTime())) return '';
+    const pad = part => String(part).padStart(2, '0');
+    return pad(date.getDate()) + '/' + pad(date.getMonth() + 1) + '/' + String(date.getFullYear()).slice(-2) + ' às ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+  }
+
+  function overviewCard(title, icon, body) {
+    return `
+      <section class="overview-card" data-accordion>
+        <button type="button" class="overview-accordion-head" aria-expanded="true">
+          <span class="overview-accordion-icon" aria-hidden="true">${icon}</span>
+          <span class="overview-accordion-title">${escapeHtml(title)}</span>
+          ${overviewChevron}
+        </button>
+        <div class="overview-card-body">${body}</div>
+      </section>`;
+  }
+
+  function renderOverview(record) {
+    const fields = object.columns.map(column => {
+      const value = recordValue(record, column);
+      return `
+        <div class="overview-field">
+          <span class="overview-field-label">${escapeHtml(columnName(column))}</span>
+          <span class="overview-field-value">${escapeHtml(value || '—')}</span>
+        </div>`;
+    }).join('');
+    const when = formatCreated(record.created_at);
+    const createdDetails = object.fields.map(field => {
+      const column = field.id ? { id: field.id, name: field.name } : field.name;
+      const value = recordValue(record, column);
+      return `<p><strong>${escapeHtml(field.name)}:</strong> ${escapeHtml(value || '-')}</p>`;
+    }).join('');
+    const history = `
+      <div class="overview-timeline">
+        <div class="overview-timeline-item">
+          <div class="overview-timeline-rail">
+            <img class="overview-timeline-mark" src="../../shared/svg/timeline-created.svg" width="40" height="40" alt="">
+            <div class="overview-timeline-line"></div>
+          </div>
+          <div class="overview-timeline-content">
+            <div class="overview-timeline-head">
+              <span class="overview-timeline-title">${escapeHtml(singularLabel())} criado</span>
+              <span class="overview-timeline-tag">${escapeHtml(singularLabel())}</span>
+            </div>
+            <div class="overview-timeline-copy">
+              ${when ? `<div class="overview-timeline-meta">${escapeHtml(when)}</div>` : ''}
+              <div class="overview-timeline-details">${createdDetails}</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    const linked = new Set(objectLinks.map(item => String(item).toLocaleLowerCase('pt-BR')));
+    const associations = ASSOCIATION_CARDS.filter(card => linked.has(card.name.toLocaleLowerCase('pt-BR'))).map(card => (
+      overviewCard(card.name, card.icon, `
+        <p class="overview-association-empty">${escapeHtml(card.empty)}</p>
+        <button type="button" class="overview-btn-secondary">${escapeHtml(card.edit)}</button>
+      `)
+    )).join('');
+    detailPreview.innerHTML = `
+      <div class="overview-header">
+        <h2 class="overview-title" id="detail-panel-title">Visão geral do ${escapeHtml(object.singular)}</h2>
+        <button type="button" class="drawer-close" id="detail-preview-close" aria-label="Fechar">
+          <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      <div class="overview-body">
+        ${overviewCard(singularLabel(), objectCardIcon, `<div class="overview-fields">${fields}</div>`)}
+        ${overviewCard('Histórico', historyCardIcon, history)}
+        ${associations}
+      </div>`;
+  }
+
+  function closeOverview() {
+    selectedRecordId = null;
+    content.classList.remove('detail-open');
+    detailPanel.setAttribute('aria-hidden', 'true');
+    if (listingLoaded) renderRecords();
+  }
+
+  function openOverview(recordId) {
+    if (selectedRecordId === recordId) {
+      closeOverview();
+      return;
+    }
+    const record = records.find((item, index) => String(item.id || index) === recordId);
+    if (!record) return;
+    selectedRecordId = recordId;
+    content.classList.add('detail-open');
+    detailPanel.setAttribute('aria-hidden', 'false');
+    renderOverview(record);
+    renderRecords();
+  }
+
+  function openRecordDrawer() {
+    applyChrome();
+    drawer.hidden = false;
+    overlay.classList.add('open');
+    drawer.classList.add('open');
+    const focusable = form.querySelector('input, .record-select-trigger');
+    focusable?.focus();
+  }
+
+  function closeRecordDrawer() {
+    closeRecordMenus();
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    drawer.hidden = true;
+  }
+
+  function readRecordValue(field, index) {
+    const root = form.querySelector(`.drawer-field[data-record-index="${index}"]`);
+    if (!root) return '';
+    if (field.type === 'multiple_choice') {
+      return [...root.querySelectorAll('input:checked')].map(input => input.value);
+    }
+    if (field.type === 'option') return root.querySelector('.record-select')?.dataset.value || '';
+    const input = root.querySelector('input');
+    return input ? input.value.trim() : '';
+  }
+
+  function valueMissing(value) {
+    return Array.isArray(value) ? value.length === 0 : !value;
+  }
+
+  let listingReady = Promise.resolve();
+
+  async function saveRecord() {
+    await listingReady;
+    const data = {};
+    const named = {};
+    const invalidDate = object.fields.some((field, index) => {
+      const value = readRecordValue(field, index);
+      if (field.id) data[field.id] = value;
+      named[field.name] = Array.isArray(value) ? value.join(', ') : value;
+      return field.type === 'date' && value && !/^\d{2}\/\d{2}\/\d{4}$/.test(value);
+    });
+    const missing = object.fields.some((field, index) => field.required && valueMissing(readRecordValue(field, index)));
+    if (invalidDate || missing) {
+      window.__showToast?.('Não foi possível salvar o ' + object.singular, { kind: 'error' });
+      return;
+    }
+    if (objectId && window.__customObjectsDb) {
+      try {
+        const created = await window.__customObjectsDb.createRecord(objectId, data);
+        records.push({ id: created.id, data, created_at: created.created_at });
+      } catch (error) {
+        window.__showToast?.('Não foi possível salvar o ' + object.singular, { kind: 'error' });
+        return;
+      }
+    } else {
+      records.push(Object.assign({ id: 'local-' + Date.now(), created_at: new Date().toISOString() }, named));
+    }
+    renderRecords();
+    closeRecordDrawer();
+    window.__showToast?.(singularLabel() + ' adicionado com sucesso');
+  }
+
+  document.getElementById('listing-add').addEventListener('click', openRecordDrawer);
+  document.getElementById('listing-empty-add')?.addEventListener('click', openRecordDrawer);
+  listingBody.addEventListener('click', event => {
+    if (event.target.closest('#listing-empty-add')) openRecordDrawer();
+    const checkbox = event.target.closest('.checkbox');
+    if (checkbox) {
+      toggleRowSelection(checkbox.closest('tr'));
+      return;
+    }
+    const button = event.target.closest('.actions-btn');
+    if (button) openOverview(button.dataset.recordId);
+  });
+  document.getElementById('listing-head').addEventListener('click', event => {
+    if (event.target.closest('.checkbox')) toggleAllRows();
+  });
+  document.getElementById('bulk-clear').addEventListener('click', clearSelection);
+
+  const deleteOverlay = document.getElementById('delete-modal-overlay');
+  const deleteConfirm = document.getElementById('delete-modal-confirm');
+  const deletePermanent = document.getElementById('delete-modal-permanent-btn');
+
+  function openDeleteModal() {
+    pendingDeleteIds = [...selectedIds];
+    if (!pendingDeleteIds.length) return;
+    document.getElementById('delete-modal-count').textContent = String(pendingDeleteIds.length);
+    document.getElementById('delete-modal-noun').textContent = object.singular + '(s)';
+    deleteConfirm.checked = false;
+    deletePermanent.disabled = true;
+    deleteOverlay.classList.add('open');
+    deleteOverlay.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeDeleteModal() {
+    deleteOverlay.classList.remove('open');
+    deleteOverlay.setAttribute('aria-hidden', 'true');
+    deleteConfirm.checked = false;
+    deletePermanent.disabled = true;
+    pendingDeleteIds = [];
+  }
+
+  async function confirmDeleteRecords() {
+    if (deletePermanent.disabled || !pendingDeleteIds.length) return;
+    const ids = [...pendingDeleteIds];
+    const remote = ids.filter(id => !String(id).startsWith('local-'));
+    deletePermanent.disabled = true;
+    try {
+      if (remote.length && objectId && window.__customObjectsDb?.deleteRecords) {
+        await window.__customObjectsDb.deleteRecords(remote);
+      }
+    } catch (error) {
+      deletePermanent.disabled = !deleteConfirm.checked;
+      window.__showToast?.('Não foi possível excluir o ' + object.singular, { kind: 'error' });
+      return;
+    }
+    const drop = new Set(ids);
+    records = records.filter((record, index) => !drop.has(String(record.id || index)));
+    ids.forEach(id => selectedIds.delete(id));
+    const panelClosed = drop.has(selectedRecordId);
+    closeDeleteModal();
+    if (panelClosed) closeOverview();
+    else renderRecords();
+    window.__showToast?.(ids.length === 1 ? singularLabel() + ' excluído com sucesso' : ids.length + ' ' + object.plural + ' excluídos com sucesso');
+  }
+
+  document.getElementById('bulk-delete-btn').addEventListener('click', openDeleteModal);
+  document.getElementById('delete-modal-close').addEventListener('click', closeDeleteModal);
+  deleteOverlay.addEventListener('click', event => {
+    if (event.target === deleteOverlay) closeDeleteModal();
+  });
+  deleteConfirm.addEventListener('change', () => {
+    deletePermanent.disabled = !deleteConfirm.checked;
+  });
+  deletePermanent.addEventListener('click', confirmDeleteRecords);
+  detailPanel.addEventListener('click', event => {
+    if (event.target.closest('#detail-preview-close')) {
+      closeOverview();
+      return;
+    }
+    const head = event.target.closest('.overview-accordion-head');
+    if (!head) return;
+    const card = head.closest('.overview-card');
+    const collapsed = card.classList.toggle('is-collapsed');
+    head.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  });
+  document.getElementById('record-close').addEventListener('click', closeRecordDrawer);
+  document.getElementById('record-cancel').addEventListener('click', closeRecordDrawer);
+  overlay.addEventListener('click', closeRecordDrawer);
+  document.getElementById('record-save').addEventListener('click', saveRecord);
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    saveRecord();
+  });
+  form.addEventListener('input', event => {
+    const input = event.target;
+    if (input.dataset.mask !== 'date') return;
+    const next = maskDate(input.value);
+    if (input.value !== next) input.value = next;
+  });
+  form.addEventListener('click', event => {
+    const trigger = event.target.closest('.record-select-trigger');
+    if (trigger) {
+      const select = trigger.closest('.record-select');
+      const willOpen = select.querySelector('.record-select-menu').hidden;
+      closeRecordMenus();
+      if (willOpen) {
+        select.querySelector('.record-select-menu').hidden = false;
+        trigger.setAttribute('aria-expanded', 'true');
+        select.classList.add('is-open');
+      }
+      return;
+    }
+    const option = event.target.closest('.record-select-option');
+    if (!option || option.querySelector('input')) return;
+    const select = option.closest('.record-select');
+    select.dataset.value = option.dataset.value || '';
+    const label = select.querySelector('.record-select-value');
+    label.textContent = option.dataset.value || 'Selecione';
+    label.classList.add('is-selected');
+    select.querySelectorAll('[role="option"]').forEach(item => {
+      item.setAttribute('aria-selected', item === option ? 'true' : 'false');
+    });
+    closeRecordMenus();
+  });
+  form.addEventListener('change', event => {
+    if (!event.target.matches('.record-check')) return;
+    syncMultipleLabel(event.target.closest('.record-select'));
+  });
+  document.addEventListener('click', event => {
+    if (!event.target.closest('.record-select')) closeRecordMenus();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    if (deleteOverlay.classList.contains('open')) {
+      closeDeleteModal();
+      return;
+    }
+    if (drawer.classList.contains('open')) {
+      if (form.querySelector('.record-select-menu:not([hidden])')) {
+        closeRecordMenus();
+        return;
+      }
+      closeRecordDrawer();
+      return;
+    }
+    if (content.classList.contains('detail-open')) closeOverview();
+  });
+
+  async function loadListing() {
+    applyChrome();
+    renderRecords();
+    const api = window.__customObjectsDb;
+    try {
+      if (!api) return;
+      const session = await window.__auth?.getSession?.();
+      if (!session) return;
+      const current = await api.getObjectByName(name);
+      if (!current) return;
+      const fields = await api.listFields(current.id);
+      if (!fields.length) return;
+      objectId = current.id;
+      const primary = fields.filter(field => field.is_primary);
+      const columns = (primary.length ? primary : fields).map(field => ({ id: field.id, name: field.name }));
+      object = {
+        description: current.description || object.description,
+        singular: (current.singular || object.singular).toLocaleLowerCase('pt-BR'),
+        plural: (current.name || object.plural).toLocaleLowerCase('pt-BR'),
+        columns,
+        fields: fields.map(field => ({
+          id: field.id,
+          name: field.name,
+          type: field.field_type,
+          required: field.is_required,
+          options: Array.isArray(field.options) ? field.options : []
+        }))
+      };
+      const rows = await api.listRecords(current.id);
+      records = rows.map(row => ({ id: row.id, data: row.data || {}, created_at: row.created_at }));
+      try {
+        const links = await api.listObjectLinks(current.id);
+        objectLinks = links.map(item => item.name);
+      } catch (error) {
+        objectLinks = [];
+      }
+    } catch (error) {
+      return;
+    } finally {
+      listingLoaded = true;
+      applyChrome();
+      renderRecords();
+    }
+  }
+
+  listingReady = loadListing();
+})();
+</script>
+<script src="../../shared/products.js"></script>
+<script src="../../shared/app-toast.js"></script>
+
+</body>
+</html>

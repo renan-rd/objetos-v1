@@ -1,0 +1,2164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Objetos personalizados — RD Station</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,800;9..40,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    window.__sbClient = supabase.createClient(
+      'https://deeklhefjxldkweqjtsa.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZWtsaGVmanhsZGt3ZXFqdHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5Mzc5NjcsImV4cCI6MjA2NzUxMzk2N30.9oxYKZHfRNjbXJzQ17POORk_5Z12DDdkPUqAbeIdMcQ'
+    );
+  </script>
+  <script src="../shared/auth.js" data-login="../login.html" data-require-auth="true"></script>
+  <link rel="stylesheet" href="../shared/custom-objects-menu.css">
+  <link rel="stylesheet" href="../shared/app-toast.css">
+  <script src="../shared/custom-objects-menu.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-nav-bg: #001927;
+      --color-surface: #ffffff;
+      --color-surface-low: #eceeef;
+      --color-border: #d6dbde;
+      --color-border-interactive: #b2bcc1;
+      --color-text-high: #002233;
+      --color-text-low: #405466;
+      --color-text-disabled: #7f8d99;
+      --color-primary-border: #00dbff;
+      --color-primary-text: #0077b2;
+      --color-primary-text-on: #00dbff;
+      --color-primary-inverse: #003d5c;
+      --color-primary-surface-low: #b2f4ff;
+      --color-danger: #e60f57;
+      --radius-xs: 4px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --sp-1: 4px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --font: "DM Sans", sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--color-nav-bg);
+      min-height: 100vh;
+      color: #002233;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-rows: 64px 1fr;
+      grid-template-columns: 64px 1fr;
+      grid-template-areas:
+        "navbar navbar"
+        "sidebar content";
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .navbar {
+      grid-area: navbar;
+      background: var(--color-nav-bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--sp-3);
+      height: 64px;
+      position: relative;
+      z-index: 9600;
+    }
+
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      position: relative;
+    }
+
+    .products-menu { position: relative; }
+
+    .products-menu-trigger {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; cursor: pointer; flex-shrink: 0;
+      background: none; border: none; padding: 0;
+    }
+
+    .products-menu-trigger:hover,
+    .products-menu-trigger.open { background: rgba(255,255,255,0.08); }
+
+    .products-dropdown {
+      position: absolute; top: calc(100% + 8px); left: 0;
+      min-width: 200px; padding: 12px;
+      background: rgba(0, 34, 51, 0.96);
+      box-shadow: 0 12px 24px rgba(0, 34, 51, 0.20);
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+      display: flex; flex-direction: column;
+      opacity: 0; pointer-events: none;
+      transform: translateY(-6px);
+      transition: opacity .15s, transform .15s;
+      z-index: 9700;
+    }
+
+    .products-dropdown.open {
+      opacity: 1; pointer-events: all; transform: translateY(0);
+    }
+
+    .products-dropdown-section {
+      padding: 8px 12px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      line-height: 15.6px;
+    }
+
+    .products-dropdown-item {
+      min-height: 40px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 19.6px;
+      cursor: pointer;
+      display: flex; align-items: center;
+    }
+
+    .products-dropdown-item:hover { background: rgba(255,255,255,0.08); }
+    .products-dropdown-item.active { background: rgba(255,255,255,0.12); }
+
+    .navbar-logo img { height: 32px; }
+
+    .navbar-secondary {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    .navbar-icons {
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar-icon-btn {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .navbar-icon-btn svg { width: 24px; height: 24px; }
+    .navbar-icon-btn:hover { background: rgba(255,255,255,0.08); }
+
+    .badge-dot {
+      position: absolute;
+      top: 4px; right: 4px;
+      width: 8px; height: 8px;
+      background: var(--color-danger);
+      border-radius: 50%;
+    }
+
+    .navbar-divider {
+      width: 1px; height: 32px;
+      background: rgba(255,255,255,0.15);
+      margin: 0 4px;
+    }
+
+    .account-menu {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-2);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .account-menu:hover { background: rgba(255,255,255,0.08); }
+
+    .account-avatar {
+      width: 24px; height: 24px;
+      border-radius: var(--radius-sm);
+      background: #00f2c9;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .account-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .account-name {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+      letter-spacing: -0.14px;
+    }
+
+    .account-menu svg { fill: #fff; width: 20px; height: 20px; }
+
+    .account-dropdown {
+      position: absolute; top: calc(100% + 8px); right: 0;
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+      min-width: 180px; overflow: hidden;
+      opacity: 0; pointer-events: none;
+      transform: translateY(-6px);
+      transition: opacity .15s, transform .15s;
+      z-index: 500;
+    }
+
+    .account-dropdown.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+    .account-dropdown-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; cursor: pointer;
+      font-size: 14px; font-weight: 500; color: #002233;
+      font-family: "DM Sans", sans-serif;
+    }
+
+    .account-dropdown-item:hover { background: #f2f4f6; }
+    .account-dropdown-item svg { width: 18px; height: 18px; fill: #405466; flex-shrink: 0; }
+
+    .sidebar {
+      grid-area: sidebar;
+      background: var(--color-nav-bg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      padding-top: var(--sp-3);
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-3);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .sidebar-item svg,
+    .sidebar-item img {
+      width: 24px; height: 24px;
+    }
+
+    .sidebar-indicator {
+      position: absolute;
+      right: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 6px; height: 40px;
+      background: var(--color-primary-border);
+      border-radius: 4px 0 0 4px;
+    }
+
+    .sidebar-item-inner {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--radius-sm);
+    }
+
+    .content {
+      grid-area: content;
+      background: var(--color-surface);
+      border-top-left-radius: 20px;
+      overflow: hidden;
+      height: 100%;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content-main {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 0 32px 32px;
+    }
+
+    .page-header {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      width: 100%;
+      padding: 40px 0;
+      gap: 12px;
+    }
+
+    .page-header-main {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-width: 0;
+      order: 1;
+    }
+
+    .page-section {
+      margin: 0;
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 20px;
+    }
+
+    .page-title {
+      margin: 0;
+      color: var(--color-text-high);
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 40px;
+      letter-spacing: -0.01em;
+      vertical-align: middle;
+    }
+
+    .page-header-main > .page-title,
+    .page-header-main > .page-aux-text {
+      margin-top: 12px;
+    }
+
+    .page-header-actions {
+      order: 2;
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-end;
+      flex-shrink: 0;
+      min-height: 40px;
+      margin-top: 32px;
+    }
+
+    .btn-primary {
+      height: 40px;
+      padding: 0 16px;
+      background: var(--color-primary-inverse);
+      color: var(--color-primary-text-on);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 24px;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover {
+      background: #005a87;
+      color: #66e9ff;
+    }
+
+    .page-aux-text {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--color-text-low);
+      line-height: 24px;
+      letter-spacing: -0.01em;
+    }
+
+    .search-filters {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .filters-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-input {
+      height: 40px;
+      width: 240px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 4px 0 12px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+    }
+
+    .search-input:hover { border-color: #8c9ba3; }
+
+    .search-input:focus-within {
+      outline: 4px solid rgba(0, 18, 36, 0.16);
+      outline-offset: 0;
+    }
+
+    .search-input-field {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      line-height: 22px;
+      color: var(--color-text-high);
+    }
+
+    .search-input-field::placeholder { color: var(--color-text-low); }
+
+    .search-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border: none;
+      background: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .search-btn:hover { background: var(--color-surface-low); }
+
+    .search-btn img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .btn-text {
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      border: none;
+      background: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      color: var(--color-primary-text);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 24px;
+      white-space: nowrap;
+    }
+
+    .btn-text:hover {
+      color: #005580;
+      background: var(--color-primary-surface-low);
+    }
+
+    .btn-text img {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: clip;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th,
+    tbody td {
+      padding: 16px 0 16px 16px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    thead th:last-child,
+    tbody td:last-child { padding-right: 16px; }
+
+    thead th {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-text-low);
+      line-height: 16px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      border-bottom: 2px solid var(--color-border);
+      background: var(--color-surface);
+    }
+
+    tbody td {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 24px;
+      color: var(--color-text-high);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface);
+    }
+
+    .col-name { width: 22%; }
+    .col-kind { width: 18%; }
+    .col-status { width: 16%; }
+    .col-options { width: 160px; text-align: right; }
+    thead th.col-options { text-align: right; }
+
+    .links-empty { color: var(--color-text-low); }
+
+    .object-name {
+      display: block;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 24px;
+      color: var(--color-text-high);
+    }
+
+    a.object-name {
+      text-decoration: none;
+    }
+
+    .object-name--link { color: var(--color-primary-text); }
+
+    a.object-name--link:hover { color: #005580; }
+
+    .object-tag {
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      padding: 0 8px;
+      border-radius: var(--radius-xs);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 16px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .object-tag--neutral {
+      background: var(--color-surface-low);
+      color: var(--color-text-high);
+    }
+
+    .object-tag--custom {
+      background: #8800f7;
+      color: #fff;
+    }
+
+    .object-tag--active {
+      background: #0ed869;
+      color: var(--color-text-high);
+    }
+
+    .actions-options-btn {
+      height: 40px;
+      padding: 0 16px;
+      border: none;
+      background: var(--color-primary-surface-low);
+      border-radius: var(--radius-md);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-primary-text);
+      line-height: 24px;
+      white-space: nowrap;
+    }
+
+    .actions-options-btn:hover {
+      color: #005580;
+      background: #66ebff;
+    }
+
+    .actions-options-caret {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: block;
+      transition: transform 0.15s;
+    }
+
+    .actions-options-btn[aria-expanded="true"] .actions-options-caret {
+      transform: rotate(180deg);
+    }
+
+    .actions-options-dropdown {
+      position: fixed;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 8px;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 12px rgba(0, 34, 51, 0.14);
+      z-index: 9500;
+      min-width: 180px;
+    }
+
+    .actions-options-dropdown-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .actions-options-dropdown-item:hover { background: var(--color-surface-low); }
+
+    .actions-options-dropdown-item.is-disabled,
+    .actions-options-dropdown-item.is-disabled:hover {
+      background: transparent;
+      cursor: default;
+    }
+
+    .actions-options-dropdown-item.is-disabled .actions-options-dropdown-label {
+      color: var(--color-text-disabled);
+    }
+
+    .actions-options-dropdown-item.is-disabled .actions-options-dropdown-icon svg path {
+      fill: #8c98a3;
+    }
+
+    .actions-options-dropdown-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .actions-options-dropdown-icon svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .actions-options-dropdown-label {
+      flex: 1;
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 24px;
+      letter-spacing: -0.16px;
+    }
+
+    .actions-options-tooltip {
+      position: fixed;
+      z-index: 9600;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: #002233;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      letter-spacing: -0.14px;
+      text-align: center;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .actions-options-tooltip::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: var(--tip-arrow-left, 50%);
+      width: 12px;
+      height: 6px;
+      margin-left: -6px;
+      background: #002233;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+    }
+
+    .actions-options-tooltip.is-below::after {
+      top: auto;
+      bottom: 100%;
+      clip-path: polygon(50% 0, 0 100%, 100% 100%);
+    }
+
+    .object-drawer-root {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+    }
+
+    .object-drawer-root[hidden] { display: none; }
+
+    .object-drawer-backdrop {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      opacity: 0.5;
+    }
+
+    .object-drawer {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 400px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--color-surface);
+      box-shadow: 0 8px 18px rgba(0, 34, 51, 0.16);
+    }
+
+    .object-drawer-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      flex-shrink: 0;
+      padding: 24px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .object-drawer-title {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      padding-top: 4px;
+      color: var(--color-text-high);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+    }
+
+    .object-drawer-close {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 8px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .object-drawer-close:hover { background: var(--color-surface-low); }
+
+    .object-drawer-close img { display: block; flex-shrink: 0; }
+
+    .object-drawer-body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .object-drawer-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .object-drawer-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .object-drawer-field--area { height: 180px; }
+
+    .object-drawer-label {
+      display: flex;
+      gap: 4px;
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .object-drawer-required { color: #c20046; }
+
+    .object-drawer-control {
+      display: flex;
+      align-items: center;
+      height: 40px;
+      padding: 4px 12px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+    }
+
+    .object-drawer-control:hover { border-color: #8c9ba3; }
+
+    .object-drawer-control:focus-within {
+      outline: 4px solid rgba(0, 18, 36, 0.16);
+      outline-offset: 0;
+    }
+
+    .object-drawer-control:has(input[aria-invalid="true"]),
+    .object-drawer-control:has(input[aria-invalid="true"]):hover {
+      border-color: #c20046;
+    }
+
+    .object-drawer-control:has(input[aria-invalid="true"]):focus-within,
+    .object-drawer-control:has(input[aria-invalid="true"]):hover:focus-within {
+      border-color: #8c9ba3;
+    }
+
+    .object-drawer-feedback {
+      margin: 0;
+      color: #c20046;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      letter-spacing: -0.01em;
+    }
+
+    .object-drawer-feedback[hidden] { display: none; }
+
+    .object-drawer-input {
+      width: 100%;
+      min-width: 0;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .object-drawer-input::placeholder { color: var(--color-text-low); }
+
+    .object-drawer-area {
+      position: relative;
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      padding: 4px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+    }
+
+    .object-drawer-area:hover { border-color: #8c9ba3; }
+
+    .object-drawer-area:focus-within {
+      outline: 4px solid rgba(0, 18, 36, 0.16);
+      outline-offset: 0;
+    }
+
+    .object-drawer-textarea {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      padding: 4px 4px 4px 8px;
+      border: none;
+      outline: none;
+      resize: none;
+      background: transparent;
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .object-drawer-textarea::placeholder { color: var(--color-text-low); }
+
+    .object-drawer-corner {
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      display: block;
+      pointer-events: none;
+    }
+
+    .object-drawer-links { position: relative; z-index: 3; }
+
+    .object-drawer-links-trigger {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 40px;
+      padding: 4px 4px 4px 12px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .object-drawer-links-trigger:hover { border-color: #8c9ba3; }
+
+    .object-drawer-links-trigger:focus-visible {
+      outline: 4px solid rgba(0, 18, 36, 0.16);
+      outline-offset: 0;
+    }
+
+    .object-drawer-links-value {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      color: var(--color-text-low);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .object-drawer-links-value.is-selected { color: var(--color-text-high); }
+
+    .object-drawer-caret {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 6px;
+    }
+
+    .object-drawer-caret img {
+      display: block;
+      flex-shrink: 0;
+      transition: transform 0.15s;
+    }
+
+    .object-drawer-links-trigger[aria-expanded="true"] .object-drawer-caret img {
+      transform: rotate(180deg);
+    }
+
+    .object-drawer-hint {
+      margin: 0;
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .object-drawer-links-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      height: 176px;
+      padding: 8px;
+      overflow-y: scroll;
+      scrollbar-gutter: stable;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 12px rgba(0, 34, 51, 0.14);
+    }
+
+    .object-drawer-links-menu::-webkit-scrollbar {
+      width: 16px;
+    }
+
+    .object-drawer-links-menu::-webkit-scrollbar-button {
+      display: none;
+      height: 0;
+    }
+
+    .object-drawer-links-menu::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .object-drawer-links-menu::-webkit-scrollbar-thumb {
+      border: 5px solid transparent;
+      border-radius: 999px;
+      background-clip: padding-box;
+      background-color: var(--color-border-interactive);
+    }
+
+    .object-drawer-links-menu::-webkit-scrollbar-thumb:hover {
+      background-color: #8c9ba3;
+    }
+
+    .object-drawer-links-menu[hidden] { display: none; }
+
+    .object-drawer-links-option {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 40px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .object-drawer-links-option:hover { background: var(--color-surface-low); }
+
+    .object-drawer-links-option:focus-within {
+      outline: 4px solid rgba(0, 18, 36, 0.16);
+      outline-offset: 0;
+    }
+
+    .object-drawer-checkbox {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .object-drawer-checkbox-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-xs);
+      background: var(--color-surface);
+    }
+
+    .object-drawer-checkbox-box svg { display: none; fill: var(--color-text-high); }
+
+    .object-drawer-links-option:hover .object-drawer-checkbox-box {
+      border-color: #8c9ba3;
+    }
+
+    .object-drawer-checkbox:checked + .object-drawer-checkbox-box,
+    .object-drawer-links-option:hover .object-drawer-checkbox:checked + .object-drawer-checkbox-box {
+      border-color: var(--color-primary-border);
+      background: var(--color-primary-border);
+    }
+
+    .object-drawer-checkbox:checked + .object-drawer-checkbox-box svg { display: block; }
+
+    .delete-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 11000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 34, 51, 0.4);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s;
+    }
+
+    .delete-modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .delete-modal {
+      width: 100%;
+      max-width: 560px;
+      background: var(--color-surface);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 12px 24px rgba(0, 34, 51, 0.2);
+      font-family: var(--font);
+    }
+
+    .delete-modal-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 16px;
+    }
+
+    .delete-modal-title {
+      flex: 1;
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.28px;
+      color: var(--color-text-high);
+    }
+
+    .delete-modal-close {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 8px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--color-text-low);
+      cursor: pointer;
+    }
+
+    .delete-modal-close:hover { background: var(--color-surface-low); }
+
+    .delete-modal-close svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    .delete-modal-body {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-high);
+    }
+
+    .delete-modal-body p { margin: 0; }
+
+    .delete-modal-confirm {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding-top: 24px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .delete-modal-check {
+      position: relative;
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      margin-top: 3px;
+    }
+
+    .delete-modal-check .object-drawer-checkbox { inset: 0; }
+
+    .delete-modal-confirm-text {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-high);
+    }
+
+    .delete-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      padding-top: 24px;
+    }
+
+    .delete-modal-btn {
+      height: 40px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .delete-modal-btn-cancel {
+      background: transparent;
+      color: var(--color-primary-text);
+    }
+
+    .delete-modal-btn-cancel:hover { background: var(--color-surface-low); }
+
+    .delete-modal-btn-permanent {
+      background: #edeff1;
+      color: var(--color-text-disabled);
+      cursor: not-allowed;
+    }
+
+    .delete-modal-btn-permanent:not(:disabled) {
+      background: #e60f57;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .delete-modal-btn-permanent:not(:disabled):hover { background: #c90d4a; }
+
+    .object-drawer-checkbox-text {
+      flex: 1;
+      min-width: 0;
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 24px;
+      letter-spacing: -0.01em;
+    }
+
+    .object-drawer-footer {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: flex-end;
+      flex-shrink: 0;
+      padding: 24px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .object-drawer-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .object-drawer-cancel,
+    .object-drawer-save {
+      height: 40px;
+      padding: 0 16px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+    }
+
+    .object-drawer-cancel {
+      background: var(--color-primary-surface-low);
+      color: var(--color-primary-text);
+    }
+
+    .object-drawer-cancel:hover {
+      background: #66ebff;
+      color: #005580;
+    }
+
+    .object-drawer-save {
+      background: var(--color-primary-inverse);
+      color: var(--color-primary-text-on);
+    }
+
+    .object-drawer-save:hover {
+      background: #005a87;
+      color: #66e9ff;
+    }
+
+    .objects-empty {
+      text-align: center;
+      color: var(--color-text-low);
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--sp-4);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .pagination-summary {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-1);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-low);
+      letter-spacing: -0.14px;
+    }
+
+    .pagination-select {
+      height: 40px;
+      width: 70px;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-1);
+      padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-3);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--color-text-low);
+      font-family: var(--font);
+      letter-spacing: -0.16px;
+    }
+
+    .pagination-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .page-btn {
+      height: 40px;
+      padding: var(--sp-2) var(--sp-4);
+      border: none;
+      background: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.16px;
+      color: var(--color-text-disabled);
+      font-family: var(--font);
+      white-space: nowrap;
+    }
+
+    .page-btn.active,
+    .page-btn:not(.disabled):hover {
+      color: var(--color-primary-text);
+      background: var(--color-primary-surface-low);
+    }
+
+    .page-btn.disabled { pointer-events: none; }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <img src="../shared/logos/logo-rdvendas.svg" width="162" height="32" alt="RD Vendas" style="flex-shrink:0;">
+      <div class="products-menu" id="products-menu" data-current-product="vendas" data-page="custom-objects" data-base="../">
+        <button type="button" class="products-menu-trigger" id="products-menu-trigger" aria-expanded="false" aria-haspopup="true" aria-label="Trocar produto">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.61138 13.4077L5.16098 8.95728C4.94634 8.74264 4.94634 8.39466 5.16098 8.18004L5.68005 7.66097C5.89432 7.4467 6.24159 7.44629 6.45637 7.66006L10 11.1871L13.5436 7.66006C13.7584 7.44629 14.1057 7.4467 14.32 7.66097L14.839 8.18004C15.0537 8.39468 15.0537 8.74267 14.839 8.95728L10.3886 13.4077C10.174 13.6223 9.82602 13.6223 9.61138 13.4077Z" fill="white"/></svg>
+        </button>
+        <div class="products-dropdown" id="products-dropdown" role="menu">
+          <div class="products-dropdown-section">Produtos</div>
+          <div class="products-dropdown-item" data-product-id="vendas" role="menuitem">RD Vendas</div>
+          <div class="products-dropdown-item" data-product-id="marketing" role="menuitem">RD Marketing</div>
+          <div class="products-dropdown-item" data-product-id="conversas" role="menuitem">RD Atendimento</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navbar-secondary">
+      <div class="navbar-icons">
+        <!-- RD Station -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_382_2076)"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 0C12 6.62741 17.3726 12 24 12C17.3726 12 12 17.3726 12 24C12 17.3726 6.62744 12 0 12C6.62744 12 12 6.62741 12 0ZM12 5.80645C12 8.36104 8.33148 12 5.71429 12C8.33148 12 12 15.639 12 18.1935C12 15.639 15.6685 12 18.2857 12C15.6685 12 12 8.36104 12 5.80645Z" fill="white"/><path d="M2.28564 13.9852C2.89332 14.1253 3.47973 14.3209 4.03974 14.5659V15.6002L4.04234 15.7378C4.09244 17.0507 4.89237 18.2342 6.12642 18.8039L9.46273 20.344C9.70706 21.0151 9.88155 21.7196 9.97873 22.4488C9.93125 22.4304 9.88404 22.4111 9.83698 22.3914L9.69376 22.329L9.66474 22.3158L9.66176 22.3142L5.37009 20.333C3.54463 19.4903 2.36197 17.739 2.28936 15.7964L2.28899 15.785V15.7737L2.28602 15.6278L2.28564 15.6183V13.9852Z" fill="#00DBFF"/><path d="M21.7142 15.6066C21.7142 17.6243 20.5144 19.463 18.6298 20.333L14.3381 22.3142C14.2334 22.3626 14.1273 22.407 14.0204 22.4484C14.1176 21.7195 14.2922 21.0152 14.5364 20.3444L17.8734 18.8039C19.1485 18.2153 19.9601 16.9714 19.9601 15.6066V14.5659C20.5201 14.3209 21.1065 14.1253 21.7142 13.9852V15.6066Z" fill="#00DBFF"/><path d="M9.91585 1.55127C9.78336 2.30526 9.56674 3.03008 9.27672 3.71621L6.12642 5.17085C4.85136 5.75945 4.03975 7.00333 4.03974 8.36818V9.02141C3.47972 9.26639 2.89333 9.46203 2.28564 9.60205V8.36818C2.28566 6.35048 3.48547 4.5118 5.37009 3.64174L9.66176 1.66052L9.66474 1.65901L9.69376 1.64578L9.69487 1.6454L9.69636 1.64464C9.76892 1.61175 9.84221 1.58089 9.91585 1.55127Z" fill="#00DBFF"/><path d="M14.3039 1.64502L14.3381 1.66052L18.6298 3.64174C20.5144 4.51181 21.7142 6.35049 21.7142 8.36818V9.60205C21.1065 9.46202 20.5201 9.2664 19.9601 9.02141V8.36818C19.9601 7.01398 19.1611 5.77896 17.9032 5.18484L17.8734 5.17085L14.722 3.71584C14.4322 3.02992 14.2165 2.305 14.084 1.55127C14.1578 1.58093 14.2312 1.61207 14.3039 1.64502Z" fill="#00DBFF"/></g><defs><clipPath id="clip0_382_2076"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
+        </div>
+        <!-- Apps -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 15V19H9V15H5ZM3 15C3 13.9353 3.93527 13 5 13H9C10.0647 13 11 13.9353 11 15V19C11 20.0647 10.0647 21 9 21H5C3.93527 21 3 20.0647 3 19V15ZM19 5H15V9H19V5ZM15 3H19C20.0647 3 21 3.93527 21 5V9C21 10.0647 20.0647 11 19 11H15C13.9353 11 13 10.0647 13 9V5C13 3.93527 13.9353 3 15 3ZM15 15V19H19V15H15ZM13 15C13 13.9353 13.9353 13 15 13H19C20.0647 13 21 13.9353 21 15V19C21 20.0647 20.0647 21 19 21H15C13.9353 21 13 20.0647 13 19V15Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9 3C10.0647 3 11 3.93527 11 5V9C11 10.0647 10.0647 11 9 11H5C3.93527 11 3 10.0647 3 9V5C3 3.93527 3.93527 3 5 3H9ZM5 5V9H9V5H5Z" fill="#00DBFF"/></svg>
+        </div>
+        <!-- Notificações -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.9999 3.25C12.5976 3.25 13.1249 3.77734 13.1249 4.375V5.07812C15.6913 5.57031 17.6249 7.85547 17.6249 10.5625V11.4766C17.6249 13.0586 18.1522 14.6055 19.1366 15.8711L19.664 16.5039C19.8749 16.7852 19.9101 17.1367 19.7694 17.418C19.6288 17.6992 19.3476 17.875 19.0312 17.875H4.96865C4.61709 17.875 4.33584 17.6992 4.19521 17.418C4.05459 17.1367 4.08975 16.7852 4.30068 16.5039L4.82803 15.8711C5.8124 14.6055 6.3749 13.0586 6.3749 11.4766V10.5625C6.3749 7.85547 8.3085 5.57031 10.8749 5.07812V4.375C10.8749 3.77734 11.3671 3.25 11.9999 3.25ZM11.9999 6.625C9.82021 6.625 8.0624 8.41797 8.0624 10.5625V11.4766C8.0624 13.1641 7.57021 14.7812 6.65615 16.1875H17.3085C16.3944 14.7812 15.9374 13.1641 15.9374 11.4766V10.5625C15.9374 8.41797 14.1444 6.625 11.9999 6.625Z" fill="white"/><path d="M13.582 20.6172C14.0039 20.1953 14.25 19.5977 14.25 19H12H9.75C9.75 19.5977 9.96094 20.1953 10.3828 20.6172C10.8047 21.0391 11.4023 21.25 12 21.25C12.5977 21.25 13.1602 21.0391 13.582 20.6172Z" fill="#00DBFF"/></svg>
+          <div class="badge-dot"></div>
+        </div>
+        <!-- Configurações -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.25C12.5977 3.25 13.1602 3.32031 13.7227 3.42578C14.0039 3.49609 14.4961 3.63672 14.7773 4.12891C14.8477 4.26953 14.8828 4.41016 14.918 4.55078L15.2695 5.92188C15.3047 6.09766 15.6562 6.30859 15.8672 6.23828L17.2031 5.85156C17.3438 5.81641 17.4844 5.78125 17.625 5.78125C18.1875 5.78125 18.5742 6.13281 18.75 6.34375C19.5234 7.22266 20.1211 8.24219 20.5078 9.36719C20.6133 9.64844 20.7188 10.1406 20.4023 10.5977C20.332 10.7383 20.2266 10.8438 20.1211 10.9492L19.1367 11.9336C18.9609 12.0742 18.9609 12.4609 19.1367 12.6016L20.1211 13.5859C20.2266 13.6914 20.332 13.7969 20.4023 13.9375C20.6836 14.3945 20.5781 14.8867 20.5078 15.168C20.1211 16.293 19.5234 17.3125 18.75 18.1914C18.5742 18.4023 18.1875 18.7539 17.625 18.7539C17.4844 18.7539 17.3438 18.7188 17.2031 18.6836L15.8672 18.2617C15.6562 18.2266 15.3047 18.4023 15.2695 18.6133L14.918 19.9844C14.8828 20.125 14.8477 20.2656 14.7773 20.4062C14.4961 20.8984 14.0039 21.0391 13.7227 21.1094C13.1602 21.2148 12.5977 21.25 12 21.25C11.4023 21.25 10.8047 21.2148 10.2422 21.1094C9.96094 21.0391 9.46875 20.8984 9.1875 20.4062C9.11719 20.2656 9.08203 20.125 9.04688 19.9844L8.69531 18.6133C8.66016 18.4023 8.30859 18.2266 8.13281 18.2617L6.79688 18.6836C6.65625 18.7188 6.48047 18.7188 6.33984 18.7539C5.77734 18.7539 5.39062 18.4023 5.21484 18.1914C4.44141 17.3125 3.84375 16.293 3.45703 15.168C3.38672 14.8867 3.28125 14.3945 3.5625 13.9023C3.63281 13.7969 3.73828 13.6562 3.84375 13.5508L4.86328 12.6016C5.00391 12.4609 5.00391 12.0742 4.86328 11.9336L3.84375 10.9492C3.73828 10.8438 3.63281 10.7383 3.5625 10.5977C3.28125 10.1406 3.38672 9.64844 3.45703 9.36719C3.84375 8.24219 4.44141 7.22266 5.21484 6.34375C5.39062 6.13281 5.77734 5.78125 6.33984 5.78125C6.48047 5.78125 6.65625 5.81641 6.79688 5.85156L8.13281 6.23828C8.30859 6.30859 8.66016 6.09766 8.69531 5.92188L9.04688 4.55078C9.08203 4.41016 9.11719 4.26953 9.1875 4.12891C9.46875 3.63672 9.96094 3.49609 10.2422 3.42578C10.8047 3.32031 11.4023 3.25 12 3.25ZM10.6641 5.07812L10.3477 6.30859C10.0664 7.43359 8.76562 8.20703 7.64062 7.89062L6.41016 7.50391C5.84766 8.20703 5.39062 8.98047 5.07422 9.82422L6.02344 10.7031C6.86719 11.5117 6.86719 13.0234 6.02344 13.832L5.07422 14.7109C5.39062 15.5547 5.84766 16.3281 6.41016 17.0312L7.64062 16.6445C8.76562 16.3281 10.0664 17.1016 10.3477 18.2266L10.6641 19.457C11.5078 19.6328 12.457 19.6328 13.3359 19.457L13.6172 18.2266C13.8984 17.1016 15.1992 16.3281 16.3242 16.6445L17.5547 17.0312C18.1172 16.3281 18.5742 15.5547 18.8906 14.7109L17.9766 13.832C17.1328 13.0234 17.1328 11.5117 17.9766 10.7031L18.8906 9.82422C18.5742 8.98047 18.1172 8.20703 17.5547 7.50391L16.3242 7.89062C15.2344 8.20703 13.8984 7.43359 13.6172 6.30859L13.3359 5.07812C12.457 4.90234 11.5078 4.90234 10.6641 5.07812Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M12 8.875C13.1953 8.875 14.2852 9.54297 14.918 10.5625C15.5156 11.6172 15.5156 12.918 14.918 13.9375C14.2852 14.9922 13.1953 15.625 12 15.625C10.7695 15.625 9.67969 14.9922 9.04688 13.9375C8.44922 12.918 8.44922 11.6172 9.04688 10.5625C9.67969 9.54297 10.7695 8.875 12 8.875ZM12.8438 10.8086C12.3164 10.4922 11.6484 10.4922 11.1562 10.8086C10.6289 11.125 10.3125 11.6523 10.3125 12.25C10.3125 12.8828 10.6289 13.4102 11.1562 13.7266C11.6484 14.043 12.3164 14.043 12.8438 13.7266C13.3359 13.4102 13.6875 12.8828 13.6875 12.25C13.6875 11.6523 13.3359 11.125 12.8438 10.8086Z" fill="#00DBFF"/></svg>
+        </div>
+      </div>
+
+      <div class="navbar-divider"></div>
+
+      <div class="account-menu" id="account-menu">
+        <div class="account-avatar">
+          <img src="../contatos/avatar-navbar.png" alt="Avatar">
+        </div>
+        <span class="account-name" id="account-name">Agência RD</span>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.61138 13.4077L5.16098 8.95728C4.94634 8.74264 4.94634 8.39466 5.16098 8.18004L5.68005 7.66097C5.89432 7.4467 6.24159 7.44629 6.45637 7.66006L10 11.1871L13.5436 7.66006C13.7584 7.44629 14.1057 7.4467 14.32 7.66097L14.839 8.18004C15.0537 8.39468 15.0537 8.74267 14.839 8.95728L10.3886 13.4077C10.174 13.6223 9.82602 13.6223 9.61138 13.4077Z" fill="white"/></svg>
+        <div class="account-dropdown" id="account-dropdown">
+          <div class="account-dropdown-item" id="logout-btn">
+            <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            Sair
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <aside class="sidebar">
+    <!-- Home -->
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5399 3.19791C12.2274 2.93403 11.7726 2.93403 11.4601 3.19791L2.29359 10.9755C1.9429 11.2741 1.90124 11.7984 2.19637 12.1491C2.4915 12.4998 3.01927 12.5415 3.36996 12.2464L4.22411 11.5241V17.9997C4.22411 19.5344 5.46714 20.7774 7.00183 20.7774H17.0016C18.5363 20.7774 19.7794 19.5344 19.7794 17.9997V11.5241L20.63 12.2464C20.9807 12.545 21.5085 12.4998 21.8036 12.1491C22.0988 11.7984 22.0571 11.2707 21.7064 10.9755L12.5399 3.19791ZM5.89074 17.9997V10.111L12.0017 4.92705L18.1127 10.111V17.9997C18.1127 18.6143 17.6162 19.1108 17.0016 19.1108H15.335V13.8331C15.335 13.0658 14.7135 12.4443 13.9461 12.4443H10.0573C9.28998 12.4443 8.66847 13.0658 8.66847 13.8331V19.1108H7.00183C6.38726 19.1108 5.89074 18.6143 5.89074 17.9997ZM10.3351 19.1108V14.1109H13.6684V19.1108H10.3351Z" fill="white"/><path d="M15.335 13.8332V19.1109H13.6684V14.111H10.3351V19.1109H8.66846V13.8332C8.66846 13.0659 9.28997 12.4443 10.0573 12.4443H13.9461C14.7135 12.4443 15.335 13.0659 15.335 13.8332Z" fill="#00DBFF"/></svg>
+      </div>
+    </div>
+    <!-- Contatos -->
+    <a href="../contatos/index.html" style="display:contents; text-decoration:none;">
+      <div class="sidebar-item">
+        <div class="sidebar-item-inner">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.375 3.25H16.5C17.7305 3.25 18.75 4.26953 18.75 5.5V19C18.75 20.2656 17.7305 21.25 16.5 21.25H6.375C5.10938 21.25 4.125 20.2656 4.125 19V5.5C4.125 4.26953 5.10938 3.25 6.375 3.25ZM10.3125 13.375C8.73047 13.375 7.5 14.6406 7.5 16.1875C7.5 16.5039 7.74609 16.75 8.0625 16.75H14.8125C15.0938 16.75 15.375 16.5039 15.375 16.1875C15.375 14.6406 14.1094 13.375 12.5625 13.375H10.3125ZM9.1875 10C9.1875 10.8086 9.60938 11.5469 10.3125 11.9688C10.9805 12.3555 11.8594 12.3555 12.5625 11.9688C13.2305 11.5469 13.6875 10.8086 13.6875 10C13.6875 9.22656 13.2305 8.48828 12.5625 8.06641C11.8594 7.67969 10.9805 7.67969 10.3125 8.06641C9.60938 8.48828 9.1875 9.22656 9.1875 10ZM21 6.0625V8.3125C21 8.62891 20.7188 8.875 20.4375 8.875C20.1211 8.875 19.875 8.62891 19.875 8.3125V6.0625C19.875 5.78125 20.1211 5.5 20.4375 5.5C20.7188 5.5 21 5.78125 21 6.0625ZM20.4375 10C20.7188 10 21 10.2812 21 10.5625V12.8125C21 13.1289 20.7188 13.375 20.4375 13.375C20.1211 13.375 19.875 13.1289 19.875 12.8125V10.5625C19.875 10.2812 20.1211 10 20.4375 10ZM21 15.0625V17.3125C21 17.6289 20.7188 17.875 20.4375 17.875C20.1211 17.875 19.875 17.6289 19.875 17.3125V15.0625C19.875 14.7812 20.1211 14.5 20.4375 14.5C20.7188 14.5 21 14.7812 21 15.0625Z" fill="#00DBFF"/></svg>
+        </div>
+      </div>
+    </a>
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <img src="../perfil/icons/hands.svg" width="24" height="24" alt="" aria-hidden="true">
+      </div>
+    </div>
+    <!-- Atrair -->
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <img src="../perfil/icons/predio.svg" width="24" height="24" alt="" aria-hidden="true">
+      </div>
+    </div>
+    <!-- Converter -->
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <img src="../perfil/icons/tasks.svg" width="24" height="24" alt="" aria-hidden="true">
+      </div>
+    </div>
+    <!-- Analisar -->
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.0312 18.4375V12.8125C10.0312 12.6719 9.89062 12.5312 9.75 12.5312C9.57422 12.5312 9.46875 12.6719 9.46875 12.8125V18.4375C9.46875 18.6133 9.57422 18.7188 9.75 18.7188C9.89062 18.7188 10.0312 18.6133 10.0312 18.4375ZM9.75 11.125C10.6641 11.125 11.4375 11.8984 11.4375 12.8125V18.4375C11.4375 19.3867 10.6641 20.125 9.75 20.125C8.80078 20.125 8.0625 19.3867 8.0625 18.4375V12.8125C8.0625 11.8984 8.80078 11.125 9.75 11.125ZM5.53125 18.4375V16.1875C5.53125 16.0469 5.39062 15.9062 5.25 15.9062C5.07422 15.9062 4.96875 16.0469 4.96875 16.1875V18.4375C4.96875 18.6133 5.07422 18.7188 5.25 18.7188C5.39062 18.7188 5.53125 18.6133 5.53125 18.4375ZM5.25 14.5C6.16406 14.5 6.9375 15.2734 6.9375 16.1875V18.4375C6.9375 19.3867 6.16406 20.125 5.25 20.125C4.30078 20.125 3.5625 19.3867 3.5625 18.4375V16.1875C3.5625 15.2734 4.30078 14.5 5.25 14.5ZM14.5312 15.0625C14.5312 14.9219 14.3906 14.7812 14.25 14.7812C14.0742 14.7812 13.9688 14.9219 13.9688 15.0625V18.4375C13.9688 18.6133 14.0742 18.7188 14.25 18.7188C14.3906 18.7188 14.5312 18.6133 14.5312 18.4375V15.0625ZM12.5625 15.0625C12.5625 14.1484 13.3008 13.375 14.25 13.375C15.1641 13.375 15.9375 14.1484 15.9375 15.0625V18.4375C15.9375 19.3867 15.1641 20.125 14.25 20.125C13.3008 20.125 12.5625 19.3867 12.5625 18.4375V15.0625ZM19.0312 18.4375V12.8125C19.0312 12.6719 18.8906 12.5312 18.75 12.5312C18.5742 12.5312 18.4688 12.6719 18.4688 12.8125V18.4375C18.4688 18.6133 18.5742 18.7188 18.75 18.7188C18.8906 18.7188 19.0312 18.6133 19.0312 18.4375ZM18.75 11.125C19.6641 11.125 20.4375 11.8984 20.4375 12.8125V18.4375C20.4375 19.3867 19.6641 20.125 18.75 20.125C17.8008 20.125 17.0625 19.3867 17.0625 18.4375V12.8125C17.0625 11.8984 17.8008 11.125 18.75 11.125Z" fill="white"/><path d="M14.7773 10.9492L20.6836 5.88672C21.0351 5.57031 21.0703 5.04297 20.789 4.69141C20.4726 4.33984 19.9453 4.30469 19.5937 4.58594L14.25 9.19141L10.2773 5.71094C9.99606 5.46484 9.57418 5.42969 9.25778 5.64062L3.35153 9.57812C2.96481 9.85938 2.85934 10.3867 3.14059 10.7734C3.38668 11.1602 3.91403 11.2656 4.30075 10.9844L9.67965 7.43359L13.6875 10.9492C14.0039 11.1953 14.4609 11.1953 14.7773 10.9492Z" fill="#00DBFF"/></svg>
+      </div>
+    </div>
+    <!-- Objetos personalizados -->
+    <div class="sidebar-item sidebar-objects active" aria-current="page" aria-label="Objetos personalizados" aria-haspopup="true">
+      <div class="sidebar-item-inner">
+        <img src="../shared/svg/custom-objects.svg" width="24" height="24" alt="" aria-hidden="true">
+      </div>
+        <div class="sidebar-indicator"></div>
+      <div class="objects-flyout" role="menu" aria-label="Objetos personalizados">
+        <div class="objects-flyout-section">Objetos personalizados</div>
+        <a class="objects-flyout-item" href="Alunos/">Alunos</a>
+        <a class="objects-flyout-item" href="Contratos/">Contratos</a>
+        <div class="objects-flyout-divider" aria-hidden="true"></div>
+        <a class="objects-flyout-item objects-flyout-create" href="../custom-objects/">
+          Gerenciar Objetos
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="content-main">
+      <header class="page-header">
+        <div class="page-header-main">
+          <p class="page-section" role="doc-subtitle">Configurações</p>
+          <h1 class="page-title">Objetos Personalizados</h1>
+          <p class="page-aux-text">Com os objetos personalizados, você pode criar novos grupos de dados, personalizando seus campos e vínculos no RD Station CRM.</p>
+        </div>
+        <div class="page-header-actions">
+          <button type="button" class="btn-primary" id="create-object-btn">Criar objeto personalizado</button>
+        </div>
+      </header>
+
+      <div class="search-filters">
+        <div class="filters-left">
+          <div class="search-input">
+            <input class="search-input-field" id="objects-search" type="search" placeholder="Buscar" autocomplete="off">
+            <button type="button" class="search-btn" id="objects-search-btn" aria-label="Buscar">
+              <img src="icons/loupe.svg" width="20" height="20" alt="">
+            </button>
+          </div>
+          <button type="button" class="btn-text">
+            <img src="icons/funnel-alt.svg" width="24" height="24" alt="">
+            Filtros
+          </button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-name">Nome do objeto</th>
+              <th class="col-kind">Tipo</th>
+              <th class="col-status">Status</th>
+              <th class="col-links">Vínculos</th>
+              <th class="col-options">Opções</th>
+            </tr>
+          </thead>
+          <tbody id="objects-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <div class="pagination-summary">
+          <span>Exibindo</span>
+          <select id="page-size-select" class="pagination-select" aria-label="Objetos por página" style="appearance:none;-webkit-appearance:none;cursor:pointer;">
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+          <span>de</span>
+          <span id="total-count">5</span>
+          <span>objetos</span>
+        </div>
+        <div class="pagination-nav" id="pagination-nav"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="object-drawer-root" id="create-object-drawer" hidden>
+  <div class="object-drawer-backdrop" data-drawer-dismiss></div>
+  <aside class="object-drawer" role="dialog" aria-modal="true" aria-labelledby="create-object-title">
+    <header class="object-drawer-header">
+      <h2 class="object-drawer-title" id="create-object-title">Criar objeto personalizado</h2>
+      <button type="button" class="object-drawer-close" data-drawer-dismiss aria-label="Fechar">
+        <img src="icons/drawer-times.svg" alt="">
+      </button>
+    </header>
+    <div class="object-drawer-body">
+      <form class="object-drawer-form" id="create-object-form" novalidate>
+        <div class="object-drawer-field">
+          <label class="object-drawer-label" for="object-name">Nome do objeto <span class="object-drawer-required">*</span></label>
+          <div class="object-drawer-control">
+            <input class="object-drawer-input" id="object-name" name="name" type="text" placeholder="Nome do objeto" aria-required="true" aria-describedby="object-name-error">
+          </div>
+          <span class="object-drawer-feedback" id="object-name-error" hidden>O nome do objeto é obrigatório.</span>
+        </div>
+        <div class="object-drawer-field">
+          <label class="object-drawer-label" for="object-name-plural">Nome do objeto no plural <span class="object-drawer-required">*</span></label>
+          <div class="object-drawer-control">
+            <input class="object-drawer-input" id="object-name-plural" name="plural" type="text" placeholder="Nome do objeto no plural" aria-required="true" aria-describedby="object-name-plural-error">
+          </div>
+          <span class="object-drawer-feedback" id="object-name-plural-error" hidden>O nome do objeto no plural é obrigatório.</span>
+        </div>
+        <div class="object-drawer-field object-drawer-field--area">
+          <label class="object-drawer-label" for="object-description">Descrição do objeto</label>
+          <div class="object-drawer-area">
+            <textarea class="object-drawer-textarea" id="object-description" name="description" placeholder="Descreva seu objeto"></textarea>
+            <img class="object-drawer-corner" src="icons/drawer-corner.svg" alt="">
+          </div>
+        </div>
+      </form>
+    </div>
+    <footer class="object-drawer-footer">
+      <div class="object-drawer-actions">
+        <button type="button" class="object-drawer-cancel" data-drawer-dismiss>Cancelar</button>
+        <button type="submit" class="object-drawer-save" form="create-object-form">Criar</button>
+      </div>
+    </footer>
+  </aside>
+</div>
+
+<div class="delete-modal-overlay" id="delete-object-modal" aria-hidden="true">
+  <div class="delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-object-title">
+    <div class="delete-modal-header">
+      <h2 class="delete-modal-title" id="delete-object-title">Excluir objeto</h2>
+      <button type="button" class="delete-modal-close" id="delete-object-close" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.2745 12L17.686 8.58852C18.1047 8.16989 18.1047 7.49114 17.686 7.07216L16.9278 6.31398C16.5092 5.89534 15.8305 5.89534 15.4115 6.31398L12 9.72545L8.58852 6.31398C8.16989 5.89534 7.49114 5.89534 7.07216 6.31398L6.31398 7.07216C5.89534 7.4908 5.89534 8.16955 6.31398 8.58852L9.72545 12L6.31398 15.4115C5.89534 15.8301 5.89534 16.5089 6.31398 16.9278L7.07216 17.686C7.4908 18.1047 8.16989 18.1047 8.58852 17.686L12 14.2745L15.4115 17.686C15.8301 18.1047 16.5092 18.1047 16.9278 17.686L17.686 16.9278C18.1047 16.5092 18.1047 15.8305 17.686 15.4115L14.2745 12Z"/></svg>
+      </button>
+    </div>
+    <div class="delete-modal-body">
+      <p id="delete-object-message">Ao excluir definitivamente este objeto, os campos e os registros não poderão mais ser recuperados.</p>
+    </div>
+    <label class="delete-modal-confirm" for="delete-object-confirm">
+      <span class="delete-modal-check">
+        <input class="object-drawer-checkbox" type="checkbox" id="delete-object-confirm">
+        <span class="object-drawer-checkbox-box"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1136 18.1592L3.26359 12.3092C2.91214 11.9577 2.91214 11.3879 3.26359 11.0364L4.53636 9.7636C4.88781 9.4121 5.4577 9.4121 5.80915 9.7636L9.75 13.7044L18.1908 5.26359C18.5423 4.91214 19.1122 4.91214 19.4636 5.26359L20.7364 6.53639C21.0879 6.88785 21.0879 7.4577 20.7364 7.80919L10.3864 18.1592C10.0349 18.5107 9.46506 18.5107 9.1136 18.1592Z"/></svg></span>
+      </span>
+      <span class="delete-modal-confirm-text">Entendi que excluir definitivamente é uma ação irreversível.</span>
+    </label>
+    <div class="delete-modal-footer">
+      <button type="button" class="delete-modal-btn delete-modal-btn-cancel" id="delete-object-cancel">Cancelar</button>
+      <button type="button" class="delete-modal-btn delete-modal-btn-permanent" id="delete-object-permanent" disabled>Excluir definitivamente</button>
+    </div>
+  </div>
+</div>
+<script src="../shared/custom-objects-db.js"></script>
+<script>
+  (function () {
+    let OBJECTS = [
+      { name: 'Negociação', kind: 'padrao', status: 'ativo', links: 'Empresa, Contato, Alunos, Contratos' },
+      { name: 'Empresa', kind: 'padrao', status: 'ativo', links: 'Negociação, Contato, Alunos, Contratos' },
+      { name: 'Contato', kind: 'padrao', status: 'ativo', links: 'Negociação, Empresa, Alunos, Contratos' },
+      { name: 'Alunos', kind: 'personalizado', status: 'desativado', links: 'Negociação, Contato', singular: 'Aluno', description: 'Informações gerais dos alunos da escola.' },
+      { name: 'Contratos', kind: 'personalizado', status: 'ativo', links: 'Negociação', singular: 'Contrato', description: 'Informações gerais dos contratos.' }
+    ];
+    window.__customObjects = OBJECTS;
+    const MIN_PAGE_SIZE = 10;
+
+    const searchInput = document.getElementById('objects-search');
+    const pageSizeSelect = document.getElementById('page-size-select');
+    const tbody = document.getElementById('objects-tbody');
+    const totalCountEl = document.getElementById('total-count');
+    const paginationNav = document.getElementById('pagination-nav');
+    let currentPage = 1;
+
+    function pageSize() {
+      return Math.max(MIN_PAGE_SIZE, parseInt(pageSizeSelect.value, 10) || MIN_PAGE_SIZE);
+    }
+
+    function filteredObjects() {
+      const query = searchInput.value.trim().toLocaleLowerCase('pt-BR');
+      if (!query) return OBJECTS;
+      return OBJECTS.filter(item =>
+        item.name.toLocaleLowerCase('pt-BR').includes(query) ||
+        item.links.toLocaleLowerCase('pt-BR').includes(query)
+      );
+    }
+
+    function tag(label, variant) {
+      return `<span class="object-tag object-tag--${variant}">${label}</span>`;
+    }
+
+    function renderRows(rows) {
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td class="objects-empty" colspan="5">Nenhum objeto encontrado</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = rows.map(row => {
+        const kindTag = row.kind === 'personalizado' ? tag('Personalizado', 'custom') : tag('Padrão', 'neutral');
+        const statusTag = row.status === 'ativo' ? tag('Ativo', 'active') : tag('Desativado', 'neutral');
+        const fieldsHref = 'objeto/fields/?objeto=' + encodeURIComponent(row.name);
+        const links = (row.links || '').trim();
+        const linksCell = links
+          ? links
+          : '<span class="links-empty">Não possui vínculos</span>';
+        return `<tr>
+          <td class="col-name"><a class="object-name object-name--link" href="${fieldsHref}">${row.name}</a></td>
+          <td class="col-kind">${kindTag}</td>
+          <td class="col-status">${statusTag}</td>
+          <td class="col-links">${linksCell}</td>
+          <td class="col-options">
+            <button type="button" class="actions-options-btn" data-kind="${row.kind}" data-status="${row.status}" data-object="${row.name}" aria-haspopup="menu" aria-expanded="false">
+              Opções
+              <svg class="actions-options-caret" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5z" fill="currentColor"/></svg>
+            </button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderPagination(totalPages) {
+      const buttons = [];
+      buttons.push(`<button type="button" class="page-btn${currentPage === 1 ? ' disabled' : ''}" data-page="${currentPage - 1}">Anterior</button>`);
+
+      if (totalPages <= 1) {
+        buttons.push('<button type="button" class="page-btn active" data-page="1">1</button>');
+      } else {
+        let start = Math.max(1, currentPage - 2);
+        let end = Math.min(totalPages, currentPage + 2);
+        if (start > 1) {
+          buttons.push('<button type="button" class="page-btn" data-page="1">1</button>');
+          if (start > 2) buttons.push('<button type="button" class="page-btn disabled">...</button>');
+        }
+        for (let page = start; page <= end; page += 1) {
+          buttons.push(`<button type="button" class="page-btn${page === currentPage ? ' active' : ''}" data-page="${page}">${page}</button>`);
+        }
+        if (end < totalPages) {
+          if (end < totalPages - 1) buttons.push('<button type="button" class="page-btn disabled">...</button>');
+          buttons.push(`<button type="button" class="page-btn" data-page="${totalPages}">${totalPages}</button>`);
+        }
+      }
+
+      buttons.push(`<button type="button" class="page-btn${currentPage === totalPages ? ' disabled' : ''}" data-page="${currentPage + 1}">Próxima</button>`);
+      paginationNav.innerHTML = buttons.join('');
+      paginationNav.querySelectorAll('.page-btn[data-page]').forEach(button => {
+        if (button.classList.contains('disabled') || button.classList.contains('active')) return;
+        button.addEventListener('click', () => {
+          currentPage = parseInt(button.dataset.page, 10);
+          render();
+        });
+      });
+    }
+
+    let activeOptionsDropdown = null;
+    let optionsTooltip = null;
+    let optionsTooltipAnchor = null;
+
+    function render() {
+      closeOptionsDropdown();
+      const rows = filteredObjects();
+      const size = pageSize();
+      const totalPages = Math.max(1, Math.ceil(rows.length / size));
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+      const start = (currentPage - 1) * size;
+      totalCountEl.textContent = String(rows.length);
+      renderRows(rows.slice(start, start + size));
+      renderPagination(totalPages);
+    }
+
+    searchInput.addEventListener('input', () => {
+      currentPage = 1;
+      render();
+    });
+    document.getElementById('objects-search-btn').addEventListener('click', () => {
+      currentPage = 1;
+      render();
+    });
+    pageSizeSelect.addEventListener('change', () => {
+      if (pageSize() < MIN_PAGE_SIZE) pageSizeSelect.value = String(MIN_PAGE_SIZE);
+      currentPage = 1;
+      render();
+    });
+
+    render();
+
+    async function loadObjects() {
+      const api = window.__customObjectsDb;
+      if (!api) return;
+      try {
+        const session = await window.__auth?.getSession?.();
+        if (!session) return;
+        const rows = await api.listCatalog();
+        if (!rows.length) return;
+        OBJECTS = rows;
+        window.__customObjects = OBJECTS;
+        render();
+        await window.__reloadCustomObjectsMenu?.();
+      } catch (error) {
+        return;
+      }
+    }
+
+    window.__reloadCustomObjects = loadObjects;
+    loadObjects();
+
+    const OBJECT_OPTIONS = [
+      {
+        key: 'editar',
+        label: 'Editar objeto',
+        lockedOnStandard: true,
+        tooltip: 'Não é possível editar objeto padrão',
+        icon: '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.0861 6.91356L17.0868 10.9143L8.39947 19.6016L4.83254 19.9953C4.35503 20.0482 3.95159 19.6444 4.00471 19.1669L4.4016 15.5975L13.0861 6.91356ZM19.5612 6.31793L17.6828 4.43946C17.0968 3.85351 16.1465 3.85351 15.5605 4.43946L13.7933 6.20668L17.794 10.2074L19.5612 8.44015C20.1472 7.85389 20.1472 6.90388 19.5612 6.31793Z" fill="#596B7A"/></svg>'
+      },
+      {
+        key: 'editar-campos',
+        label: 'Editar campos',
+        icon: '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.8125 16.25H3.5625C3.41332 16.25 3.27024 16.3093 3.16475 16.4148C3.05926 16.5202 3 16.6633 3 16.8125V19.0625C3 19.2117 3.05926 19.3548 3.16475 19.4602C3.27024 19.5657 3.41332 19.625 3.5625 19.625H5.8125C5.96168 19.625 6.10476 19.5657 6.21025 19.4602C6.31574 19.3548 6.375 19.2117 6.375 19.0625V16.8125C6.375 16.6633 6.31574 16.5202 6.21025 16.4148C6.10476 16.3093 5.96168 16.25 5.8125 16.25ZM5.8125 5H3.5625C3.41332 5 3.27024 5.05926 3.16475 5.16475C3.05926 5.27024 3 5.41332 3 5.5625V7.8125C3 7.96168 3.05926 8.10476 3.16475 8.21025C3.27024 8.31574 3.41332 8.375 3.5625 8.375H5.8125C5.96168 8.375 6.10476 8.31574 6.21025 8.21025C6.31574 8.10476 6.375 7.96168 6.375 7.8125V5.5625C6.375 5.41332 6.31574 5.27024 6.21025 5.16475C6.10476 5.05926 5.96168 5 5.8125 5ZM5.8125 10.625H3.5625C3.41332 10.625 3.27024 10.6843 3.16475 10.7898C3.05926 10.8952 3 11.0383 3 11.1875V13.4375C3 13.5867 3.05926 13.7298 3.16475 13.8352C3.27024 13.9407 3.41332 14 3.5625 14H5.8125C5.96168 14 6.10476 13.9407 6.21025 13.8352C6.31574 13.7298 6.375 13.5867 6.375 13.4375V11.1875C6.375 11.0383 6.31574 10.8952 6.21025 10.7898C6.10476 10.6843 5.96168 10.625 5.8125 10.625ZM20.4375 16.8125H9.1875C9.03832 16.8125 8.89524 16.8718 8.78975 16.9773C8.68426 17.0827 8.625 17.2258 8.625 17.375V18.5C8.625 18.6492 8.68426 18.7923 8.78975 18.8977C8.89524 19.0032 9.03832 19.0625 9.1875 19.0625H20.4375C20.5867 19.0625 20.7298 19.0032 20.8352 18.8977C20.9407 18.7923 21 18.6492 21 18.5V17.375C21 17.2258 20.9407 17.0827 20.8352 16.9773C20.7298 16.8718 20.5867 16.8125 20.4375 16.8125ZM20.4375 5.5625H9.1875C9.03832 5.5625 8.89524 5.62176 8.78975 5.72725C8.68426 5.83274 8.625 5.97582 8.625 6.125V7.25C8.625 7.39918 8.68426 7.54226 8.78975 7.64775C8.89524 7.75324 9.03832 7.8125 9.1875 7.8125H20.4375C20.5867 7.8125 20.7298 7.75324 20.8352 7.64775C20.9407 7.54226 21 7.39918 21 7.25V6.125C21 5.97582 20.9407 5.83274 20.8352 5.72725C20.7298 5.62176 20.5867 5.5625 20.4375 5.5625ZM20.4375 11.1875H9.1875C9.03832 11.1875 8.89524 11.2468 8.78975 11.3523C8.68426 11.4577 8.625 11.6008 8.625 11.75V12.875C8.625 13.0242 8.68426 13.1673 8.78975 13.2727C8.89524 13.3782 9.03832 13.4375 9.1875 13.4375H20.4375C20.5867 13.4375 20.7298 13.3782 20.8352 13.2727C20.9407 13.1673 21 13.0242 21 12.875V11.75C21 11.6008 20.9407 11.4577 20.8352 11.3523C20.7298 11.2468 20.5867 11.1875 20.4375 11.1875Z" fill="#596B7A"/></svg>'
+      },
+      {
+        key: 'desativar',
+        label: 'Desativar',
+        lockedOnStandard: true,
+        tooltip: 'Não é possível desativar objeto padrão',
+        icon: '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.9999 16.5C9.6296 16.5 7.71085 14.6654 7.53429 12.3404L4.25618 9.80694C3.82524 10.3476 3.42868 10.9191 3.10868 11.5441C3.03719 11.6855 2.99995 11.8418 2.99995 12.0002C2.99995 12.1587 3.03719 12.3149 3.10868 12.4563C4.80336 15.7629 8.15835 18 11.9999 18C12.8408 18 13.6521 17.875 14.434 17.6732L12.8124 16.4185C12.5446 16.4702 12.2726 16.4975 11.9999 16.5ZM21.8067 18.3157L18.3521 15.6457C19.4015 14.7613 20.2646 13.677 20.8911 12.456C20.9626 12.3146 20.9999 12.1584 20.9999 11.9999C20.9999 11.8414 20.9626 11.6852 20.8911 11.5438C19.1964 8.23726 15.8415 6.00008 11.9999 6.00008C10.391 6.00203 8.80823 6.40707 7.39617 7.1782L3.42055 4.10539C3.36871 4.06505 3.30943 4.03532 3.24609 4.0179C3.18275 4.00048 3.1166 3.99571 3.05142 4.00387C2.98624 4.01202 2.9233 4.03294 2.86621 4.06543C2.80912 4.09792 2.75899 4.14134 2.71868 4.19321L2.10524 4.98289C2.02387 5.08757 1.98741 5.22029 2.00387 5.35186C2.02034 5.48342 2.08839 5.60306 2.19306 5.68445L20.5793 19.8947C20.6311 19.9351 20.6904 19.9648 20.7537 19.9822C20.8171 19.9996 20.8832 20.0044 20.9484 19.9962C21.0136 19.9881 21.0765 19.9672 21.1336 19.9347C21.1907 19.9022 21.2408 19.8588 21.2811 19.8069L21.8949 19.0172C21.9762 18.9125 22.0126 18.7798 21.9961 18.6482C21.9796 18.5166 21.9115 18.397 21.8067 18.3157ZM16.0655 13.8782L14.8374 12.9288C14.9408 12.6299 14.9957 12.3163 14.9999 12.0001C15.006 11.537 14.9034 11.079 14.7004 10.6628C14.4974 10.2466 14.1996 9.8838 13.8309 9.60357C13.4622 9.32334 13.033 9.13348 12.5776 9.04923C12.1223 8.96499 11.6535 8.98872 11.209 9.1185C11.3974 9.37385 11.4993 9.68272 11.4999 10.0001C11.4952 10.1057 11.4791 10.2104 11.4518 10.3126L9.15147 8.53476C9.95053 7.86701 10.9586 7.50084 11.9999 7.50007C12.5909 7.49974 13.1762 7.61591 13.7224 7.84194C14.2685 8.06797 14.7647 8.39943 15.1826 8.81735C15.6005 9.23528 15.932 9.73149 16.158 10.2776C16.384 10.8237 16.5002 11.409 16.4999 12.0001C16.4999 12.676 16.3346 13.306 16.0655 13.8785V13.8782Z" fill="#596B7A"/></svg>'
+      },
+      {
+        key: 'excluir',
+        label: 'Excluir',
+        lockedOnStandard: true,
+        tooltip: 'Não é possível excluir objeto padrão',
+        icon: '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 19.3124C6 19.7599 6.15804 20.1892 6.43934 20.5056C6.72064 20.8221 7.10218 20.9999 7.5 20.9999H16.5C16.8978 20.9999 17.2794 20.8221 17.5607 20.5056C17.842 20.1892 18 19.7599 18 19.3124V7.49988H6V19.3124ZM14.5 10.3124C14.5 10.1632 14.5527 10.0201 14.6464 9.91463C14.7402 9.80914 14.8674 9.74988 15 9.74988C15.1326 9.74988 15.2598 9.80914 15.3536 9.91463C15.4473 10.0201 15.5 10.1632 15.5 10.3124V18.1874C15.5 18.3366 15.4473 18.4796 15.3536 18.5851C15.2598 18.6906 15.1326 18.7499 15 18.7499C14.8674 18.7499 14.7402 18.6906 14.6464 18.5851C14.5527 18.4796 14.5 18.3366 14.5 18.1874V10.3124ZM11.5 10.3124C11.5 10.1632 11.5527 10.0201 11.6464 9.91463C11.7402 9.80914 11.8674 9.74988 12 9.74988C12.1326 9.74988 12.2598 9.80914 12.3536 9.91463C12.4473 10.0201 12.5 10.1632 12.5 10.3124V18.1874C12.5 18.3366 12.4473 18.4796 12.3536 18.5851C12.2598 18.6906 12.1326 18.7499 12 18.7499C11.8674 18.7499 11.7402 18.6906 11.6464 18.5851C11.5527 18.4796 11.5 18.3366 11.5 18.1874V10.3124ZM8.5 10.3124C8.5 10.1632 8.55268 10.0201 8.64645 9.91463C8.74021 9.80914 8.86739 9.74988 9 9.74988C9.13261 9.74988 9.25979 9.80914 9.35355 9.91463C9.44732 10.0201 9.5 10.1632 9.5 10.3124V18.1874C9.5 18.3366 9.44732 18.4796 9.35355 18.5851C9.25979 18.6906 9.13261 18.7499 9 18.7499C8.86739 18.7499 8.74021 18.6906 8.64645 18.5851C8.55268 18.4796 8.5 18.3366 8.5 18.1874V10.3124ZM18.5 4.12488H14.75L14.4563 3.46746C14.394 3.32691 14.2982 3.20868 14.1795 3.12608C14.0608 3.04348 13.9239 2.99977 13.7844 2.99988H10.2125C10.0732 2.99928 9.93665 3.04282 9.81838 3.12552C9.7001 3.20822 9.60492 3.32672 9.54375 3.46746L9.25 4.12488H5.5C5.36739 4.12488 5.24021 4.18415 5.14645 4.28964C5.05268 4.39513 5 4.5382 5 4.68738V5.81238C5 5.96157 5.05268 6.10464 5.14645 6.21013C5.24021 6.31562 5.36739 6.37488 5.5 6.37488H18.5C18.6326 6.37488 18.7598 6.31562 18.8536 6.21013C18.9473 6.10464 19 5.96157 19 5.81238V4.68738C19 4.5382 18.9473 4.39513 18.8536 4.28964C18.7598 4.18415 18.6326 4.12488 18.5 4.12488Z" fill="#596B7A"/></svg>'
+      }
+    ];
+
+    function hideOptionsTooltip() {
+      if (!optionsTooltip) return;
+      optionsTooltip.hidden = true;
+      if (optionsTooltipAnchor) optionsTooltipAnchor.removeAttribute('aria-describedby');
+      optionsTooltipAnchor = null;
+    }
+
+    function placeOptionsTooltip() {
+      if (!optionsTooltip || optionsTooltip.hidden || !optionsTooltipAnchor) return;
+      const rect = optionsTooltipAnchor.getBoundingClientRect();
+      const gap = 18;
+      optionsTooltip.classList.remove('is-below');
+      let top = rect.top - optionsTooltip.offsetHeight - gap;
+      if (top < 8) {
+        top = rect.bottom + gap;
+        optionsTooltip.classList.add('is-below');
+      }
+      const width = optionsTooltip.offsetWidth;
+      let right = window.innerWidth - rect.right;
+      if (right < 8) right = 8;
+      if (window.innerWidth - right - width < 8) {
+        right = Math.max(8, window.innerWidth - width - 8);
+      }
+      optionsTooltip.style.top = top + 'px';
+      optionsTooltip.style.left = 'auto';
+      optionsTooltip.style.right = right + 'px';
+      const tipRect = optionsTooltip.getBoundingClientRect();
+      const arrowHalf = 6;
+      const center = rect.left + rect.width / 2 - tipRect.left;
+      const minCenter = 8 + arrowHalf;
+      const maxCenter = Math.max(minCenter, tipRect.width - 8 - arrowHalf);
+      optionsTooltip.style.setProperty('--tip-arrow-left', Math.max(minCenter, Math.min(center, maxCenter)) + 'px');
+    }
+
+    function showOptionsTooltip(item) {
+      if (!optionsTooltip) {
+        optionsTooltip = document.createElement('div');
+        optionsTooltip.className = 'actions-options-tooltip';
+        optionsTooltip.id = 'actions-options-tooltip';
+        optionsTooltip.setAttribute('role', 'tooltip');
+        optionsTooltip.hidden = true;
+        document.body.appendChild(optionsTooltip);
+      }
+      optionsTooltip.textContent = item.dataset.tooltip || '';
+      optionsTooltip.hidden = false;
+      optionsTooltipAnchor = item;
+      item.setAttribute('aria-describedby', optionsTooltip.id);
+      placeOptionsTooltip();
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(placeOptionsTooltip);
+      }
+    }
+
+    function closeOptionsDropdown() {
+      hideOptionsTooltip();
+      if (!activeOptionsDropdown) return;
+      if (activeOptionsDropdown._anchor) {
+        activeOptionsDropdown._anchor.setAttribute('aria-expanded', 'false');
+      }
+      activeOptionsDropdown.remove();
+      activeOptionsDropdown = null;
+    }
+
+    function positionOptionsDropdown() {
+      if (!activeOptionsDropdown || !activeOptionsDropdown._anchor) return;
+      const rect = activeOptionsDropdown._anchor.getBoundingClientRect();
+      const menuW = activeOptionsDropdown.offsetWidth;
+      const menuH = activeOptionsDropdown.offsetHeight;
+      let top = rect.bottom + 4;
+      if (top + menuH > window.innerHeight - 8 && rect.top - 4 - menuH >= 8) {
+        top = rect.top - 4 - menuH;
+      }
+      activeOptionsDropdown.style.top = top + 'px';
+      activeOptionsDropdown.style.left = Math.max(8, rect.right - menuW) + 'px';
+    }
+
+    const ACTIVATE_OPTION = {
+      key: 'ativar',
+      label: 'Ativar',
+      lockedOnStandard: true,
+      tooltip: 'Não é possível ativar objeto padrão',
+      icon: '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8918 11.5438C19.1971 8.23719 15.8421 6 12.0005 6C8.15892 6 4.80297 8.23875 3.10922 11.5441C3.03773 11.6855 3.00049 11.8417 3.00049 12.0002C3.00049 12.1586 3.03773 12.3149 3.10922 12.4563C4.80391 15.7628 8.15892 18 12.0005 18C15.8421 18 19.198 15.7613 20.8918 12.4559C20.9632 12.3145 21.0005 12.1583 21.0005 11.9999C21.0005 11.8414 20.9632 11.6852 20.8918 11.5438ZM12.0005 16.5C11.1105 16.5 10.2404 16.2361 9.50042 15.7416C8.76039 15.2472 8.18362 14.5444 7.84302 13.7221C7.50243 12.8998 7.41331 11.995 7.58695 11.1221C7.76058 10.2492 8.18916 9.44736 8.8185 8.81802C9.44784 8.18869 10.2497 7.7601 11.1226 7.58647C11.9955 7.41284 12.9003 7.50195 13.7226 7.84255C14.5448 8.18314 15.2476 8.75992 15.7421 9.49994C16.2366 10.24 16.5005 11.11 16.5005 12C16.5008 12.591 16.3846 13.1763 16.1585 13.7224C15.9325 14.2685 15.601 14.7647 15.1831 15.1826C14.7652 15.6006 14.269 15.932 13.7229 16.1581C13.1768 16.3841 12.5915 16.5003 12.0005 16.5ZM12.0005 9.00001C11.7327 9.00375 11.4667 9.04359 11.2095 9.11844C11.4215 9.40647 11.5232 9.76091 11.4962 10.1175C11.4693 10.4741 11.3154 10.8092 11.0625 11.062C10.8097 11.3149 10.4745 11.4688 10.118 11.4957C9.76139 11.5227 9.40694 11.421 9.11892 11.2091C8.95491 11.8133 8.98452 12.4538 9.20357 13.0403C9.42263 13.6269 9.8201 14.1299 10.3401 14.4788C10.86 14.8276 11.4762 15.0045 12.102 14.9848C12.7278 14.965 13.3317 14.7495 13.8286 14.3686C14.3255 13.9876 14.6904 13.4605 14.872 12.8613C15.0536 12.2621 15.0427 11.621 14.8409 11.0283C14.6391 10.4356 14.2565 9.92114 13.7469 9.55729C13.2374 9.19344 12.6266 8.99853 12.0005 9.00001Z" fill="#596B7A"/></svg>'
+    };
+
+    function openOptionsDropdown(btn) {
+      closeOptionsDropdown();
+      const isStandard = btn.dataset.kind === 'padrao';
+      const statusOption = btn.dataset.status === 'desativado' ? ACTIVATE_OPTION : OBJECT_OPTIONS.find(opt => opt.key === 'desativar');
+      const dropdown = document.createElement('div');
+      dropdown.className = 'actions-options-dropdown';
+      dropdown.setAttribute('role', 'menu');
+      dropdown.innerHTML = OBJECT_OPTIONS.map(opt => opt.key === 'desativar' ? statusOption : opt).map(opt => {
+        const disabled = isStandard && opt.lockedOnStandard;
+        const tooltip = disabled ? ` data-tooltip="${opt.tooltip}"` : '';
+        return `<div class="actions-options-dropdown-item${disabled ? ' is-disabled' : ''}" role="menuitem" data-action="${opt.key}"${disabled ? ' aria-disabled="true"' : ''}${tooltip}>
+          <span class="actions-options-dropdown-icon">${opt.icon}</span>
+          <span class="actions-options-dropdown-label">${opt.label}</span>
+        </div>`;
+      }).join('');
+      document.body.appendChild(dropdown);
+      activeOptionsDropdown = dropdown;
+      activeOptionsDropdown._anchor = btn;
+      btn.setAttribute('aria-expanded', 'true');
+      positionOptionsDropdown();
+      dropdown.querySelectorAll('.actions-options-dropdown-item:not(.is-disabled)').forEach(item => {
+        item.addEventListener('click', async event => {
+          event.stopPropagation();
+          const action = item.dataset.action;
+          const objectName = btn.dataset.object;
+          closeOptionsDropdown();
+          if (action === 'ativar' || action === 'desativar') {
+            const activating = action === 'ativar';
+            const object = OBJECTS.find(entry => entry.name === objectName);
+            if (!object) {
+              window.__showToast?.(activating ? 'Não foi possível ativar o objeto' : 'Não foi possível desativar o objeto', { kind: 'error' });
+              return;
+            }
+            const next = activating ? 'ativo' : 'desativado';
+            if (object.id && window.__customObjectsDb?.updateObject) {
+              try {
+                await window.__customObjectsDb.updateObject(object.id, { status: next });
+              } catch (error) {
+                window.__showToast?.(activating ? 'Não foi possível ativar o objeto' : 'Não foi possível desativar o objeto', { kind: 'error' });
+                return;
+              }
+            }
+            object.status = next;
+            render();
+            await window.__reloadCustomObjectsMenu?.();
+            window.__showToast?.(activating ? 'Objeto ativado com sucesso' : 'Objeto desativado com sucesso');
+            return;
+          }
+          if (action === 'editar-campos' && objectName) {
+            window.location.href = encodeURIComponent(objectName) + '/fields/';
+            return;
+          }
+          if (action === 'editar' && objectName && window.__openCustomObjectDrawer) {
+            const object = OBJECTS.find(item => item.name === objectName);
+            if (!object) return;
+            window.__openCustomObjectDrawer({
+              id: object.id,
+              name: object.name,
+              singular: object.singular,
+              description: object.description,
+              links: object.links,
+              returnFocus: btn
+            });
+            return;
+          }
+          if (action === 'excluir' && objectName) openDeleteObjectModal(objectName, btn);
+        });
+      });
+      dropdown.querySelectorAll('.actions-options-dropdown-item.is-disabled').forEach(item => {
+        item.addEventListener('mouseenter', () => showOptionsTooltip(item));
+        item.addEventListener('mouseleave', hideOptionsTooltip);
+      });
+    }
+
+    document.querySelector('.content-main')?.addEventListener('scroll', () => {
+      positionOptionsDropdown();
+      placeOptionsTooltip();
+    });
+    window.addEventListener('resize', positionOptionsDropdown);
+
+    document.addEventListener('click', event => {
+      const optionsBtn = event.target.closest('.actions-options-btn');
+      if (optionsBtn) {
+        event.stopPropagation();
+        if (activeOptionsDropdown && activeOptionsDropdown._anchor === optionsBtn) {
+          closeOptionsDropdown();
+        } else {
+          openOptionsDropdown(optionsBtn);
+        }
+        return;
+      }
+      if (!event.target.closest('.actions-options-dropdown')) closeOptionsDropdown();
+    });
+
+    const deleteObjectModal = document.getElementById('delete-object-modal');
+    const deleteObjectConfirm = document.getElementById('delete-object-confirm');
+    const deleteObjectPermanent = document.getElementById('delete-object-permanent');
+    const deleteObjectMessage = document.getElementById('delete-object-message');
+    let deletingObjectName = '';
+    let deleteObjectReturnFocus = null;
+
+    function closeDeleteObjectModal() {
+      deleteObjectModal.classList.remove('open');
+      deleteObjectModal.setAttribute('aria-hidden', 'true');
+      deleteObjectConfirm.checked = false;
+      deleteObjectPermanent.disabled = true;
+      const target = deleteObjectReturnFocus && document.contains(deleteObjectReturnFocus) ? deleteObjectReturnFocus : null;
+      deletingObjectName = '';
+      deleteObjectReturnFocus = null;
+      target?.focus();
+    }
+
+    function openDeleteObjectModal(objectName, returnFocus) {
+      deletingObjectName = objectName;
+      deleteObjectReturnFocus = returnFocus || null;
+      deleteObjectMessage.textContent = 'Ao excluir definitivamente o objeto ' + objectName + ', os campos e os registros não poderão mais ser recuperados.';
+      deleteObjectConfirm.checked = false;
+      deleteObjectPermanent.disabled = true;
+      deleteObjectModal.classList.add('open');
+      deleteObjectModal.setAttribute('aria-hidden', 'false');
+      document.getElementById('delete-object-cancel').focus();
+    }
+
+    async function removeDeletedObject() {
+      const object = OBJECTS.find(item => item.name === deletingObjectName);
+      if (!object || !object.id || !window.__customObjectsDb?.deleteObject) {
+        window.__showToast?.('Não foi possível excluir o objeto', { kind: 'error' });
+        return;
+      }
+      try {
+        await window.__customObjectsDb.deleteObject(object.id);
+      } catch (error) {
+        window.__showToast?.('Não foi possível excluir o objeto', { kind: 'error' });
+        return;
+      }
+      const removedName = object.name;
+      deleteObjectReturnFocus = null;
+      closeDeleteObjectModal();
+      OBJECTS = OBJECTS.filter(item => item.name !== removedName).map(item => ({
+        ...item,
+        links: item.links
+          .split(',')
+          .map(name => name.trim())
+          .filter(name => name && name !== removedName)
+          .join(', ')
+      }));
+      window.__customObjects = OBJECTS;
+      render();
+      await window.__reloadCustomObjectsMenu?.();
+      window.__showToast?.('Objeto excluído com sucesso');
+    }
+
+    deleteObjectConfirm.addEventListener('change', () => {
+      deleteObjectPermanent.disabled = !deleteObjectConfirm.checked;
+    });
+    document.getElementById('delete-object-close').addEventListener('click', closeDeleteObjectModal);
+    document.getElementById('delete-object-cancel').addEventListener('click', closeDeleteObjectModal);
+    deleteObjectPermanent.addEventListener('click', () => {
+      if (deleteObjectPermanent.disabled) return;
+      removeDeletedObject();
+    });
+    deleteObjectModal.addEventListener('click', event => {
+      if (event.target === deleteObjectModal) closeDeleteObjectModal();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Escape' || !deleteObjectModal.classList.contains('open')) return;
+      closeDeleteObjectModal();
+    });
+  })();
+</script>
+<script>
+  (function () {
+    const root = document.getElementById('create-object-drawer');
+    const openButton = document.getElementById('create-object-btn');
+    const form = document.getElementById('create-object-form');
+    const drawerTitle = document.getElementById('create-object-title');
+    const nameInput = document.getElementById('object-name');
+    const pluralInput = document.getElementById('object-name-plural');
+    const descriptionInput = document.getElementById('object-description');
+    const saveButton = document.querySelector('.object-drawer-save');
+    let editingObject = false;
+    let editingId = null;
+    let returnFocus = openButton;
+    const nameFields = [
+      { input: nameInput, feedback: document.getElementById('object-name-error') },
+      { input: pluralInput, feedback: document.getElementById('object-name-plural-error') }
+    ];
+    if (!root || !openButton) return;
+
+    function setFieldError(input, feedback, invalid) {
+      if (invalid) {
+        input.setAttribute('aria-invalid', 'true');
+        feedback.hidden = false;
+        return;
+      }
+      input.removeAttribute('aria-invalid');
+      feedback.hidden = true;
+    }
+
+    function clearNameErrors() {
+      nameFields.forEach(({ input, feedback }) => setFieldError(input, feedback, false));
+    }
+
+    function openDrawer(detail) {
+      const editing = Boolean(detail && typeof detail.name === 'string');
+      editingObject = editing;
+      editingId = editing ? detail.id || null : null;
+      form.reset();
+      clearNameErrors();
+      drawerTitle.textContent = editing ? 'Editar objeto personalizado' : 'Criar objeto personalizado';
+      if (saveButton) saveButton.textContent = editing ? 'Salvar' : 'Criar';
+      returnFocus = editing && detail.returnFocus ? detail.returnFocus : openButton;
+      if (editing) {
+        nameInput.value = detail.singular || detail.name;
+        pluralInput.value = detail.name;
+        descriptionInput.value = detail.description || '';
+      } else {
+        openButton.setAttribute('aria-expanded', 'true');
+      }
+      root.hidden = false;
+      nameInput.focus();
+    }
+
+    window.__openCustomObjectDrawer = openDrawer;
+
+    function closeDrawer() {
+      if (root.hidden) return;
+      root.hidden = true;
+      openButton.setAttribute('aria-expanded', 'false');
+      const focusTarget = returnFocus && document.contains(returnFocus) ? returnFocus : openButton;
+      focusTarget.focus();
+    }
+
+    openButton.addEventListener('click', openDrawer);
+
+    root.addEventListener('click', event => {
+      if (event.target.closest('[data-drawer-dismiss]')) closeDrawer();
+    });
+
+    nameFields.forEach(({ input, feedback }) => {
+      input.addEventListener('input', () => {
+        if (input.value.trim()) setFieldError(input, feedback, false);
+      });
+    });
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      let firstInvalid = null;
+      nameFields.forEach(({ input, feedback }) => {
+        const invalid = !input.value.trim();
+        setFieldError(input, feedback, invalid);
+        if (invalid && !firstInvalid) firstInvalid = input;
+      });
+      if (firstInvalid) {
+        firstInvalid.focus();
+        window.__showToast?.(editingObject ? 'Não foi possível atualizar o objeto' : 'Não foi possível criar o objeto', { kind: 'error' });
+        return;
+      }
+      const api = window.__customObjectsDb;
+      if (editingObject) {
+        if (!editingId || !api?.updateObject) {
+          window.__showToast?.('Não foi possível atualizar o objeto', { kind: 'error' });
+          return;
+        }
+        try {
+          await api.updateObject(editingId, {
+            name: pluralInput.value.trim(),
+            singular: nameInput.value.trim(),
+            description: descriptionInput.value.trim()
+          });
+        } catch (error) {
+          const duplicate = error && (error.code === '23505' || /duplicate/i.test(error.message || ''));
+          const feedback = nameFields[1].feedback;
+          feedback.textContent = duplicate ? 'Já existe um objeto com esse nome.' : 'Não foi possível atualizar o objeto.';
+          setFieldError(pluralInput, feedback, true);
+          pluralInput.focus();
+          window.__showToast?.('Não foi possível atualizar o objeto', { kind: 'error' });
+          return;
+        }
+        closeDrawer();
+        form.reset();
+        nameFields[1].feedback.textContent = 'O nome do objeto no plural é obrigatório.';
+        await window.__reloadCustomObjects?.();
+        window.__showToast?.('Objeto atualizado com sucesso');
+        return;
+      }
+      if (api) {
+        try {
+          await api.createObject({
+            name: pluralInput.value.trim(),
+            singular: nameInput.value.trim(),
+            description: descriptionInput.value.trim()
+          });
+        } catch (error) {
+          const duplicate = error && (error.code === '23505' || /duplicate/i.test(error.message || ''));
+          const feedback = nameFields[1].feedback;
+          feedback.textContent = duplicate ? 'Já existe um objeto com esse nome.' : 'Não foi possível criar o objeto.';
+          setFieldError(pluralInput, feedback, true);
+          pluralInput.focus();
+          window.__showToast?.('Não foi possível criar o objeto', { kind: 'error' });
+          return;
+        }
+      }
+      closeDrawer();
+      form.reset();
+      nameFields[1].feedback.textContent = 'O nome do objeto no plural é obrigatório.';
+      await window.__reloadCustomObjects?.();
+      window.__showToast?.('Objeto criado com sucesso');
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Escape' || root.hidden) return;
+      closeDrawer();
+    });
+  })();
+</script>
+<script src="../shared/products.js"></script>
+<script src="../shared/app-toast.js"></script>
+</body>
+</html>

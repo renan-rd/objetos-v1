@@ -1,5 +1,6 @@
 (function () {
   var MARGIN = 8;
+  var CLOSE_DELAY = 300;
 
   function place(menu) {
     var anchor = menu.closest(".sidebar-objects");
@@ -27,8 +28,19 @@
   document.addEventListener("pointerenter", function (event) {
     var anchor = event.target.closest && event.target.closest(".sidebar-objects");
     if (!anchor) return;
+    clearTimeout(anchor.closeTimer);
+    anchor.classList.add("is-open");
     var menu = anchor.querySelector(".objects-flyout");
     if (menu) place(menu);
+  }, true);
+
+  document.addEventListener("pointerleave", function (event) {
+    var anchor = event.target;
+    if (!anchor.classList || !anchor.classList.contains("sidebar-objects")) return;
+    clearTimeout(anchor.closeTimer);
+    anchor.closeTimer = setTimeout(function () {
+      anchor.classList.remove("is-open");
+    }, CLOSE_DELAY);
   }, true);
 
   window.addEventListener("resize", placeAll);

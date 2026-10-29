@@ -11,7 +11,8 @@
 }
 
 .sidebar-objects:hover .sidebar-item-inner,
-.sidebar-objects:focus-within .sidebar-item-inner {
+.sidebar-objects:focus-within .sidebar-item-inner,
+.sidebar-objects.is-open .sidebar-item-inner {
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -50,7 +51,8 @@
 }
 
 .sidebar-objects:hover .objects-flyout,
-.sidebar-objects:focus-within .objects-flyout {
+.sidebar-objects:focus-within .objects-flyout,
+.sidebar-objects.is-open .objects-flyout {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;

@@ -1891,7 +1891,7 @@
             return;
           }
           if (action === 'editar-campos' && objectName) {
-            window.location.href = encodeURIComponent(objectName) + '/fields/';
+            window.location.href = 'objeto/fields/?objeto=' + encodeURIComponent(objectName);
             return;
           }
           if (action === 'editar' && objectName && window.__openCustomObjectDrawer) {

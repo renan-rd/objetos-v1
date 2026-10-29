@@ -98,6 +98,22 @@
     .btn-secondary:hover { background: #66EBFF; color: #005580; }
     .btn-primary { background: var(--color-primary-inverse); color: var(--color-primary-text-on); }
     .btn-primary:hover { background: #005A87; color: #66E9FF; }
+    .btn-secondary.is-skeleton,
+    .btn-primary.is-skeleton { position: relative; background: transparent; pointer-events: none; cursor: default; }
+    .btn-secondary.is-skeleton:hover,
+    .btn-primary.is-skeleton:hover { background: transparent; color: transparent; }
+    .is-skeleton .btn-skeleton-label { visibility: hidden; }
+    .page-title-skeleton.is-skeleton { position: relative; display: inline-block; }
+    .page-title-skeleton.is-skeleton .skeleton { position: absolute; inset: 0; width: auto; height: auto; }
+    .search-input.is-skeleton { position: relative; border-color: transparent; background: transparent; pointer-events: none; box-shadow: none; }
+    .search-input.is-skeleton .skeleton { position: absolute; inset: -1px; z-index: 1; width: auto; height: auto; border-radius: inherit; }
+    .btn-text.is-skeleton { position: relative; background: transparent; pointer-events: none; cursor: default; }
+    .btn-text.is-skeleton:hover { background: transparent; }
+    .btn-text .btn-skeleton-label { display: inline-flex; align-items: center; gap: var(--sp-2); }
+    .btn-text.is-skeleton .skeleton { position: absolute; inset: 0; width: auto; height: auto; border-radius: inherit; }
+    .btn-secondary.is-skeleton .skeleton,
+    .btn-primary.is-skeleton .skeleton { position: absolute; inset: 0; width: auto; height: auto; border-radius: inherit; }
+    a.btn-primary { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
     .page-aux-text { margin: 0; font-size: 16px; font-weight: 500; color: var(--color-text-low); letter-spacing: -0.16px; line-height: 1.5; }
     .search-filters { display: flex; align-items: center; padding: var(--sp-4) 0; }
     .filters-left { display: flex; align-items: center; gap: var(--sp-2); }
@@ -213,6 +229,7 @@
     .drawer-btn-cancel:hover { background: #66ebff; color: #005580; }
     .drawer-btn-save { background: var(--color-primary-inverse); color: var(--color-primary-text-on); }
     .drawer-btn-save:hover { background: #005a87; color: #66e9ff; }
+    table.is-empty-state thead { display: none; }
     thead tr { background: var(--color-surface); border-bottom: 1px solid var(--color-border); }
     thead th { padding: var(--sp-3) var(--sp-4); text-align: left; font-size: 12px; font-weight: 700; color: var(--color-text-low); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
     thead th:first-child { width: 44px; }
@@ -746,26 +763,24 @@
       <div class="content-inner">
         <header class="page-header">
           <div class="page-header-main">
-            <h1 class="page-title" id="listing-title"></h1>
+            <h1 class="page-title" id="listing-title"><span class="page-title-skeleton is-skeleton" id="listing-title-skeleton" aria-busy="true"><span class="btn-skeleton-label" id="listing-title-label"></span><span class="skeleton" aria-hidden="true"></span></span></h1>
             <div class="header-actions">
-              <button type="button" class="btn-secondary" id="listing-import"></button>
-              <button type="button" class="btn-primary" id="listing-add"></button>
+              <button type="button" class="btn-secondary is-skeleton" id="listing-import" disabled aria-busy="true"><span class="btn-skeleton-label">Importar registros</span><span class="skeleton" aria-hidden="true"></span></button>
+              <button type="button" class="btn-primary is-skeleton" id="listing-add" disabled aria-busy="true"><span class="btn-skeleton-label">Adicionar registro</span><span class="skeleton" aria-hidden="true"></span></button>
             </div>
           </div>
           <p class="page-aux-text" id="listing-description"></p>
         </header>
         <div class="search-filters">
           <div class="filters-left">
-            <div class="search-input">
-              <input class="search-input-field" id="listing-search" type="text">
-              <button class="search-btn" type="button" aria-label="Buscar">
+            <div class="search-input is-skeleton" aria-busy="true">
+              <span class="skeleton" aria-hidden="true"></span>
+              <input class="search-input-field" id="listing-search" type="text" disabled>
+              <button class="search-btn" id="listing-search-btn" type="button" aria-label="Buscar" disabled>
                 <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
               </button>
             </div>
-            <button class="btn-text" type="button">
-              <svg viewBox="0 0 24 24"><path d="M4.5 8.25H19.5C19.7762 8.25 20 8.02616 20 7.75V6.5C20 6.22384 19.7762 6 19.5 6H4.5C4.22384 6 4 6.22384 4 6.5V7.75C4 8.02616 4.22384 8.25 4.5 8.25ZM6.5 13.25H17.5C17.7762 13.25 18 13.0262 18 12.75V11.5C18 11.2238 17.7762 11 17.5 11H6.5C6.22384 11 6 11.2238 6 11.5V12.75C6 13.0262 6.22384 13.25 6.5 13.25ZM8.5 18.25H15.5C15.7762 18.25 16 18.0262 16 17.75V16.5C16 16.2238 15.7762 16 15.5 16H8.5C8.22384 16 8 16.2238 8 16.5V17.75C8 18.0262 8.22384 18.25 8.5 18.25Z"/></svg>
-              Filtros
-            </button>
+            <button class="btn-text is-skeleton" id="listing-filters" type="button" disabled aria-busy="true"><span class="btn-skeleton-label"><svg viewBox="0 0 24 24"><path d="M4.5 8.25H19.5C19.7762 8.25 20 8.02616 20 7.75V6.5C20 6.22384 19.7762 6 19.5 6H4.5C4.22384 6 4 6.22384 4 6.5V7.75C4 8.02616 4.22384 8.25 4.5 8.25ZM6.5 13.25H17.5C17.7762 13.25 18 13.0262 18 12.75V11.5C18 11.2238 17.7762 11 17.5 11H6.5C6.22384 11 6 11.2238 6 11.5V12.75C6 13.0262 6.22384 13.25 6.5 13.25ZM8.5 18.25H15.5C15.7762 18.25 16 18.0262 16 17.75V16.5C16 16.2238 15.7762 16 15.5 16H8.5C8.22384 16 8 16.2238 8 16.5V17.75C8 18.0262 8.22384 18.25 8.5 18.25Z"/></svg>Filtros</span><span class="skeleton" aria-hidden="true"></span></button>
           </div>
         </div>
       </div>
@@ -843,6 +858,24 @@
   </div>
 </div>
 
+<div class="delete-modal-overlay" id="fields-modal-overlay" aria-hidden="true">
+  <div class="delete-modal" role="dialog" aria-modal="true" aria-labelledby="fields-modal-title">
+    <div class="delete-modal-header">
+      <h2 class="delete-modal-title" id="fields-modal-title">Ainda não há campos cadastrados</h2>
+      <button type="button" class="delete-modal-close" id="fields-modal-close" aria-label="Fechar">
+        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <div class="delete-modal-body">
+      <p id="fields-modal-text"></p>
+    </div>
+    <div class="delete-modal-footer">
+      <button type="button" class="btn-secondary" id="fields-modal-cancel">Cancelar</button>
+      <a class="btn-primary" id="fields-modal-create" href="fields/">Criar campos</a>
+    </div>
+  </div>
+</div>
+
 <script src="../../shared/custom-objects-db.js"></script>
 <script>
   (function () {
@@ -853,10 +886,10 @@
       plural: 'alunos',
       columns: ['Nome do aluno', 'Data de nascimento', 'Endereço'],
       fields: [
-        { name: 'Nome do aluno', type: 'text', required: true },
-        { name: 'Data de nascimento', type: 'date', required: true },
+        { name: 'Nome do aluno', type: 'text', required: false },
+        { name: 'Data de nascimento', type: 'date', required: false },
         { name: 'Endereço', type: 'text', required: false },
-        { name: 'CPF', type: 'cpf', required: true }
+        { name: 'CPF', type: 'cpf', required: false }
       ]
     },
     Contratos: {
@@ -865,10 +898,10 @@
       plural: 'contratos',
       columns: ['Nome do contrato', 'Data de nascimento', 'Endereço'],
       fields: [
-        { name: 'Nome do contrato', type: 'text', required: true },
-        { name: 'Data de nascimento', type: 'date', required: true },
+        { name: 'Nome do contrato', type: 'text', required: false },
+        { name: 'Data de nascimento', type: 'date', required: false },
         { name: 'Endereço', type: 'text', required: false },
-        { name: 'CPF', type: 'cpf', required: true }
+        { name: 'CPF', type: 'cpf', required: false }
       ]
     }
   };
@@ -899,8 +932,8 @@
     description: '',
     singular: 'registro',
     plural: 'registros',
-    columns: ['Nome'],
-    fields: [{ name: 'Nome', type: 'text', required: true }]
+    columns: [],
+    fields: []
   };
   let records = [];
   let objectLinks = [];
@@ -996,13 +1029,37 @@
     label.classList.toggle('is-selected', chosen.length > 0);
   }
 
+  function revealListingAction(button, label) {
+    button.classList.remove('is-skeleton');
+    button.disabled = false;
+    button.removeAttribute('aria-busy');
+    button.textContent = label;
+  }
+
+  function revealFixedChrome() {
+    const title = document.getElementById('listing-title');
+    title.textContent = name || 'Objeto';
+    const search = document.getElementById('listing-search');
+    const searchWrap = search.closest('.search-input');
+    searchWrap.classList.remove('is-skeleton');
+    searchWrap.removeAttribute('aria-busy');
+    searchWrap.querySelector('.skeleton')?.remove();
+    search.disabled = false;
+    search.placeholder = 'Buscar ' + object.plural;
+    document.getElementById('listing-search-btn').disabled = false;
+    const filters = document.getElementById('listing-filters');
+    filters.classList.remove('is-skeleton');
+    filters.disabled = false;
+    filters.removeAttribute('aria-busy');
+    filters.querySelector('.skeleton')?.remove();
+  }
+
   function applyChrome() {
     document.title = name + ' — RD Station';
-    document.getElementById('listing-title').textContent = name || 'Objeto';
+    revealFixedChrome();
     document.getElementById('listing-description').textContent = object.description;
-    document.getElementById('listing-search').placeholder = 'Buscar ' + object.plural;
-    document.getElementById('listing-import').textContent = 'Importar ' + object.plural;
-    document.getElementById('listing-add').textContent = 'Adicionar ' + object.singular;
+    revealListingAction(document.getElementById('listing-import'), 'Importar ' + object.plural);
+    revealListingAction(document.getElementById('listing-add'), 'Adicionar ' + object.singular);
     document.getElementById('record-title').textContent = 'Adicionar ' + object.singular;
     document.getElementById('record-save').textContent = 'Salvar ' + object.singular;
     document.getElementById('listing-head').innerHTML = '<th><div class="checkbox"></div></th>' + object.columns.map(column => (
@@ -1017,7 +1074,12 @@
     syncHeaderCheckbox();
   }
 
+  function setListingHeadVisible(visible) {
+    listingBody.closest('table')?.classList.toggle('is-empty-state', !visible);
+  }
+
   function renderSkeleton() {
+    setListingHeadVisible(true);
     const count = Math.max(object.columns.length, 1);
     const headWidths = [96, 140, 88, 120];
     const cellWidths = [68, 42, 56, 34];
@@ -1036,28 +1098,61 @@
     listingBody.closest('table').setAttribute('aria-busy', 'true');
   }
 
+  function searchText(value) {
+    return String(value || '')
+      .toLocaleLowerCase('pt-BR')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+
+  function recordSearchText(record) {
+    return object.columns.map(column => recordValue(record, column)).filter(Boolean).join(' ');
+  }
+
+  function visibleRecords() {
+    const query = searchText(document.getElementById('listing-search').value.trim());
+    if (!query) return records;
+    return records.filter(record => searchText(recordSearchText(record)).includes(query));
+  }
+
   function renderRecords() {
     if (!listingLoaded) {
       renderSkeleton();
       return;
     }
     listingBody.closest('table').setAttribute('aria-busy', 'false');
+    const visible = visibleRecords();
+    if (!records.length || !visible.length) setListingHeadVisible(false);
     if (!records.length) {
       listingBody.innerHTML = `
         <tr class="empty-state-row"><td colspan="${object.columns.length + 2}">
           <div class="empty-state-box">
             <img src="../../shared/empty-state-null.svg" width="360" height="156" alt="" style="display:block;width:100%;max-width:360px;height:auto;">
             <div class="empty-state-copy">
-              <div class="empty-state-title">Você ainda não tem ${escapeHtml(object.plural)}</div>
-              <div class="empty-state-text">Que tal cadastrar o seu primeiro ${escapeHtml(object.singular)}?</div>
+              <div class="empty-state-title">Você ainda não tem registros</div>
+              <div class="empty-state-text">Que tal cadastrar o primeiro registro?</div>
             </div>
-            <button type="button" class="btn-primary" id="listing-empty-add">Cadastrar ${escapeHtml(object.singular)}</button>
           </div>
         </td></tr>`;
       syncSelection();
       return;
     }
-    listingBody.innerHTML = records.map((record, index) => {
+    if (!visible.length) {
+      listingBody.innerHTML = `
+        <tr class="empty-state-row"><td colspan="${object.columns.length + 2}">
+          <div class="empty-state-box">
+            <div class="empty-state-copy">
+              <div class="empty-state-title">Nenhum registro encontrado</div>
+              <div class="empty-state-text">Tente buscar por outro termo.</div>
+            </div>
+          </div>
+        </td></tr>`;
+      syncSelection();
+      return;
+    }
+    setListingHeadVisible(true);
+    listingBody.innerHTML = visible.map(record => {
+      const index = records.indexOf(record);
       const recordId = String(record.id || index);
       const selected = selectedRecordId === recordId;
       const checked = selectedIds.has(recordId);
@@ -1253,7 +1348,30 @@
     renderRecords();
   }
 
-  function openRecordDrawer() {
+  const fieldsModal = document.getElementById('fields-modal-overlay');
+  let fieldsModalReturn = null;
+
+  function openFieldsModal() {
+    document.getElementById('fields-modal-text').textContent = 'Crie os campos ' + (name ? 'de ' + name : 'deste objeto') + ' para definir as informações de cada ' + object.singular + '. Depois disso, você consegue adicionar registros.';
+    document.getElementById('fields-modal-create').href = name ? 'fields/?objeto=' + encodeURIComponent(name) : 'fields/';
+    fieldsModalReturn = document.activeElement;
+    fieldsModal.classList.add('open');
+    fieldsModal.setAttribute('aria-hidden', 'false');
+    document.getElementById('fields-modal-create').focus();
+  }
+
+  function closeFieldsModal() {
+    fieldsModal.classList.remove('open');
+    fieldsModal.setAttribute('aria-hidden', 'true');
+    if (fieldsModalReturn && typeof fieldsModalReturn.focus === 'function') fieldsModalReturn.focus();
+  }
+
+  async function openRecordDrawer() {
+    await listingReady;
+    if (!object.fields.length) {
+      openFieldsModal();
+      return;
+    }
     applyChrome();
     drawer.hidden = false;
     overlay.classList.add('open');
@@ -1288,6 +1406,7 @@
 
   async function saveRecord() {
     await listingReady;
+    if (!object.fields.length) return;
     const data = {};
     const named = {};
     const invalidDate = object.fields.some((field, index) => {
@@ -1318,9 +1437,18 @@
   }
 
   document.getElementById('listing-add').addEventListener('click', openRecordDrawer);
-  document.getElementById('listing-empty-add')?.addEventListener('click', openRecordDrawer);
+  const listingSearch = document.getElementById('listing-search');
+  function applyListingSearch() {
+    if (listingLoaded) renderRecords();
+  }
+  listingSearch.addEventListener('input', applyListingSearch);
+  listingSearch.addEventListener('keydown', event => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    applyListingSearch();
+  });
+  document.getElementById('listing-search-btn').addEventListener('click', applyListingSearch);
   listingBody.addEventListener('click', event => {
-    if (event.target.closest('#listing-empty-add')) openRecordDrawer();
     const checkbox = event.target.closest('.checkbox');
     if (checkbox) {
       toggleRowSelection(checkbox.closest('tr'));
@@ -1382,6 +1510,11 @@
   }
 
   document.getElementById('bulk-delete-btn').addEventListener('click', openDeleteModal);
+  document.getElementById('fields-modal-close').addEventListener('click', closeFieldsModal);
+  document.getElementById('fields-modal-cancel').addEventListener('click', closeFieldsModal);
+  fieldsModal.addEventListener('click', event => {
+    if (event.target === fieldsModal) closeFieldsModal();
+  });
   document.getElementById('delete-modal-close').addEventListener('click', closeDeleteModal);
   deleteOverlay.addEventListener('click', event => {
     if (event.target === deleteOverlay) closeDeleteModal();
@@ -1449,6 +1582,10 @@
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
+    if (fieldsModal.classList.contains('open')) {
+      closeFieldsModal();
+      return;
+    }
     if (deleteOverlay.classList.contains('open')) {
       closeDeleteModal();
       return;
@@ -1465,7 +1602,7 @@
   });
 
   async function loadListing() {
-    applyChrome();
+    document.getElementById('listing-title-label').textContent = name || 'Objeto';
     renderRecords();
     const api = window.__customObjectsDb;
     try {
@@ -1474,21 +1611,20 @@
       if (!session) return;
       const current = await api.getObjectByName(name);
       if (!current) return;
-      const fields = await api.listFields(current.id);
-      if (!fields.length) return;
       objectId = current.id;
+      const fields = await api.listFields(current.id);
       const primary = fields.filter(field => field.is_primary);
       const columns = (primary.length ? primary : fields).map(field => ({ id: field.id, name: field.name }));
       object = {
-        description: current.description || object.description,
-        singular: (current.singular || object.singular).toLocaleLowerCase('pt-BR'),
-        plural: (current.name || object.plural).toLocaleLowerCase('pt-BR'),
+        description: current.description || '',
+        singular: (current.singular || 'registro').toLocaleLowerCase('pt-BR'),
+        plural: (current.name || name || 'registros').toLocaleLowerCase('pt-BR'),
         columns,
         fields: fields.map(field => ({
           id: field.id,
           name: field.name,
           type: field.field_type,
-          required: field.is_required,
+          required: false,
           options: Array.isArray(field.options) ? field.options : []
         }))
       };

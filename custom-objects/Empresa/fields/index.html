@@ -1773,8 +1773,6 @@
     }
 
     .fields-table .col-order { width: 81px; }
-    .fields-table .col-required { width: 204px; }
-    .fields-table .col-preference { width: 167px; }
     .fields-table .col-created { width: 143px; }
     .fields-table .col-actions { width: 72px; }
 
@@ -2122,6 +2120,18 @@
       </div>
 
       <div id="fields-panel-campos" role="tabpanel" aria-labelledby="fields-tab-campos">
+        <div class="fields-empty" id="fields-empty" hidden>
+          <img src="../../../shared/empty-state-null.svg" width="360" height="156" alt="">
+          <div class="fields-empty-copy">
+            <h2 class="fields-empty-title">Você ainda não tem campos</h2>
+            <p class="fields-empty-text">Crie os campos deste objeto para cadastrar registros. Na aba Vínculos, você relaciona este objeto a outros.</p>
+          </div>
+          <button type="button" class="btn-primary fields-empty-action" id="fields-empty-create">
+            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.4167 10.8333H13.1667V5.58333C13.1667 5.26104 12.9056 5 12.5833 5H11.4167C11.0944 5 10.8333 5.26104 10.8333 5.58333V10.8333H5.58333C5.26104 10.8333 5 11.0944 5 11.4167V12.5833C5 12.9056 5.26104 13.1667 5.58333 13.1667H10.8333V18.4167C10.8333 18.739 11.0944 19 11.4167 19H12.5833C12.9056 19 13.1667 18.739 13.1667 18.4167V13.1667H18.4167C18.739 13.1667 19 12.9056 19 12.5833V11.4167C19 11.0944 18.739 10.8333 18.4167 10.8333Z" fill="currentColor"/></svg>
+            Criar campo
+          </button>
+        </div>
+        <div id="fields-filled" hidden>
         <div class="fields-toolbar">
           <div class="search-input">
             <input class="search-input-field" id="fields-search" type="search" placeholder="Buscar" autocomplete="off" aria-label="Buscar campo">
@@ -2146,8 +2156,6 @@
                   <th class="col-order" scope="col">Ordem</th>
                   <th scope="col">Nome do campo</th>
                   <th scope="col">Tipo</th>
-                  <th class="col-required" scope="col">Obrigatoriedade</th>
-                  <th class="col-preference" scope="col">Preferências</th>
                   <th class="col-created" scope="col">Criado em</th>
                   <th class="col-actions" scope="col">Ações</th>
                 </tr>
@@ -2170,8 +2178,6 @@
                   <th class="col-order" scope="col">Ordem</th>
                   <th scope="col">Nome do campo</th>
                   <th scope="col">Tipo</th>
-                  <th class="col-required" scope="col">Obrigatoriedade</th>
-                  <th class="col-preference" scope="col">Preferências</th>
                   <th class="col-created" scope="col">Criado em</th>
                   <th class="col-actions" scope="col">Ações</th>
                 </tr>
@@ -2180,6 +2186,7 @@
             </table>
           </div>
         </section>
+        </div>
       </div>
 
       <div class="fields-links" id="fields-panel-vinculos" role="tabpanel" aria-labelledby="fields-tab-vinculos" hidden>
@@ -2352,7 +2359,6 @@
       'Alunos': { kind: 'personalizado', description: 'Informações gerais dos alunos da escola.', links: ['Negociação', 'Contato'], first: 'Nome do aluno' },
       'Contratos': { kind: 'personalizado', description: 'Informações gerais dos contratos.', links: ['Negociação'], first: 'Nome do contrato' }
     };
-    const FIELD_ID = '6865c547315c72001ae80bdc';
     const MAX_PRIMARY_FIELDS = 3;
     const PRIMARY_LIMIT_TOOLTIP = 'Só é possível ter 3 campos principais. Desmarque um campo para marcar outro.';
     const starSolid = '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.1417 4.52566L9.18879 8.43281L4.81945 9.06138C4.0359 9.17352 3.72188 10.1267 4.29011 10.6726L7.45122 13.7122L6.70356 18.0059C6.56898 18.7821 7.39739 19.3634 8.09122 19.0004L12 16.9731L15.9088 19.0004C16.6026 19.3605 17.431 18.7821 17.2964 18.0059L16.5488 13.7122L19.7099 10.6726C20.2781 10.1267 19.9641 9.17352 19.1805 9.06138L14.8112 8.43281L12.8583 4.52566C12.5084 3.82921 11.4946 3.82036 11.1417 4.52566Z" fill="currentColor"/></svg>';
@@ -2374,15 +2380,6 @@
       }[char]));
     }
 
-    function sampleRows(firstName, preferenceForAddress) {
-      return [
-        { name: firstName, detail: 'ID: ' + FIELD_ID, type: 'Texto', typeDetail: 'Texto livre', required: 'Obrigatório', preference: 'Visível', created: '20/01/2026' },
-        { name: 'Data de nascimento', detail: 'ID: ' + FIELD_ID, type: 'Data', typeDetail: 'DD/MM/AAAA', required: 'Obrigatório', preference: 'Visível', created: '20/01/2026' },
-        { name: 'Endereço', detail: 'ID: ' + FIELD_ID, type: 'Texto', typeDetail: 'Texto livre', required: 'Não obrigatório', preference: preferenceForAddress, created: '20/01/2026' },
-        { name: 'CPF', detail: 'ID: ' + FIELD_ID, type: 'CPF', typeDetail: 'Campo com formatação', required: 'Obrigatório', preference: '', created: '20/01/2026' }
-      ];
-    }
-
     function fieldRow(row, primary) {
       const star = primary ? starSolid : starOutline;
       return `
@@ -2398,8 +2395,6 @@
             <div class="fields-cell-title">${escapeHtml(row.type)}</div>
             <div class="fields-cell-detail">${escapeHtml(row.typeDetail)}</div>
           </td>
-          <td>${escapeHtml(row.required)}</td>
-          <td>${escapeHtml(row.preference)}</td>
           <td>${escapeHtml(row.created)}</td>
           <td class="col-actions">
             <button type="button" class="fields-icon-btn fields-actions fields-row-actions" aria-label="Ações de ${escapeHtml(row.name)}" aria-haspopup="menu" aria-expanded="false">${ellipsis}</button>
@@ -2412,6 +2407,12 @@
       target.innerHTML = rows.map(row => fieldRow(row, primary)).join('');
     }
 
+    function syncFieldsEmpty() {
+      const total = primaryBody.querySelectorAll('tr').length + secondaryBody.querySelectorAll('tr').length;
+      document.getElementById('fields-empty').hidden = total > 0;
+      document.getElementById('fields-filled').hidden = total === 0;
+    }
+
     const name = objectName();
     const object = CATALOG[name] || { description: '', links: [], first: 'Nome' };
     document.getElementById('fields-title').textContent = name || 'Objeto';
@@ -2419,8 +2420,6 @@
     document.title = (name || 'Objeto') + ' — Objetos personalizados';
     const primaryBody = document.getElementById('fields-primary');
     const secondaryBody = document.getElementById('fields-secondary');
-    renderRows(primaryBody, sampleRows(object.first, '').slice(0, MAX_PRIMARY_FIELDS), true);
-    renderRows(secondaryBody, sampleRows(object.first, 'Visível por funil'), false);
 
     let starTooltip = null;
     let starTooltipAnchor = null;
@@ -2745,17 +2744,17 @@
         typeDetail: type.detail,
         description: fieldDescription.value.trim(),
         options: isChoiceType(type) ? collectFieldOptions() : [],
-        required: 'Não obrigatório',
-        preference: '',
         created: todayLabel()
       }, primary));
       syncPrimaryLimit();
       filterFields();
+      syncFieldsEmpty();
       const row = target.lastElementChild;
       if (row && !row.hidden) row.scrollIntoView({ block: 'nearest' });
     }
 
     document.getElementById('fields-create-btn').addEventListener('click', () => openFieldDrawer());
+    document.getElementById('fields-empty-create').addEventListener('click', event => openFieldDrawer(null, event.currentTarget));
     fieldDrawer.querySelectorAll('[data-field-drawer-dismiss]').forEach(element => {
       element.addEventListener('click', closeFieldDrawer);
     });
@@ -3311,6 +3310,7 @@
       }
       row.remove();
       syncPrimaryLimit();
+      syncFieldsEmpty();
       closeDeleteModal();
       window.__showToast?.(message);
     }
@@ -3363,16 +3363,14 @@
         typeDetail: field.type_detail,
         description: field.description || '',
         options: Array.isArray(field.options) ? field.options : [],
-        required: field.is_required ? 'Obrigatório' : 'Não obrigatório',
-        preference: field.preference || '',
         created: fieldDate(field.created_at)
       };
     }
 
     async function hydrateCustomObject() {
       const api = window.__customObjectsDb;
-      if (!api) return;
       try {
+        if (!api) return;
         const session = await window.__auth?.getSession?.();
         if (!session) return;
         catalogObjects = await api.listObjects();
@@ -3381,18 +3379,18 @@
         currentObjectId = current.id;
         if (current.description) document.getElementById('fields-description').textContent = current.description;
         const fields = await api.listFields(current.id);
-        if (fields.length) {
-          renderRows(primaryBody, fields.filter(field => field.is_primary).map(rowFromField), true);
-          renderRows(secondaryBody, fields.filter(field => !field.is_primary).map(rowFromField), false);
-          syncPrimaryLimit();
-          filterFields();
-        }
+        renderRows(primaryBody, fields.filter(field => field.is_primary).map(rowFromField), true);
+        renderRows(secondaryBody, fields.filter(field => !field.is_primary).map(rowFromField), false);
+        syncPrimaryLimit();
+        filterFields();
         const links = await api.listObjectLinks(current.id);
         linkedObjects.splice(0, linkedObjects.length, ...links);
         renderLinkedObjects();
         renderLinkMenu();
       } catch (error) {
         return;
+      } finally {
+        syncFieldsEmpty();
       }
     }
 

@@ -71,20 +71,23 @@
     placeAll();
   }
 
+  function canLoadFlyout() {
+    return window.__sbClient && window.__auth && window.__auth.getSession && document.querySelector(".objects-flyout");
+  }
+
   async function loadFlyout() {
-    var client = window.__sbClient;
-    if (!client || !window.__auth || !window.__auth.getSession) return;
+    if (!canLoadFlyout()) return false;
     try {
       var session = await window.__auth.getSession();
-      if (!session) return;
-      var result = await client
+      if (!session) return false;
+      var result = await window.__sbClient
         .from("custom_objects")
         .select("name, status, created_at")
         .eq("kind", "personalizado")
         .eq("status", "ativo")
         .eq("show_in_catalog", true)
         .order("created_at", { ascending: true });
-      if (result.error || !result.data) return;
+      if (result.error || !result.data) return false;
       var order = ["Alunos", "Contratos"];
       var objects = result.data.slice().sort(function (a, b) {
         var ai = order.indexOf(a.name);
@@ -95,11 +98,30 @@
         return ai - bi;
       });
       fillFlyout(objects);
+      return true;
     } catch (error) {
-      return;
+      return false;
     }
   }
 
+  var bootTimer = null;
+  function scheduleBoot(attempt) {
+    clearTimeout(bootTimer);
+    loadFlyout().then(function (loaded) {
+      if (loaded || attempt >= 40) return;
+      bootTimer = setTimeout(function () {
+        scheduleBoot(attempt + 1);
+      }, 150);
+    });
+  }
+
   window.__reloadCustomObjectsMenu = loadFlyout;
-  loadFlyout();
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      scheduleBoot(0);
+    });
+  } else {
+    scheduleBoot(0);
+  }
 })();

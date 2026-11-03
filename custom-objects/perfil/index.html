@@ -1,0 +1,2008 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil — RD Station</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    window.__sbClient = supabase.createClient(
+      'https://deeklhefjxldkweqjtsa.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZWtsaGVmanhsZGt3ZXFqdHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5Mzc5NjcsImV4cCI6MjA2NzUxMzk2N30.9oxYKZHfRNjbXJzQ17POORk_5Z12DDdkPUqAbeIdMcQ'
+    );
+  </script>
+  <script src="../../shared/auth.js" data-login="../../login.html" data-require-auth="true"></script>
+  <link rel="stylesheet" href="../../shared/inline-edit.css">
+  <link rel="stylesheet" href="../../shared/company-drawer.css">
+  <link rel="stylesheet" href="../../shared/profile-card-empty.css">
+  <link rel="stylesheet" href="../../shared/custom-objects-menu.css">
+  <link rel="stylesheet" href="../../shared/app-toast.css">
+  <script src="../../shared/custom-objects-menu.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-nav-bg: #001927;
+      --color-surface: #ffffff;
+      --color-surface-low: #eceeef;
+      --color-border: #d6dbde;
+      --color-border-interactive: #b2bcc1;
+      --color-text-high: #002233;
+      --color-text-low: #405466;
+      --color-text-disabled: #7f8d99;
+      --color-primary-border: #00dbff;
+      --color-primary-text: #0077b2;
+      --color-primary-text-on: #00dbff;
+      --color-primary-inverse: #003d5c;
+      --color-primary-surface-low: #b2f4ff;
+      --color-icon-low: #596b7a;
+      --color-danger: #e60f57;
+      --radius-xs: 4px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-pill: 999px;
+      --sp-1: 4px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-7: 40px;
+      --font: "DM Sans", sans-serif;
+      --scrollbar-size: 6px;
+      --scrollbar-thumb: #c5cdd4;
+      --scrollbar-thumb-hover: #636e7c;
+      --scrollbar-track: transparent;
+    }
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    }
+    *::-webkit-scrollbar {
+      width: var(--scrollbar-size);
+      height: var(--scrollbar-size);
+    }
+    *::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+    *::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: var(--radius-pill);
+    }
+    *::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+    button, input { font-family: inherit; }
+    body { font-family: var(--font); background: var(--color-nav-bg); min-height: 100vh; color: var(--color-text-high); }
+    .layout { display: grid; grid-template-rows: 64px 1fr; grid-template-columns: 64px 1fr; grid-template-areas: "navbar navbar" "sidebar content"; height: 100vh; overflow: hidden; }
+    .navbar { grid-area: navbar; background: var(--color-nav-bg); display: flex; align-items: center; justify-content: space-between; padding: var(--sp-3); height: 64px; position: relative; z-index: 9600; }
+    .navbar-logo { display: flex; align-items: center; gap: var(--sp-3); position: relative; }
+    .products-menu { position: relative; }
+    .products-menu-trigger { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; flex-shrink: 0; background: none; border: none; padding: 0; }
+    .products-menu-trigger:hover, .products-menu-trigger.open { background: rgba(255,255,255,0.08); }
+    .products-dropdown { position: absolute; top: calc(100% + 8px); left: 0; min-width: 200px; padding: 12px; background: rgba(0, 34, 51, 0.96); box-shadow: 0 12px 24px rgba(0, 34, 51, 0.20); border-radius: 16px; backdrop-filter: blur(8px); display: flex; flex-direction: column; opacity: 0; pointer-events: none; transform: translateY(-6px); transition: opacity .15s, transform .15s; z-index: 9700; }
+    .products-dropdown.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+    .products-dropdown-section { padding: 8px 12px; color: #fff; font-size: 12px; font-weight: 500; text-transform: uppercase; line-height: 15.6px; }
+    .products-dropdown-item { min-height: 40px; padding: 8px 12px; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 700; line-height: 19.6px; cursor: pointer; display: flex; align-items: center; }
+    .products-dropdown-item:hover { background: rgba(255,255,255,0.08); }
+    .products-dropdown-item.active { background: rgba(255,255,255,0.12); }
+    .navbar-logo img { height: 32px; }
+    .navbar-secondary { display: flex; align-items: center; gap: var(--sp-2); }
+    .navbar-icons { display: flex; align-items: center; }
+    .navbar-icon-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); cursor: pointer; position: relative; }
+    .navbar-icon-btn svg { width: 24px; height: 24px; }
+    .navbar-icon-btn:hover { background: rgba(255,255,255,0.08); }
+    .badge-dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: var(--color-danger); border-radius: 50%; }
+    .navbar-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.15); margin: 0 4px; }
+    .account-menu { position: relative; display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2); border-radius: var(--radius-sm); cursor: pointer; }
+    .account-menu:hover { background: rgba(255,255,255,0.08); }
+    .account-avatar { width: 24px; height: 24px; border-radius: var(--radius-sm); background: #00f2c9; overflow: hidden; flex-shrink: 0; }
+    .account-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .account-name { color: #fff; font-size: 14px; font-weight: 700; white-space: nowrap; letter-spacing: -0.14px; }
+    .account-menu svg { fill: #fff; width: 20px; height: 20px; }
+    .account-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #fff; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.14); min-width: 180px; overflow: hidden; opacity: 0; pointer-events: none; transform: translateY(-6px); transition: opacity .15s, transform .15s; z-index: 500; }
+    .account-dropdown.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+    .account-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; font-size: 14px; font-weight: 500; color: #002233; }
+    .account-dropdown-item:hover { background: #f2f4f6; }
+    .account-dropdown-item svg { width: 18px; height: 18px; fill: #405466; flex-shrink: 0; }
+    .sidebar { grid-area: sidebar; background: var(--color-nav-bg); display: flex; flex-direction: column; gap: var(--sp-2); padding-top: var(--sp-3); }
+    .sidebar-item { display: flex; align-items: center; justify-content: center; padding: var(--sp-3); position: relative; cursor: pointer; }
+    .sidebar-item svg, .sidebar-item img { width: 24px; height: 24px; }
+    .sidebar-indicator { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 6px; height: 40px; background: var(--color-primary-border); border-radius: 4px 0 0 4px; }
+    .sidebar-item-inner { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); }
+    .content { grid-area: content; background: var(--color-surface-low); border-top-left-radius: 20px; overflow: hidden; height: 100%; min-height: 0; display: flex; flex-direction: column; }
+    .content-main { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+    .content-split { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+    .content-body { flex: 1; padding: 24px; min-width: 0; overflow-y: auto; }
+    .detail-panel {
+      width: 0; overflow: hidden; flex-shrink: 0;
+      border-left: 1px solid transparent; background: var(--color-surface);
+      display: flex; flex-direction: column;
+      transition: width .25s ease, border-color .25s ease;
+    }
+    .content.detail-open .detail-panel,
+    .content.detail-open.detail-edit .detail-panel { width: min(400px, 38vw); border-left-color: var(--color-border); }
+    .detail-panel .drawer { position: static; width: 100%; height: 100%; background: var(--color-surface); }
+    #drawer-edit-link:not(.open) { display: none !important; }
+    .content.detail-open.detail-edit .detail-panel .drawer.open { display: flex; flex-direction: column; }
+    .drawer-header { display: flex; align-items: flex-start; gap: 8px; min-height: 56px; padding: 16px 24px 8px; flex-shrink: 0; }
+    .drawer-title { flex: 1; min-height: 32px; font-size: 16px; font-weight: 700; letter-spacing: -0.16px; line-height: 1.5; }
+    .drawer-close { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: none; background: none; border-radius: var(--radius-sm); cursor: pointer; }
+    .drawer-close:hover { background: var(--color-surface-low); }
+    .drawer-close svg { width: 20px; height: 20px; fill: var(--color-icon-low); }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 0 16px; display: flex; flex-direction: column; }
+    .drawer-section-title { font-size: 12px; font-weight: 700; color: var(--color-text-low); letter-spacing: -0.12px; line-height: 1.3; text-transform: uppercase; padding: 16px 0; }
+    .drawer-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .drawer-label { font-size: 16px; font-weight: 700; letter-spacing: -0.16px; line-height: 1.5; }
+    .drawer-input, .drawer-select {
+      width: 100%; height: 40px; padding: 8px 12px;
+      border: 1px solid var(--color-border-interactive); border-radius: var(--radius-md);
+      background: var(--color-surface); font: 500 16px/1.5 var(--font); color: var(--color-text-high);
+    }
+    .drawer-input:focus, .drawer-select:focus { outline: none; border-color: var(--color-primary-border); box-shadow: 0 0 0 2px rgba(0,219,255,.15); }
+    .drawer-footer { min-height: 48px; padding: 8px 24px; display: flex; justify-content: flex-end; flex-shrink: 0; }
+    .drawer-actions { display: flex; gap: 12px; align-items: center; }
+    .drawer-btn-cancel, .drawer-btn-save {
+      height: 32px; padding: 6px 12px; border: none; border-radius: var(--radius-sm);
+      background: none; color: var(--color-primary-text); font-size: 14px; font-weight: 700; cursor: pointer;
+    }
+    .drawer-btn-save { background: var(--color-primary-surface-low); }
+    .drawer-btn-cancel:hover, .drawer-btn-save:hover { background: #66EBFF; color: #005580; }
+    .drawer-btn-save:disabled { opacity: .5; cursor: not-allowed; }
+    .drawer-error { font-size: 13px; color: var(--color-danger); margin-bottom: 8px; }
+    .drawer-required { color: var(--color-danger); }
+    .link-checks { display: flex; flex-direction: column; gap: 8px; }
+    .link-check { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+    #link-selected-list.company-selected-list:empty::after { content: "Nenhum registro selecionado"; }
+    .company-selected-item .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .company-selected-item .avatar img,
+    .company-selected-item .avatar svg,
+    .company-autocomplete-option .avatar img,
+    .company-autocomplete-option .avatar svg { width: 40px; height: 40px; display: block; }
+    .company-selected-item .avatar img,
+    .company-autocomplete-option .avatar img { object-fit: cover; }
+    .company-autocomplete-option .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    #link-search-list .company-autocomplete-option { align-items: center; }
+    #link-search-list .company-autocomplete-check { margin-top: 0; }
+    #link-selected-list.is-loading { pointer-events: none; }
+    #link-selected-list.is-loading:empty::after { content: none; }
+    .link-skeleton-mark { width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0; }
+    #link-selected-list[data-kind="contato"] .link-skeleton-mark { border-radius: var(--radius-pill); }
+    #link-selected-list.is-loading .company-selected-info { gap: 8px; }
+    .page-header {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      padding: var(--sp-4);
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      border-top-left-radius: 20px;
+    }
+    .page-header-inner { flex: 1; display: flex; align-items: center; gap: var(--sp-4); min-width: 0; }
+    .page-header-title-row { flex: 1; display: flex; align-items: center; gap: var(--sp-2); min-width: 0; }
+    .page-header-back {
+      width: 40px; height: 40px; padding: var(--sp-2);
+      display: flex; align-items: center; justify-content: center;
+      border: none; background: none; border-radius: var(--radius-md);
+      cursor: pointer; flex-shrink: 0; text-decoration: none;
+      transition: background .15s;
+    }
+    .page-header-back:hover { background: var(--color-primary-surface-low); }
+    .page-header-back svg { width: 24px; height: 24px; fill: var(--color-primary-text); }
+    .page-header-title {
+      flex: 1; font-size: 20px; font-weight: 700; color: var(--color-text-high);
+      line-height: 30px; min-width: 0; overflow-wrap: break-word;
+    }
+    .profile-layout { display: grid; grid-template-columns: 368px minmax(0, 1fr); gap: 16px; align-items: start; }
+    .profile-col, .profile-focus { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    .overview-card, .profile-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      min-width: 0;
+    }
+    .overview-accordion-head {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      text-align: left;
+    }
+    .overview-accordion-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--color-icon-low); }
+    .overview-accordion-icon svg { width: 24px; height: 24px; display: block; fill: currentColor; }
+    .overview-accordion-title { flex: 1; min-width: 0; font-size: 16px; font-weight: 700; letter-spacing: -0.16px; line-height: 1.5; }
+    .overview-accordion-chevron { width: 24px; height: 24px; flex-shrink: 0; transition: transform .15s; }
+    .overview-card.is-collapsed .overview-accordion-chevron { transform: rotate(180deg); }
+    .overview-card.is-collapsed .overview-card-body { display: none; }
+    .overview-card-body { display: flex; flex-direction: column; gap: 12px; padding: 0 16px 16px; }
+    #assoc-cards { display: flex; flex-direction: column; gap: 16px; }
+    #assoc-cards .overview-card { padding: 16px; }
+    #assoc-cards .overview-accordion-head { padding: 0; }
+    #assoc-cards .overview-card-body { padding: 12px 0 0; }
+    .overview-btn-secondary {
+      width: 100%; height: 32px; margin-top: 4px; padding: 6px 12px;
+      border: none; border-radius: var(--radius-sm);
+      background: var(--color-primary-surface-low); color: var(--color-primary-text);
+      font-size: 14px; font-weight: 700; letter-spacing: -0.14px; line-height: 1.4;
+      cursor: pointer;
+    }
+    .overview-btn-secondary:hover { background: #66EBFF; color: #005580; }
+    .profile-detail-list { display: flex; flex-direction: column; gap: 8px; }
+    .profile-field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .profile-field-label { font-size: 12px; font-weight: 500; letter-spacing: -0.12px; line-height: 1.3; color: var(--color-text-low); }
+    .profile-field-value { font-size: 16px; font-weight: 500; letter-spacing: -0.16px; line-height: 1.5; color: var(--color-text-high); overflow: hidden; text-overflow: ellipsis; }
+    .profile-empty { margin: 0; font-size: 14px; font-weight: 500; line-height: 1.4; color: var(--color-text-low); }
+    .profile-card { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+    .profile-tabs-nav {
+      display: flex;
+      align-items: flex-end;
+      padding: 0;
+      border-bottom: 2px solid var(--color-border);
+      gap: 0;
+    }
+    .profile-tabs-wrapper { position: relative; flex: 1; min-width: 0; }
+    .profile-tabs-scroll { display: flex; align-items: flex-end; flex-wrap: wrap; }
+    .profile-tab {
+      background: none;
+      border: none;
+      border-bottom: 4px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text-low);
+      padding: 8px 16px 14px;
+      white-space: nowrap;
+      line-height: 24px;
+      transition: color .15s, border-color .15s;
+    }
+    .profile-tabs-scroll .profile-tab:first-child { padding-left: 0; }
+    .profile-tab:hover { color: var(--color-primary-text); }
+    .profile-tab.active {
+      color: var(--color-primary-text);
+      border-bottom-color: #00DBFF;
+    }
+    .profile-tab-panel { display: none; flex-direction: column; gap: 16px; }
+    .profile-tab-panel.active { display: flex; }
+    .overview-timeline { display: flex; flex-direction: column; }
+    .overview-timeline-item { display: flex; align-items: stretch; }
+    .overview-timeline-rail {
+      width: 48px; display: flex; flex-direction: column; align-items: center;
+      gap: 4px; padding-top: 4px; flex-shrink: 0;
+    }
+    .overview-timeline-mark { display: block; flex-shrink: 0; }
+    .overview-timeline-line { flex: 1; width: 4px; min-height: 1px; background: var(--color-border); }
+    .overview-timeline-content {
+      flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding: 12px 0 12px 12px;
+    }
+    .overview-timeline-head { display: flex; align-items: flex-start; gap: 8px; }
+    .overview-timeline-title { font-size: 16px; font-weight: 700; color: #212429; letter-spacing: -0.16px; line-height: 1.5; }
+    .overview-timeline-tag {
+      display: inline-flex; align-items: center; padding: 4px 8px; border-radius: var(--radius-xs);
+      background: var(--color-surface-low); color: var(--color-text-high);
+      font-size: 12px; font-weight: 900; letter-spacing: -0.12px; line-height: 1.3; white-space: nowrap;
+    }
+    .overview-timeline-copy { display: flex; flex-direction: column; gap: 4px; }
+    .overview-timeline-meta { font-size: 14px; font-weight: 400; color: #636e7c; letter-spacing: -0.14px; line-height: 1.4; }
+    .overview-timeline-details { font-size: 14px; font-weight: 400; color: var(--color-text-high); letter-spacing: -0.14px; line-height: 1.4; }
+    .overview-timeline-details p { margin: 0; }
+    .overview-timeline-details strong { font-weight: 700; }
+    .profile-activities-bar { display: flex; align-items: center; gap: 8px; }
+    .profile-search-wrap {
+      display: flex; align-items: center; flex: 1; max-width: 260px; height: 40px;
+      border: 1px solid var(--color-border-interactive); border-radius: 12px; padding: 4px 4px 4px 12px; gap: 8px;
+    }
+    .profile-search-wrap input { border: none; outline: none; flex: 1; min-width: 0; background: transparent; font-size: 14px; font-weight: 500; color: var(--color-text-high); }
+    .profile-search-wrap input::placeholder { color: var(--color-text-low); }
+    .profile-search-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+    .profile-search-icon svg { width: 20px; height: 20px; fill: var(--color-icon-low); }
+    .profile-bar-btn {
+      display: flex; align-items: center; gap: 8px; height: 40px; padding: 8px 16px 8px 12px;
+      border: none; background: none; border-radius: 12px; cursor: pointer;
+      color: var(--color-primary-text); font-size: 16px; font-weight: 700; letter-spacing: -0.16px; white-space: nowrap;
+    }
+    .profile-bar-btn:hover { background: var(--color-primary-surface-low); }
+    .profile-bar-btn svg { width: 24px; height: 24px; fill: var(--color-primary-text); }
+    .title-skeleton.is-skeleton, .profile-tab.is-skeleton { position: relative; display: inline-flex; }
+    .title-skeleton.is-skeleton .btn-skeleton-label, .profile-tab.is-skeleton .btn-skeleton-label { visibility: hidden; }
+    .title-skeleton.is-skeleton .skeleton, .profile-tab.is-skeleton .skeleton { position: absolute; inset: 0; width: auto; height: auto; }
+    .history-filters { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; padding: 10px 0; }
+    .history-filter { position: relative; width: 300px; max-width: 100%; }
+    .history-filter-trigger {
+      display: flex; align-items: center; width: 100%; height: 40px;
+      padding: 4px 4px 4px 12px; border: 1px solid var(--color-border-interactive); border-radius: var(--radius-md);
+      background: var(--color-surface); cursor: pointer; text-align: left; font-family: var(--font);
+    }
+    .history-filter-trigger:hover { border-color: #8c9ba3; }
+    .history-filter-trigger[aria-expanded="true"] { border-color: var(--color-primary-border, #00dbff); }
+    .history-filter-value {
+      flex: 1; min-width: 0; padding-right: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      font-size: 16px; font-weight: 500; line-height: 1.5; letter-spacing: -0.16px; color: var(--color-text-low);
+    }
+    .history-filter-caret { width: 32px; height: 32px; padding: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .history-filter-caret svg { width: 20px; height: 20px; fill: var(--color-icon-low); }
+    #history-filter-list .company-autocomplete-option { align-items: center; font-family: var(--font); }
+    #history-filter-list .company-autocomplete-check { margin-top: 0; }
+    #history-filter-list .company-autocomplete-option-name {
+      font-family: var(--font); font-size: 16px; font-weight: 700; line-height: 24px; letter-spacing: -0.16px; color: var(--color-text-high);
+    }
+    .history-filter-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .history-filter-tags:empty { display: none; }
+    .history-filter-tag {
+      display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: var(--radius-xs);
+      background: var(--color-surface-low); color: var(--color-text-high);
+      font-size: 12px; font-weight: 900; line-height: 1.3; letter-spacing: -0.12px; text-transform: uppercase; white-space: nowrap;
+    }
+    .history-filter-tag-remove { display: flex; padding: 0 0 0 4px; border: none; background: none; cursor: pointer; color: var(--color-text-high); }
+    .history-filter-tag-remove svg { width: 16px; height: 16px; fill: currentColor; }
+    .history-filter.is-skeleton .history-filter-trigger { position: relative; border-color: transparent; pointer-events: none; }
+    .history-filter.is-skeleton .skeleton { position: absolute; inset: -1px; width: auto; height: auto; border-radius: inherit; }
+    .profile-search-wrap.is-skeleton { position: relative; border-color: transparent; pointer-events: none; }
+    .profile-search-wrap.is-skeleton .skeleton { position: absolute; inset: -1px; width: auto; height: auto; border-radius: inherit; }
+    .profile-bar-btn.is-skeleton { position: relative; pointer-events: none; }
+    .profile-bar-btn.is-skeleton .btn-skeleton-label { visibility: hidden; display: inline-flex; align-items: center; gap: 8px; }
+    .profile-bar-btn.is-skeleton .skeleton { position: absolute; inset: 0; width: auto; height: auto; border-radius: inherit; }
+    .profile-field.is-skeleton { pointer-events: none; }
+    @keyframes skeleton-wave { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    .skeleton {
+      display: block; height: 16px; border-radius: 4px;
+      background: linear-gradient(90deg, #eceeef 25%, #f4f5f6 50%, #eceeef 75%);
+      background-size: 200% 100%;
+      animation: skeleton-wave 1.4s infinite ease-in-out;
+    }
+    @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <img src="../../shared/logos/logo-rdvendas.svg" width="162" height="32" alt="RD Vendas" style="flex-shrink:0;">
+      <div class="products-menu" id="products-menu" data-current-product="vendas" data-page="custom-objects" data-base="../../">
+        <button type="button" class="products-menu-trigger" id="products-menu-trigger" aria-expanded="false" aria-haspopup="true" aria-label="Trocar produto">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.61138 13.4077L5.16098 8.95728C4.94634 8.74264 4.94634 8.39466 5.16098 8.18004L5.68005 7.66097C5.89432 7.4467 6.24159 7.44629 6.45637 7.66006L10 11.1871L13.5436 7.66006C13.7584 7.44629 14.1057 7.4467 14.32 7.66097L14.839 8.18004C15.0537 8.39468 15.0537 8.74267 14.839 8.95728L10.3886 13.4077C10.174 13.6223 9.82602 13.6223 9.61138 13.4077Z" fill="white"/></svg>
+        </button>
+        <div class="products-dropdown" id="products-dropdown" role="menu">
+          <div class="products-dropdown-section">Produtos</div>
+          <div class="products-dropdown-item" data-product-id="vendas" role="menuitem">RD Vendas</div>
+          <div class="products-dropdown-item" data-product-id="marketing" role="menuitem">RD Marketing</div>
+          <div class="products-dropdown-item" data-product-id="conversas" role="menuitem">RD Atendimento</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navbar-secondary">
+      <div class="navbar-icons">
+        <!-- RD Station -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_382_2076)"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 0C12 6.62741 17.3726 12 24 12C17.3726 12 12 17.3726 12 24C12 17.3726 6.62744 12 0 12C6.62744 12 12 6.62741 12 0ZM12 5.80645C12 8.36104 8.33148 12 5.71429 12C8.33148 12 12 15.639 12 18.1935C12 15.639 15.6685 12 18.2857 12C15.6685 12 12 8.36104 12 5.80645Z" fill="white"/><path d="M2.28564 13.9852C2.89332 14.1253 3.47973 14.3209 4.03974 14.5659V15.6002L4.04234 15.7378C4.09244 17.0507 4.89237 18.2342 6.12642 18.8039L9.46273 20.344C9.70706 21.0151 9.88155 21.7196 9.97873 22.4488C9.93125 22.4304 9.88404 22.4111 9.83698 22.3914L9.69376 22.329L9.66474 22.3158L9.66176 22.3142L5.37009 20.333C3.54463 19.4903 2.36197 17.739 2.28936 15.7964L2.28899 15.785V15.7737L2.28602 15.6278L2.28564 15.6183V13.9852Z" fill="#00DBFF"/><path d="M21.7142 15.6066C21.7142 17.6243 20.5144 19.463 18.6298 20.333L14.3381 22.3142C14.2334 22.3626 14.1273 22.407 14.0204 22.4484C14.1176 21.7195 14.2922 21.0152 14.5364 20.3444L17.8734 18.8039C19.1485 18.2153 19.9601 16.9714 19.9601 15.6066V14.5659C20.5201 14.3209 21.1065 14.1253 21.7142 13.9852V15.6066Z" fill="#00DBFF"/><path d="M9.91585 1.55127C9.78336 2.30526 9.56674 3.03008 9.27672 3.71621L6.12642 5.17085C4.85136 5.75945 4.03975 7.00333 4.03974 8.36818V9.02141C3.47972 9.26639 2.89333 9.46203 2.28564 9.60205V8.36818C2.28566 6.35048 3.48547 4.5118 5.37009 3.64174L9.66176 1.66052L9.66474 1.65901L9.69376 1.64578L9.69487 1.6454L9.69636 1.64464C9.76892 1.61175 9.84221 1.58089 9.91585 1.55127Z" fill="#00DBFF"/><path d="M14.3039 1.64502L14.3381 1.66052L18.6298 3.64174C20.5144 4.51181 21.7142 6.35049 21.7142 8.36818V9.60205C21.1065 9.46202 20.5201 9.2664 19.9601 9.02141V8.36818C19.9601 7.01398 19.1611 5.77896 17.9032 5.18484L17.8734 5.17085L14.722 3.71584C14.4322 3.02992 14.2165 2.305 14.084 1.55127C14.1578 1.58093 14.2312 1.61207 14.3039 1.64502Z" fill="#00DBFF"/></g><defs><clipPath id="clip0_382_2076"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
+        </div>
+        <!-- Apps -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 15V19H9V15H5ZM3 15C3 13.9353 3.93527 13 5 13H9C10.0647 13 11 13.9353 11 15V19C11 20.0647 10.0647 21 9 21H5C3.93527 21 3 20.0647 3 19V15ZM19 5H15V9H19V5ZM15 3H19C20.0647 3 21 3.93527 21 5V9C21 10.0647 20.0647 11 19 11H15C13.9353 11 13 10.0647 13 9V5C13 3.93527 13.9353 3 15 3ZM15 15V19H19V15H15ZM13 15C13 13.9353 13.9353 13 15 13H19C20.0647 13 21 13.9353 21 15V19C21 20.0647 20.0647 21 19 21H15C13.9353 21 13 20.0647 13 19V15Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9 3C10.0647 3 11 3.93527 11 5V9C11 10.0647 10.0647 11 9 11H5C3.93527 11 3 10.0647 3 9V5C3 3.93527 3.93527 3 5 3H9ZM5 5V9H9V5H5Z" fill="#00DBFF"/></svg>
+        </div>
+        <!-- Notificações -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.9999 3.25C12.5976 3.25 13.1249 3.77734 13.1249 4.375V5.07812C15.6913 5.57031 17.6249 7.85547 17.6249 10.5625V11.4766C17.6249 13.0586 18.1522 14.6055 19.1366 15.8711L19.664 16.5039C19.8749 16.7852 19.9101 17.1367 19.7694 17.418C19.6288 17.6992 19.3476 17.875 19.0312 17.875H4.96865C4.61709 17.875 4.33584 17.6992 4.19521 17.418C4.05459 17.1367 4.08975 16.7852 4.30068 16.5039L4.82803 15.8711C5.8124 14.6055 6.3749 13.0586 6.3749 11.4766V10.5625C6.3749 7.85547 8.3085 5.57031 10.8749 5.07812V4.375C10.8749 3.77734 11.3671 3.25 11.9999 3.25ZM11.9999 6.625C9.82021 6.625 8.0624 8.41797 8.0624 10.5625V11.4766C8.0624 13.1641 7.57021 14.7812 6.65615 16.1875H17.3085C16.3944 14.7812 15.9374 13.1641 15.9374 11.4766V10.5625C15.9374 8.41797 14.1444 6.625 11.9999 6.625Z" fill="white"/><path d="M13.582 20.6172C14.0039 20.1953 14.25 19.5977 14.25 19H12H9.75C9.75 19.5977 9.96094 20.1953 10.3828 20.6172C10.8047 21.0391 11.4023 21.25 12 21.25C12.5977 21.25 13.1602 21.0391 13.582 20.6172Z" fill="#00DBFF"/></svg>
+          <div class="badge-dot"></div>
+        </div>
+        <!-- Configurações -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.25C12.5977 3.25 13.1602 3.32031 13.7227 3.42578C14.0039 3.49609 14.4961 3.63672 14.7773 4.12891C14.8477 4.26953 14.8828 4.41016 14.918 4.55078L15.2695 5.92188C15.3047 6.09766 15.6562 6.30859 15.8672 6.23828L17.2031 5.85156C17.3438 5.81641 17.4844 5.78125 17.625 5.78125C18.1875 5.78125 18.5742 6.13281 18.75 6.34375C19.5234 7.22266 20.1211 8.24219 20.5078 9.36719C20.6133 9.64844 20.7188 10.1406 20.4023 10.5977C20.332 10.7383 20.2266 10.8438 20.1211 10.9492L19.1367 11.9336C18.9609 12.0742 18.9609 12.4609 19.1367 12.6016L20.1211 13.5859C20.2266 13.6914 20.332 13.7969 20.4023 13.9375C20.6836 14.3945 20.5781 14.8867 20.5078 15.168C20.1211 16.293 19.5234 17.3125 18.75 18.1914C18.5742 18.4023 18.1875 18.7539 17.625 18.7539C17.4844 18.7539 17.3438 18.7188 17.2031 18.6836L15.8672 18.2617C15.6562 18.2266 15.3047 18.4023 15.2695 18.6133L14.918 19.9844C14.8828 20.125 14.8477 20.2656 14.7773 20.4062C14.4961 20.8984 14.0039 21.0391 13.7227 21.1094C13.1602 21.2148 12.5977 21.25 12 21.25C11.4023 21.25 10.8047 21.2148 10.2422 21.1094C9.96094 21.0391 9.46875 20.8984 9.1875 20.4062C9.11719 20.2656 9.08203 20.125 9.04688 19.9844L8.69531 18.6133C8.66016 18.4023 8.30859 18.2266 8.13281 18.2617L6.79688 18.6836C6.65625 18.7188 6.48047 18.7188 6.33984 18.7539C5.77734 18.7539 5.39062 18.4023 5.21484 18.1914C4.44141 17.3125 3.84375 16.293 3.45703 15.168C3.38672 14.8867 3.28125 14.3945 3.5625 13.9023C3.63281 13.7969 3.73828 13.6562 3.84375 13.5508L4.86328 12.6016C5.00391 12.4609 5.00391 12.0742 4.86328 11.9336L3.84375 10.9492C3.73828 10.8438 3.63281 10.7383 3.5625 10.5977C3.28125 10.1406 3.38672 9.64844 3.45703 9.36719C3.84375 8.24219 4.44141 7.22266 5.21484 6.34375C5.39062 6.13281 5.77734 5.78125 6.33984 5.78125C6.48047 5.78125 6.65625 5.81641 6.79688 5.85156L8.13281 6.23828C8.30859 6.30859 8.66016 6.09766 8.69531 5.92188L9.04688 4.55078C9.08203 4.41016 9.11719 4.26953 9.1875 4.12891C9.46875 3.63672 9.96094 3.49609 10.2422 3.42578C10.8047 3.32031 11.4023 3.25 12 3.25ZM10.6641 5.07812L10.3477 6.30859C10.0664 7.43359 8.76562 8.20703 7.64062 7.89062L6.41016 7.50391C5.84766 8.20703 5.39062 8.98047 5.07422 9.82422L6.02344 10.7031C6.86719 11.5117 6.86719 13.0234 6.02344 13.832L5.07422 14.7109C5.39062 15.5547 5.84766 16.3281 6.41016 17.0312L7.64062 16.6445C8.76562 16.3281 10.0664 17.1016 10.3477 18.2266L10.6641 19.457C11.5078 19.6328 12.457 19.6328 13.3359 19.457L13.6172 18.2266C13.8984 17.1016 15.1992 16.3281 16.3242 16.6445L17.5547 17.0312C18.1172 16.3281 18.5742 15.5547 18.8906 14.7109L17.9766 13.832C17.1328 13.0234 17.1328 11.5117 17.9766 10.7031L18.8906 9.82422C18.5742 8.98047 18.1172 8.20703 17.5547 7.50391L16.3242 7.89062C15.2344 8.20703 13.8984 7.43359 13.6172 6.30859L13.3359 5.07812C12.457 4.90234 11.5078 4.90234 10.6641 5.07812Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M12 8.875C13.1953 8.875 14.2852 9.54297 14.918 10.5625C15.5156 11.6172 15.5156 12.918 14.918 13.9375C14.2852 14.9922 13.1953 15.625 12 15.625C10.7695 15.625 9.67969 14.9922 9.04688 13.9375C8.44922 12.918 8.44922 11.6172 9.04688 10.5625C9.67969 9.54297 10.7695 8.875 12 8.875ZM12.8438 10.8086C12.3164 10.4922 11.6484 10.4922 11.1562 10.8086C10.6289 11.125 10.3125 11.6523 10.3125 12.25C10.3125 12.8828 10.6289 13.4102 11.1562 13.7266C11.6484 14.043 12.3164 14.043 12.8438 13.7266C13.3359 13.4102 13.6875 12.8828 13.6875 12.25C13.6875 11.6523 13.3359 11.125 12.8438 10.8086Z" fill="#00DBFF"/></svg>
+        </div>
+      </div>
+
+      <div class="navbar-divider"></div>
+
+      <div class="account-menu" id="account-menu">
+        <div class="account-avatar">
+          <img src="../../contatos/avatar-navbar.png" alt="Avatar">
+        </div>
+        <span class="account-name" id="account-name">Agência RD</span>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.61138 13.4077L5.16098 8.95728C4.94634 8.74264 4.94634 8.39466 5.16098 8.18004L5.68005 7.66097C5.89432 7.4467 6.24159 7.44629 6.45637 7.66006L10 11.1871L13.5436 7.66006C13.7584 7.44629 14.1057 7.4467 14.32 7.66097L14.839 8.18004C15.0537 8.39468 15.0537 8.74267 14.839 8.95728L10.3886 13.4077C10.174 13.6223 9.82602 13.6223 9.61138 13.4077Z" fill="white"/></svg>
+        <div class="account-dropdown" id="account-dropdown">
+          <div class="account-dropdown-item" id="logout-btn">
+            <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            Sair
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <aside class="sidebar">
+    <!-- Home -->
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5399 3.19791C12.2274 2.93403 11.7726 2.93403 11.4601 3.19791L2.29359 10.9755C1.9429 11.2741 1.90124 11.7984 2.19637 12.1491C2.4915 12.4998 3.01927 12.5415 3.36996 12.2464L4.22411 11.5241V17.9997C4.22411 19.5344 5.46714 20.7774 7.00183 20.7774H17.0016C18.5363 20.7774 19.7794 19.5344 19.7794 17.9997V11.5241L20.63 12.2464C20.9807 12.545 21.5085 12.4998 21.8036 12.1491C22.0988 11.7984 22.0571 11.2707 21.7064 10.9755L12.5399 3.19791ZM5.89074 17.9997V10.111L12.0017 4.92705L18.1127 10.111V17.9997C18.1127 18.6143 17.6162 19.1108 17.0016 19.1108H15.335V13.8331C15.335 13.0658 14.7135 12.4443 13.9461 12.4443H10.0573C9.28998 12.4443 8.66847 13.0658 8.66847 13.8331V19.1108H7.00183C6.38726 19.1108 5.89074 18.6143 5.89074 17.9997ZM10.3351 19.1108V14.1109H13.6684V19.1108H10.3351Z" fill="white"/><path d="M15.335 13.8332V19.1109H13.6684V14.111H10.3351V19.1109H8.66846V13.8332C8.66846 13.0659 9.28997 12.4443 10.0573 12.4443H13.9461C14.7135 12.4443 15.335 13.0659 15.335 13.8332Z" fill="#00DBFF"/></svg>
+      </div>
+    </div>
+    <!-- Contatos -->
+    <a href="../../contatos/index.html" style="display:contents; text-decoration:none;">
+      <div class="sidebar-item">
+        <div class="sidebar-item-inner">
+          <img src="../../shared/svg/contact-default.svg" width="24" height="24" alt="" aria-hidden="true">
+        </div>
+      </div>
+    </a>
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <img src="../../perfil/icons/hands.svg" width="24" height="24" alt="" aria-hidden="true">
+      </div>
+    </div>
+    <!-- Atrair -->
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <img src="../../perfil/icons/predio.svg" width="24" height="24" alt="" aria-hidden="true">
+      </div>
+    </div>
+    <!-- Converter -->
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <img src="../../perfil/icons/tasks.svg" width="24" height="24" alt="" aria-hidden="true">
+      </div>
+    </div>
+    <!-- Analisar -->
+    <div class="sidebar-item">
+      <div class="sidebar-item-inner">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.0312 18.4375V12.8125C10.0312 12.6719 9.89062 12.5312 9.75 12.5312C9.57422 12.5312 9.46875 12.6719 9.46875 12.8125V18.4375C9.46875 18.6133 9.57422 18.7188 9.75 18.7188C9.89062 18.7188 10.0312 18.6133 10.0312 18.4375ZM9.75 11.125C10.6641 11.125 11.4375 11.8984 11.4375 12.8125V18.4375C11.4375 19.3867 10.6641 20.125 9.75 20.125C8.80078 20.125 8.0625 19.3867 8.0625 18.4375V12.8125C8.0625 11.8984 8.80078 11.125 9.75 11.125ZM5.53125 18.4375V16.1875C5.53125 16.0469 5.39062 15.9062 5.25 15.9062C5.07422 15.9062 4.96875 16.0469 4.96875 16.1875V18.4375C4.96875 18.6133 5.07422 18.7188 5.25 18.7188C5.39062 18.7188 5.53125 18.6133 5.53125 18.4375ZM5.25 14.5C6.16406 14.5 6.9375 15.2734 6.9375 16.1875V18.4375C6.9375 19.3867 6.16406 20.125 5.25 20.125C4.30078 20.125 3.5625 19.3867 3.5625 18.4375V16.1875C3.5625 15.2734 4.30078 14.5 5.25 14.5ZM14.5312 15.0625C14.5312 14.9219 14.3906 14.7812 14.25 14.7812C14.0742 14.7812 13.9688 14.9219 13.9688 15.0625V18.4375C13.9688 18.6133 14.0742 18.7188 14.25 18.7188C14.3906 18.7188 14.5312 18.6133 14.5312 18.4375V15.0625ZM12.5625 15.0625C12.5625 14.1484 13.3008 13.375 14.25 13.375C15.1641 13.375 15.9375 14.1484 15.9375 15.0625V18.4375C15.9375 19.3867 15.1641 20.125 14.25 20.125C13.3008 20.125 12.5625 19.3867 12.5625 18.4375V15.0625ZM19.0312 18.4375V12.8125C19.0312 12.6719 18.8906 12.5312 18.75 12.5312C18.5742 12.5312 18.4688 12.6719 18.4688 12.8125V18.4375C18.4688 18.6133 18.5742 18.7188 18.75 18.7188C18.8906 18.7188 19.0312 18.6133 19.0312 18.4375ZM18.75 11.125C19.6641 11.125 20.4375 11.8984 20.4375 12.8125V18.4375C20.4375 19.3867 19.6641 20.125 18.75 20.125C17.8008 20.125 17.0625 19.3867 17.0625 18.4375V12.8125C17.0625 11.8984 17.8008 11.125 18.75 11.125Z" fill="white"/><path d="M14.7773 10.9492L20.6836 5.88672C21.0351 5.57031 21.0703 5.04297 20.789 4.69141C20.4726 4.33984 19.9453 4.30469 19.5937 4.58594L14.25 9.19141L10.2773 5.71094C9.99606 5.46484 9.57418 5.42969 9.25778 5.64062L3.35153 9.57812C2.96481 9.85938 2.85934 10.3867 3.14059 10.7734C3.38668 11.1602 3.91403 11.2656 4.30075 10.9844L9.67965 7.43359L13.6875 10.9492C14.0039 11.1953 14.4609 11.1953 14.7773 10.9492Z" fill="#00DBFF"/></svg>
+      </div>
+    </div>
+    <!-- Objetos personalizados -->
+    <div class="sidebar-item sidebar-objects active" aria-current="page" aria-label="Objetos personalizados" aria-haspopup="true">
+      <div class="sidebar-item-inner">
+        <img src="../../shared/svg/custom-objects-active.svg" width="24" height="24" alt="" aria-hidden="true">
+      </div>
+        <div class="sidebar-indicator"></div>
+      <div class="objects-flyout" role="menu" aria-label="Objetos personalizados">
+        <div class="objects-flyout-section">Objetos personalizados</div>
+        <a class="objects-flyout-item" href="../Alunos/">Alunos</a>
+        <a class="objects-flyout-item" href="../Contratos/">Contratos</a>
+        <div class="objects-flyout-divider" aria-hidden="true"></div>
+        <a class="objects-flyout-item objects-flyout-create" href="../../custom-objects/">
+          Gerenciar Objetos
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="content-split">
+    <div class="content-main">
+      <header class="page-header">
+        <div class="page-header-inner">
+          <div class="page-header-title-row">
+            <a class="page-header-back" id="profile-back" href="../objeto/" title="Voltar" aria-label="Voltar para a listagem">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M13.0475 18.0623L12.3539 18.774C12.0601 19.0753 11.5852 19.0753 11.2946 18.774L5.22029 12.545C4.92657 12.2436 4.92657 11.7564 5.22029 11.4582L11.2946 5.22601C11.5883 4.92466 12.0633 4.92466 12.3539 5.22601L13.0475 5.93771C13.3444 6.24227 13.3381 6.73918 13.035 7.03733L9.26984 10.7177H18.2501C18.6657 10.7177 19 11.0607 19 11.4871V12.5129C19 12.9393 18.6657 13.2823 18.2501 13.2823H9.26984L13.035 16.9627C13.3413 17.2608 13.3475 17.7577 13.0475 18.0623Z" fill="var(--color-primary-text)"/></svg>
+            </a>
+            <h1 class="page-header-title" id="profile-title"><span class="title-skeleton is-skeleton" id="profile-title-skeleton" aria-busy="true"><span class="btn-skeleton-label" id="profile-title-label"></span><span class="skeleton" aria-hidden="true"></span></span></h1>
+          </div>
+        </div>
+      </header>
+      <div class="content-body">
+      <div class="profile-layout">
+        <div class="profile-col">
+          <section class="overview-card" id="object-card">
+            <button type="button" class="overview-accordion-head" aria-expanded="true">
+              <span class="overview-accordion-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3.569 2h4.138a2.07 2.07 0 0 1 2.069 2.069v4.138a2.07 2.07 0 0 1-2.07 2.069H3.57A2.07 2.07 0 0 1 1.5 8.206V4.07A2.07 2.07 0 0 1 3.569 2zm0 11.034h4.138a2.07 2.07 0 0 1 2.069 2.07v4.137a2.07 2.07 0 0 1-2.07 2.07H3.57A2.07 2.07 0 0 1 1.5 19.24v-4.138a2.07 2.07 0 0 1 2.069-2.069zm8.965-8.965A2.07 2.07 0 0 1 14.604 2h4.137a2.07 2.07 0 0 1 2.07 2.069v4.138a2.07 2.07 0 0 1-2.07 2.069h-4.138a2.07 2.07 0 0 1-2.069-2.07V4.07zm4.138 8.276c.574 0 1.035.461 1.035 1.034v2.759h2.758c.574 0 1.035.461 1.035 1.034 0 .574-.461 1.035-1.035 1.035h-2.758v2.758c0 .574-.461 1.035-1.035 1.035a1.032 1.032 0 0 1-1.034-1.035v-2.758h-2.759a1.032 1.032 0 0 1-1.034-1.035c0-.573.461-1.034 1.034-1.034h2.759v-2.759c0-.573.461-1.034 1.034-1.034z"/></svg></span>
+              <span class="overview-accordion-title" id="object-card-title"><span class="title-skeleton is-skeleton" aria-busy="true"><span class="btn-skeleton-label" id="object-card-title-label"></span><span class="skeleton" aria-hidden="true"></span></span></span>
+              <img class="overview-accordion-chevron" src="../../contatos/painel-visao/chevron-up.svg" width="24" height="24" alt="">
+            </button>
+            <div class="overview-card-body" id="object-card-body">
+              <div class="profile-field is-skeleton" aria-busy="true"><span class="skeleton" style="width:96px;height:12px"></span><span class="skeleton" style="width:180px"></span></div>
+              <div class="profile-field is-skeleton" aria-busy="true"><span class="skeleton" style="width:120px;height:12px"></span><span class="skeleton" style="width:140px"></span></div>
+              <div class="profile-field is-skeleton" aria-busy="true"><span class="skeleton" style="width:80px;height:12px"></span><span class="skeleton" style="width:200px"></span></div>
+            </div>
+          </section>
+          <section class="overview-card" id="fields-card">
+            <button type="button" class="overview-accordion-head" aria-expanded="true">
+              <span class="overview-accordion-icon" aria-hidden="true"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8.88921 4.875V1.33333H3.33366C2.96421 1.33333 2.66699 1.61198 2.66699 1.95833V14.0417C2.66699 14.388 2.96421 14.6667 3.33366 14.6667H12.667C13.0364 14.6667 13.3337 14.388 13.3337 14.0417V5.5H9.55588C9.18921 5.5 8.88921 5.21875 8.88921 4.875ZM10.667 11.0208C10.667 11.1927 10.517 11.3333 10.3337 11.3333H5.66699C5.48366 11.3333 5.33366 11.1927 5.33366 11.0208V10.8125C5.33366 10.6406 5.48366 10.5 5.66699 10.5H10.3337C10.517 10.5 10.667 10.6406 10.667 10.8125V11.0208ZM10.667 9.35417C10.667 9.52604 10.517 9.66667 10.3337 9.66667H5.66699C5.48366 9.66667 5.33366 9.52604 5.33366 9.35417V9.14583C5.33366 8.97396 5.48366 8.83333 5.66699 8.83333H10.3337C10.517 8.83333 10.667 8.97396 10.667 9.14583V9.35417ZM10.667 7.47917V7.6875C10.667 7.85937 10.517 8 10.3337 8H5.66699C5.48366 8 5.33366 7.85937 5.33366 7.6875V7.47917C5.33366 7.30729 5.48366 7.16667 5.66699 7.16667H10.3337C10.517 7.16667 10.667 7.30729 10.667 7.47917ZM13.3337 4.50781V4.66667H9.7781V1.33333H9.94755C10.1253 1.33333 10.2948 1.39844 10.4198 1.51562L13.1392 4.06771C13.2642 4.1849 13.3337 4.34375 13.3337 4.50781Z"/></svg></span>
+              <span class="overview-accordion-title" id="fields-card-title"><span class="title-skeleton is-skeleton" aria-busy="true"><span class="btn-skeleton-label">Mais informações</span><span class="skeleton" aria-hidden="true"></span></span></span>
+              <img class="overview-accordion-chevron" src="../../contatos/painel-visao/chevron-up.svg" width="24" height="24" alt="">
+            </button>
+            <div class="overview-card-body" id="fields-card-body">
+              <div class="profile-field is-skeleton" aria-busy="true"><span class="skeleton" style="width:110px;height:12px"></span><span class="skeleton" style="width:160px"></span></div>
+              <div class="profile-field is-skeleton" aria-busy="true"><span class="skeleton" style="width:88px;height:12px"></span><span class="skeleton" style="width:200px"></span></div>
+              <div class="profile-field is-skeleton" aria-busy="true"><span class="skeleton" style="width:132px;height:12px"></span><span class="skeleton" style="width:120px"></span></div>
+              <div class="profile-field is-skeleton" aria-busy="true"><span class="skeleton" style="width:96px;height:12px"></span><span class="skeleton" style="width:176px"></span></div>
+            </div>
+          </section>
+          <div id="assoc-cards">
+            <section class="overview-card" aria-busy="true">
+              <div class="overview-accordion-head">
+                <span class="skeleton" style="width:24px;height:24px;border-radius:4px"></span>
+                <span class="skeleton" style="width:96px;height:16px"></span>
+              </div>
+              <div class="overview-card-body">
+                <div class="profile-field is-skeleton" aria-busy="true"><span class="skeleton" style="width:40px;height:40px;border-radius:12px"></span><span class="skeleton" style="width:160px"></span></div>
+              </div>
+            </section>
+          </div>
+        </div>
+        <div class="profile-focus">
+          <div class="profile-card">
+            <div class="profile-tabs-nav" id="profile-tabs" aria-busy="true">
+              <div class="profile-tabs-wrapper">
+                <div class="profile-tabs-scroll" id="profile-tabs-scroll">
+                  <span class="profile-tab is-skeleton" aria-busy="true"><span class="btn-skeleton-label">Histórico</span><span class="skeleton" aria-hidden="true"></span></span>
+                </div>
+              </div>
+            </div>
+            <div id="profile-panels">
+              <div class="profile-tab-panel active" data-tab-panel="historico">
+                <div class="history-filters">
+                  <div class="history-filter is-skeleton" aria-busy="true">
+                    <div class="history-filter-trigger"><span class="skeleton" aria-hidden="true"></span><span class="history-filter-value">Filtre por tipo de evento</span></div>
+                  </div>
+                </div>
+                <div class="profile-field is-skeleton" aria-busy="true"><span class="skeleton" style="width:70%"></span><span class="skeleton" style="width:46%"></span></div>
+                <div class="profile-field is-skeleton" aria-busy="true"><span class="skeleton" style="width:58%"></span><span class="skeleton" style="width:40%"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+    <aside class="detail-panel" id="detail-panel" aria-hidden="true" aria-label="Editar vínculo">
+      <div class="drawer" id="drawer-edit-link" role="dialog" aria-modal="false" aria-label="Editar vínculo">
+        <div class="drawer-header">
+          <span class="drawer-title" id="link-drawer-title">Editar vínculo</span>
+          <button class="drawer-close" id="link-drawer-close" type="button" title="Fechar" aria-label="Fechar">
+            <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
+        </div>
+        <div class="drawer-body">
+          <div class="company-drawer-tabs" id="link-drawer-tabs">
+            <div class="company-drawer-tabs-nav" role="tablist" aria-label="Como adicionar o registro">
+              <button class="company-drawer-tab" id="link-tab-create" type="button" role="tab" data-link-tab="create" aria-selected="false">Criar novo</button>
+              <button class="company-drawer-tab is-active" id="link-tab-existing" type="button" role="tab" data-link-tab="existing" aria-selected="true">Adicionar existente</button>
+            </div>
+          </div>
+          <form id="link-create-form" hidden novalidate>
+            <div class="drawer-section-title" id="link-create-heading">Identificação</div>
+            <div id="link-create-fields"></div>
+          </form>
+          <div id="link-existing-panel">
+            <div class="drawer-field">
+              <label class="drawer-label" id="link-search-label" for="link-search">Buscar</label>
+              <div class="company-autocomplete" id="link-search-box">
+                <div class="company-autocomplete-control">
+                  <input class="company-autocomplete-input" id="link-search" type="text" placeholder="Digite o nome" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="link-search-list">
+                  <button class="company-autocomplete-clear" id="link-search-clear" type="button" hidden aria-label="Limpar">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4z"/></svg>
+                  </button>
+                </div>
+                <div class="company-autocomplete-dropdown" id="link-search-list" role="listbox" hidden></div>
+              </div>
+            </div>
+            <div class="drawer-section-title" id="link-selected-heading">Registros selecionados</div>
+            <div class="company-selected-list" id="link-selected-list" aria-live="polite"></div>
+          </div>
+          <div id="link-drawer-error" class="drawer-error" style="display:none"></div>
+        </div>
+        <div class="drawer-footer">
+          <div class="drawer-actions">
+            <button class="drawer-btn-cancel" id="link-drawer-cancel" type="button">Cancelar</button>
+            <button class="drawer-btn-save" id="link-drawer-save" type="button">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+    </div>
+  </main>
+</div>
+<script src="../../shared/custom-objects-db.js"></script>
+<script src="../../shared/inline-edit.js"></script>
+<script src="../../shared/profile-assoc-scroll.js"></script>
+<script>
+(function () {
+  const params = new URLSearchParams(location.search);
+  const objectName = params.get('objeto') || '';
+  const recordId = params.get('id') || '';
+  let linkedRows = [];
+  const searchIcon = '<span class="profile-search-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></span>';
+  const filterIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 8.25H19.5C19.7762 8.25 20 8.02616 20 7.75V6.5C20 6.22384 19.7762 6 19.5 6H4.5C4.22384 6 4 6.22384 4 6.5V7.75C4 8.02616 4.22384 8.25 4.5 8.25ZM6.5 13.25H17.5C17.7762 13.25 18 13.0262 18 12.75V11.5C18 11.2238 17.7762 11 17.5 11H6.5C6.22384 11 6 11.2238 6 11.5V12.75C6 13.0262 6.22384 13.25 6.5 13.25ZM8.5 18.25H15.5C15.7762 18.25 16 18.0262 16 17.75V16.5C16 16.2238 15.7762 16 15.5 16H8.5C8.22384 16 8 16.2238 8 16.5V17.75C8 18.0262 8.22384 18.25 8.5 18.25Z"/></svg>';
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[char]));
+  }
+
+  function fold(value) {
+    return String(value || '').toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  function listingHref() {
+    if (objectName === 'Alunos' || objectName === 'Contratos') return '../' + encodeURIComponent(objectName) + '/';
+    return '../objeto/?objeto=' + encodeURIComponent(objectName);
+  }
+
+  function fieldValue(field, data) {
+    const raw = data && field ? data[field.id] : '';
+    if (Array.isArray(raw)) return raw.filter(Boolean).join(', ');
+    return raw ? String(raw) : '';
+  }
+
+  function inlineType(field) {
+    if (field.field_type === 'date') return 'date';
+    if (field.field_type === 'option') return 'select';
+    if (field.field_type === 'multiple_choice') return 'multiselect';
+    return 'text';
+  }
+
+  function choiceOptions(field) {
+    let options = field && field.options;
+    if (typeof options === 'string') {
+      try { options = JSON.parse(options); } catch (error) { options = []; }
+    }
+    if (!Array.isArray(options)) return [];
+    return options.map(option => {
+      if (option && typeof option === 'object') return option.label || option.value || '';
+      return option == null ? '' : String(option);
+    }).filter(Boolean);
+  }
+
+  const ASSOC_TYPES = [
+    {
+      key: 'empresa',
+      title: 'Empresa',
+      singular: 'empresa',
+      plural: 'empresas',
+      selectedTitle: 'Empresas selecionadas',
+      icon: '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M13.0477 13.25H12.5715V2.5625C12.5715 2.25184 12.3157 2 12.0001 2H4.00008C3.68449 2 3.42865 2.25184 3.42865 2.5625V13.25H2.95246C2.79468 13.25 2.66675 13.3759 2.66675 13.5312V14H13.3334V13.5312C13.3334 13.3759 13.2055 13.25 13.0477 13.25ZM5.71437 3.78125C5.71437 3.62593 5.8423 3.5 6.00008 3.5H6.95246C7.11025 3.5 7.23818 3.62593 7.23818 3.78125V4.71875C7.23818 4.87407 7.11025 5 6.95246 5H6.00008C5.8423 5 5.71437 4.87407 5.71437 4.71875V3.78125ZM5.71437 6.03125C5.71437 5.87593 5.8423 5.75 6.00008 5.75H6.95246C7.11025 5.75 7.23818 5.87593 7.23818 6.03125V6.96875C7.23818 7.12407 7.11025 7.25 6.95246 7.25H6.00008C5.8423 7.25 5.71437 7.12407 5.71437 6.96875V6.03125ZM6.95246 9.5H6.00008C5.8423 9.5 5.71437 9.37407 5.71437 9.21875V8.28125C5.71437 8.12593 5.8423 8 6.00008 8H6.95246C7.11025 8 7.23818 8.12593 7.23818 8.28125V9.21875C7.23818 9.37407 7.11025 9.5 6.95246 9.5ZM8.76199 13.25H7.23818V11.2812C7.23818 11.1259 7.36611 11 7.52389 11H8.47627C8.63406 11 8.76199 11.1259 8.76199 11.2812V13.25ZM10.2858 9.21875C10.2858 9.37407 10.1579 9.5 10.0001 9.5H9.0477C8.88991 9.5 8.76199 9.37407 8.76199 9.21875V8.28125C8.76199 8.12593 8.88991 8 9.0477 8H10.0001C10.1579 8 10.2858 8.12593 10.2858 8.28125V9.21875ZM10.2858 6.96875C10.2858 7.12407 10.1579 7.25 10.0001 7.25H9.0477C8.88991 7.25 8.76199 7.12407 8.76199 6.96875V6.03125C8.76199 5.87593 8.88991 5.75 9.0477 5.75H10.0001C10.1579 5.75 10.2858 5.87593 10.2858 6.03125V6.96875ZM10.2858 4.71875C10.2858 4.87407 10.1579 5 10.0001 5H9.0477C8.88991 5 8.76199 4.87407 8.76199 4.71875V3.78125C8.76199 3.62593 8.88991 3.5 9.0477 3.5H10.0001C10.1579 3.5 10.2858 3.62593 10.2858 3.78125V4.71875Z"/></svg>'
+    },
+    {
+      key: 'contato',
+      title: 'Contato',
+      singular: 'contato',
+      plural: 'contatos',
+      selectedTitle: 'Contatos selecionados',
+      icon: '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8.00008 8C9.68341 8 11.0477 6.65703 11.0477 5C11.0477 3.34297 9.68341 2 8.00008 2C6.31675 2 4.95246 3.34297 4.95246 5C4.95246 6.65703 6.31675 8 8.00008 8ZM10.1334 8.75H9.7358C9.20722 8.98906 8.61913 9.125 8.00008 9.125C7.38103 9.125 6.79532 8.98906 6.26437 8.75H5.86675C4.10008 8.75 2.66675 10.1609 2.66675 11.9V12.875C2.66675 13.4961 3.17865 14 3.80961 14H12.1906C12.8215 14 13.3334 13.4961 13.3334 12.875V11.9C13.3334 10.1609 11.9001 8.75 10.1334 8.75Z"/></svg>'
+    },
+    {
+      key: 'lojas',
+      title: 'Lojas',
+      singular: 'loja',
+      plural: 'lojas',
+      selectedTitle: 'Lojas selecionadas',
+      icon: '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M2.15 6.15 3.05 2.7h9.9l.9 3.45c.18.68-.32 1.35-1.02 1.35-.58 0-1.08-.38-1.22-.94l-.18-.72-.18.72c-.14.56-.64.94-1.22.94s-1.08-.38-1.22-.94l-.18-.72-.18.72c-.14.56-.64.94-1.22.94s-1.08-.38-1.22-.94l-.18-.72-.18.72c-.14.56-.64.94-1.22.94-.7 0-1.2-.67-1.02-1.35ZM3.15 8.15V13.1h3.9V9.55h1.9V13.1h3.9V8.15h-.95c-.22.48-.7.82-1.25.82-.62 0-1.15-.4-1.34-.96-.19.56-.72.96-1.34.96s-1.15-.4-1.34-.96c-.19.56-.72.96-1.34.96-.55 0-1.03-.34-1.25-.82H3.15Z"/></svg>'
+    }
+  ];
+
+  function assocType(name) {
+    const key = fold(name);
+    return ASSOC_TYPES.find(type => key === type.singular || key === type.plural || key === type.key) || null;
+  }
+
+  function initials(name) {
+    const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return '?';
+    const first = parts[0].charAt(0);
+    const last = parts.length > 1 ? parts[parts.length - 1].charAt(0) : '';
+    return (first + last).toLocaleUpperCase('pt-BR');
+  }
+
+  const AVATAR_COLORS = ['#e8b84b', '#6c63ff', '#e05e34', '#2196f3', '#9c27b0', '#00897b', '#f44336', '#ff9800', '#607d8b', '#3f51b5', '#00acc1', '#43a047'];
+
+  function contactInitials(name) {
+    const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return '?';
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  }
+
+  function contactColor(name) {
+    let hash = 0;
+    const value = String(name || '');
+    for (let index = 0; index < value.length; index += 1) hash = (hash * 31 + value.charCodeAt(index)) & 0xffffffff;
+    return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+  }
+
+  function contactAvatarSvg(name) {
+    return '<svg viewBox="0 0 40 40" width="40" height="40"><circle cx="20" cy="20" r="20" fill="' + contactColor(name) + '"/><text x="20" y="25" text-anchor="middle" font-size="14" fill="#fff" font-weight="700" font-family="sans-serif">' + escapeHtml(contactInitials(name)) + '</text></svg>';
+  }
+
+  function contactAvatarHtml(name, photo) {
+    if (photo) return '<div class="avatar"><img src="' + escapeHtml(photo) + '" alt="' + escapeHtml(name || '') + '"></div>';
+    return '<div class="avatar">' + contactAvatarSvg(name) + '</div>';
+  }
+
+  function recordMarkHtml(type, item) {
+    if (type && type.key === 'contato') return contactAvatarHtml(item.name, item.photo);
+    return '<div class="company-selected-logo">' + escapeHtml(initials(item.name)) + '</div>';
+  }
+
+  function formatContactPhone(raw) {
+    if (!raw) return '';
+    const digits = String(raw).replace(/\D/g, '');
+    if (digits.startsWith('55') && digits.length >= 12) {
+      const local = digits.slice(2);
+      const ddd = local.slice(0, 2);
+      const number = local.slice(2);
+      if (number.length === 9) return '+55 (' + ddd + ') ' + number.charAt(0) + ' ' + number.slice(1, 5) + '-' + number.slice(5);
+      if (number.length === 8) return '+55 (' + ddd + ') ' + number.slice(0, 4) + '-' + number.slice(4);
+      return '+55 (' + ddd + ') ' + number;
+    }
+    if (digits.length === 11) return '(' + digits.slice(0, 2) + ') ' + digits.charAt(2) + ' ' + digits.slice(3, 7) + '-' + digits.slice(7);
+    if (digits.length === 10) return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 6) + '-' + digits.slice(6);
+    return String(raw);
+  }
+
+  function primaryContactEmail(row) {
+    const list = Array.isArray(row.emails) && row.emails.length ? row.emails : (row.email ? [row.email] : []);
+    const first = list[0];
+    if (first && typeof first === 'object') return first.email || first.valor || '';
+    return first ? String(first) : '';
+  }
+
+  function primaryContactPhone(row) {
+    const list = Array.isArray(row.telefones) && row.telefones.length ? row.telefones : (row.telefone ? [row.telefone] : []);
+    const first = list[0];
+    const raw = first && typeof first === 'object' ? (first.numero || first.telefone || '') : (first || '');
+    return formatContactPhone(raw);
+  }
+
+  function recordInfoHtml(type, item) {
+    const lines = type && type.key === 'contato'
+      ? (item.phone ? [item.phone] : [])
+      : (item.meta ? [item.meta] : []);
+    return '<div class="company-selected-info"><span class="company-selected-name">' + escapeHtml(item.name) + '</span>'
+      + lines.map(line => '<span class="company-selected-meta">' + escapeHtml(line) + '</span>').join('')
+      + '</div>';
+  }
+
+  function linkActionsHtml(item, principal) {
+    return '<div class="company-selected-actions">'
+      + '<button type="button" class="company-selected-principal' + (principal ? ' is-principal' : '') + '" data-id="' + escapeHtml(item.id) + '" aria-pressed="' + (principal ? 'true' : 'false') + '" aria-label="Marcar como principal" aria-describedby="link-principal-tooltip">' + (principal ? linkStarSolidSvg : linkStarOutlineSvg) + '</button>'
+      + '<div class="company-selected-menu">'
+      + '<button type="button" class="company-selected-menu-btn" data-id="' + escapeHtml(item.id) + '" aria-label="Mais opções de ' + escapeHtml(item.name) + '" aria-haspopup="menu" aria-expanded="false">' + linkEllipsisSvg + '</button>'
+      + '<div class="company-selected-menu-list" role="menu" hidden>'
+      + '<button type="button" class="company-selected-menu-item" role="menuitem" data-action="edit" data-id="' + escapeHtml(item.id) + '">Editar campos</button>'
+      + '<button type="button" class="company-selected-menu-item" role="menuitem" data-action="remove" data-id="' + escapeHtml(item.id) + '">Remover associação</button>'
+      + '</div></div></div>';
+  }
+
+  function assocCard(type, link, items) {
+    const empty = !items.length;
+    const label = 'Editar ' + (items.length > 1 ? type.plural : type.singular);
+    const rows = items.map(item => (
+      '<div class="company-selected-item"' + (item.id ? ' data-record-id="' + escapeHtml(item.id) + '"' : '') + '>'
+      + recordMarkHtml(type, item)
+      + recordInfoHtml(type, item)
+      + (item.id ? linkActionsHtml(item, item.principal === true) : '') + '</div>'
+    )).join('');
+    return '<section class="overview-card' + (empty ? ' is-card-empty is-collapsed' : '') + '" id="assoc-' + type.key + '" data-link-id="' + escapeHtml(link.id) + '" data-object-id="' + escapeHtml(link.objectId) + '">'
+      + '<button type="button" class="overview-accordion-head" aria-expanded="' + (empty ? 'false' : 'true') + '">'
+      + '<span class="overview-accordion-icon" aria-hidden="true">' + type.icon + '</span>'
+      + '<span class="overview-accordion-title">' + escapeHtml(type.title) + '</span>'
+      + '<span class="overview-accordion-alert" aria-hidden="true"><img src="../../shared/profile-empty-alert.svg" width="24" height="24" alt=""></span>'
+      + '<img class="overview-accordion-chevron" src="../../contatos/painel-visao/chevron-up.svg" width="24" height="24" alt="">'
+      + '</button>'
+      + '<div class="overview-card-body">'
+      + '<div class="profile-card-empty"><div class="profile-card-empty-hero"><img class="profile-card-empty-art" src="../../shared/profile-empty-illustration.svg" width="128" height="128" alt=""><div class="profile-card-empty-copy"><p class="profile-card-empty-title">Nenhuma informação disponível</p><p class="profile-card-empty-text">Não foram adicionados dados para exibição aqui.</p></div></div><button type="button" class="overview-btn-secondary" data-assoc-edit>' + escapeHtml(label) + '</button></div>'
+      + '<div class="company-selected-list assoc-record-list" id="assoc-' + type.key + '-list">' + rows + '</div>'
+      + '<button type="button" class="overview-btn-secondary" data-assoc-edit>' + escapeHtml(label) + '</button>'
+      + '</div></section>';
+  }
+
+  async function associatedNames(api, link, ids) {
+    const wanted = ids.map(String);
+    const found = {};
+    if (!wanted.length) return found;
+    const key = fold(link.name);
+    const db = window.__sbClient;
+    try {
+      if ((key === 'contato' || key === 'contatos') && db) {
+        const { data } = await db.from('claude_contatos').select('id, nome, email, emails, telefone, telefones, foto_perfil').in('id', wanted);
+        (data || []).forEach(row => {
+          const email = primaryContactEmail(row);
+          found[row.id] = { name: row.nome || 'Contato', meta: email, email, phone: primaryContactPhone(row), photo: row.foto_perfil || '' };
+        });
+      } else if ((key === 'empresa' || key === 'empresas') && db) {
+        const { data } = await db.from('claude_empresas').select('id, nome, cnpj').in('id', wanted);
+        (data || []).forEach(row => { found[row.id] = { name: row.nome || 'Empresa', meta: row.cnpj || '' }; });
+      }
+    } catch (error) {}
+    const pending = wanted.filter(id => !found[id]);
+    if (!pending.length || !link.objectId) return found;
+    try {
+      const fields = await api.listFields(link.objectId);
+      const rows = await api.listRecords(link.objectId);
+      const ordered = fields.slice().sort((a, b) => (a.position || 0) - (b.position || 0));
+      const primary = ordered.find(field => field.is_primary) || ordered[0];
+      const secondary = ordered.find(field => field !== primary);
+      rows.forEach(row => {
+        if (!pending.includes(String(row.id))) return;
+        found[row.id] = {
+          name: (primary && fieldValue(primary, row.data)) || link.name,
+          meta: secondary ? fieldValue(secondary, row.data) : '',
+          photo: row.data && (row.data.foto_perfil || row.data.foto) || ''
+        };
+      });
+    } catch (error) {}
+    return found;
+  }
+
+  function fieldRows(fields, data) {
+    if (!fields.length) return '';
+    return '<div class="profile-detail-list">' + fields.map(field => {
+      const value = fieldValue(field, data);
+      const choices = choiceOptions(field);
+      const options = (field.field_type === 'option' || field.field_type === 'multiple_choice') && choices.length
+        ? ' data-options="' + escapeHtml(JSON.stringify(choices)) + '"'
+        : '';
+      return '<div class="profile-detail-item" data-custom-record="1" data-field="' + escapeHtml(field.id) + '" data-inline-type="' + inlineType(field) + '"' + options + '>'
+        + '<span class="profile-detail-label">' + escapeHtml(field.name) + '</span>'
+        + '<div class="profile-detail-value-row"><span class="profile-detail-value' + (value ? '' : ' is-empty') + '">' + escapeHtml(value || '—') + '</span></div>'
+        + '</div>';
+    }).join('') + '</div>';
+  }
+
+  function revealTitle(id, text) {
+    document.getElementById(id).textContent = text;
+  }
+
+  function toolbar(placeholder) {
+    return '<div class="profile-activities-bar"><div class="profile-search-wrap"><input type="search" placeholder="' + escapeHtml(placeholder) + '" aria-label="' + escapeHtml(placeholder) + '">' + searchIcon + '</div><button type="button" class="profile-bar-btn">' + filterIcon + 'Filtros</button></div>';
+  }
+
+  const historyCaret = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.53907 10H15.4609C15.9402 10 16.1803 10.6386 15.8414 11.0121L12.3804 14.8264C12.1703 15.0579 11.8297 15.0579 11.6196 14.8264L8.15866 11.0121C7.81973 10.6386 8.05978 10 8.53907 10Z"/></svg>';
+  const historyTimes = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.2745 12L17.686 8.58852C18.1047 8.16989 18.1047 7.49114 17.686 7.07216L16.9278 6.31398C16.5092 5.89534 15.8305 5.89534 15.4115 6.31398L12 9.72545L8.58852 6.31398C8.16989 5.89534 7.49114 5.89534 7.07216 6.31398L6.31398 7.07216C5.89534 7.4908 5.89534 8.16955 6.31398 8.58852L9.72545 12L6.31398 15.4115C5.89534 15.8301 5.89534 16.5089 6.31398 16.9278L7.07216 17.686C7.4908 18.1047 8.16989 18.1047 8.58852 17.686L12 14.2745L15.4115 17.686C15.8301 18.1047 16.5092 18.1047 16.9278 17.686L17.686 16.9278C18.1047 16.5092 18.1047 15.8305 17.686 15.4115L14.2745 12Z"/></svg>';
+  const historyCheck = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1136 18.1592L3.26359 12.3092C2.91214 11.9577 2.91214 11.3879 3.26359 11.0364L4.53636 9.7636C4.88781 9.4121 5.4577 9.4121 5.80915 9.7636L9.75 13.7044L18.1908 5.26359C18.5423 4.91214 19.1122 4.91214 19.4636 5.26359L20.7364 6.53639C21.0879 6.88785 21.0879 7.4577 20.7364 7.80919L10.3864 18.1592C10.0349 18.5107 9.46506 18.5107 9.1136 18.1592Z"/></svg>';
+
+  function historyFilters() {
+    return '<div class="history-filters">'
+      + '<div class="history-filter" id="history-filter">'
+      + '<button type="button" class="history-filter-trigger" id="history-filter-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="history-filter-list">'
+      + '<span class="history-filter-value">Filtre por tipo de evento</span><span class="history-filter-caret">' + historyCaret + '</span></button>'
+      + '<div class="company-autocomplete-dropdown" id="history-filter-list" role="listbox" aria-multiselectable="true" hidden></div>'
+      + '</div>'
+      + '<div class="history-filter-tags" id="history-filter-tags"></div>'
+      + '</div>';
+  }
+
+  function panel(id, placeholder, emptyText) {
+    if (id === 'historico') {
+      return '<div class="profile-tab-panel active" data-tab-panel="historico">' + historyFilters() + '<div id="profile-history"><p class="profile-empty">' + escapeHtml(emptyText) + '</p></div></div>';
+    }
+    return '<div class="profile-tab-panel" data-tab-panel="' + id + '">' + toolbar(placeholder) + '<p class="profile-empty">' + escapeHtml(emptyText) + '</p></div>';
+  }
+
+  let historyEvents = [];
+  let historyLabel = 'Registro';
+  const historySelected = new Set();
+
+  function historyEventTypes() {
+    return [
+      { key: 'created', label: historyLabel + ' criado' },
+      { key: 'updated', label: historyLabel + ' editado' }
+    ];
+  }
+
+  function renderHistoryFilterList() {
+    const list = document.getElementById('history-filter-list');
+    if (!list) return;
+    list.innerHTML = historyEventTypes().map(type => {
+      const on = historySelected.has(type.key);
+      return '<button type="button" class="company-autocomplete-option' + (on ? ' is-selected' : '') + '" role="option" aria-selected="' + (on ? 'true' : 'false') + '" data-history-type="' + type.key + '">'
+        + '<span class="company-autocomplete-check">' + historyCheck + '</span>'
+        + '<span class="company-autocomplete-option-text"><span class="company-autocomplete-option-name">' + escapeHtml(type.label) + '</span></span></button>';
+    }).join('');
+  }
+
+  function renderHistoryTags() {
+    const tags = document.getElementById('history-filter-tags');
+    if (!tags) return;
+    tags.innerHTML = historyEventTypes().filter(type => historySelected.has(type.key)).map(type => (
+      '<span class="history-filter-tag">' + escapeHtml(type.label)
+      + '<button type="button" class="history-filter-tag-remove" data-history-remove="' + type.key + '" aria-label="Remover filtro ' + escapeHtml(type.label) + '">' + historyTimes + '</button></span>'
+    )).join('');
+  }
+
+  function setHistoryFilterOpen(open) {
+    const list = document.getElementById('history-filter-list');
+    const trigger = document.getElementById('history-filter-trigger');
+    if (!list || !trigger) return;
+    if (open) renderHistoryFilterList();
+    list.hidden = !open;
+    trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  function formatHistoryWhen(value) {
+    const date = value ? new Date(value) : null;
+    if (!date || Number.isNaN(date.getTime())) return '';
+    const pad = part => String(part).padStart(2, '0');
+    return pad(date.getDate()) + '/' + pad(date.getMonth() + 1) + '/' + String(date.getFullYear()).slice(-2) + ' às ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+  }
+
+  function historyTimeline(events, singular) {
+    if (!events.length) return '<p class="profile-empty">Nenhuma atividade registrada</p>';
+    return '<div class="overview-timeline">' + events.map(event => {
+      const created = event.kind !== 'updated';
+      const changes = Array.isArray(event.changes) ? event.changes : [];
+      const details = changes.map(change => {
+        const after = change.after ? String(change.after) : '-';
+        const line = created ? after : ((change.before ? String(change.before) : '-') + ' → ' + after);
+        return '<p><strong>' + escapeHtml(change.name || 'Campo') + ':</strong> ' + escapeHtml(line) + '</p>';
+      }).join('');
+      const when = formatHistoryWhen(event.created_at);
+      return '<div class="overview-timeline-item"><div class="overview-timeline-rail"><img class="overview-timeline-mark" src="../../shared/svg/timeline-created.svg" width="40" height="40" alt=""><div class="overview-timeline-line"></div></div><div class="overview-timeline-content"><div class="overview-timeline-head"><span class="overview-timeline-title">' + escapeHtml(singular + (created ? ' criado' : ' editado')) + '</span><span class="overview-timeline-tag">' + escapeHtml(singular) + '</span></div><div class="overview-timeline-copy">' + (when ? '<div class="overview-timeline-meta">' + escapeHtml(when) + '</div>' : '') + '<div class="overview-timeline-details">' + details + '</div></div></div></div>';
+    }).join('') + '</div>';
+  }
+
+  function paintHistory() {
+    const host = document.getElementById('profile-history');
+    if (!host) return;
+    const visible = historyEvents.filter(event => {
+      if (!historySelected.size) return true;
+      return historySelected.has(event.kind === 'updated' ? 'updated' : 'created');
+    });
+    host.innerHTML = historyTimeline(visible, historyLabel);
+  }
+
+  function bindHistoryFilter() {
+    const root = document.getElementById('history-filter');
+    if (!root || root.dataset.bound === '1') return;
+    root.dataset.bound = '1';
+    const trigger = document.getElementById('history-filter-trigger');
+    const list = document.getElementById('history-filter-list');
+    trigger.addEventListener('click', () => setHistoryFilterOpen(list.hidden));
+    list.addEventListener('mousedown', event => {
+      if (event.target.closest('[data-history-type]')) event.preventDefault();
+    });
+    list.addEventListener('click', event => {
+      const option = event.target.closest('[data-history-type]');
+      if (!option) return;
+      const key = option.dataset.historyType;
+      if (historySelected.has(key)) historySelected.delete(key);
+      else historySelected.add(key);
+      renderHistoryFilterList();
+      renderHistoryTags();
+      paintHistory();
+    });
+    document.getElementById('history-filter-tags').addEventListener('click', event => {
+      const remove = event.target.closest('[data-history-remove]');
+      if (!remove) return;
+      historySelected.delete(remove.dataset.historyRemove);
+      renderHistoryTags();
+      if (!list.hidden) renderHistoryFilterList();
+      paintHistory();
+    });
+    document.addEventListener('mousedown', event => {
+      if (!list.hidden && !root.contains(event.target)) setHistoryFilterOpen(false);
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !list.hidden) {
+        setHistoryFilterOpen(false);
+        trigger.focus();
+      }
+    });
+    renderHistoryTags();
+  }
+
+  function render(state) {
+    const objectLabel = state.objectLabel || objectName || 'Objeto';
+    const recordLabel = state.recordLabel || objectLabel || 'Registro';
+    document.title = recordLabel + ' — RD Station';
+    revealTitle('profile-title', recordLabel);
+    revealTitle('object-card-title', state.cardLabel || 'Objeto');
+    revealTitle('fields-card-title', 'Mais informações');
+    document.getElementById('object-card-body').innerHTML = state.primaryHtml || '<p class="profile-empty">Nenhum campo principal</p>';
+    document.getElementById('fields-card-body').innerHTML = state.secondaryHtml || '<p class="profile-empty">Nenhum outro campo</p>';
+    document.getElementById('assoc-cards').innerHTML = state.assocHtml || '';
+    window.__bindAssocLists?.();
+    window.__profileFieldRaw = state.raw || {};
+    window.InlineField?.mountCard('#object-card');
+    window.InlineField?.mountCard('#fields-card');
+
+    document.getElementById('profile-tabs').removeAttribute('aria-busy');
+    document.getElementById('profile-tabs-scroll').innerHTML = '<button type="button" class="profile-tab active" data-tab="historico">Histórico</button>';
+    document.getElementById('profile-panels').innerHTML = panel('historico', 'Buscar atividade', 'Nenhuma atividade registrada');
+  }
+
+  document.getElementById('profile-title-label').textContent = objectName || 'Registro';
+  document.getElementById('object-card-title-label').textContent = 'Objeto';
+  document.getElementById('profile-back').href = listingHref();
+
+  const NATIVE_OBJECTS = {
+    empresa: {
+      table: 'claude_empresas',
+      columns: 'id, nome, cnpj, segmento, site, telefone',
+      fields: [
+        { id: 'nome', name: 'Nome da empresa', field_type: 'text', is_required: true, native: true },
+        { id: 'cnpj', name: 'CNPJ', field_type: 'text', native: true },
+        { id: 'segmento', name: 'Segmento', field_type: 'text', native: true },
+        { id: 'site', name: 'Site', field_type: 'text', native: true },
+        { id: 'telefone', name: 'Telefone', field_type: 'text', native: true }
+      ],
+      view(row) {
+        return { id: String(row.id), name: row.nome || 'Empresa', meta: row.cnpj || '', search: fold([row.nome, row.cnpj, row.segmento, row.site, row.telefone].filter(Boolean).join(' ')), linkKind: 'empresa', data: { nome: row.nome || '', cnpj: row.cnpj || '', segmento: row.segmento || '', site: row.site || '', telefone: row.telefone || '' } };
+      }
+    },
+    contato: {
+      table: 'claude_contatos',
+      columns: 'id, nome, email, emails, telefone, telefones, cargo, cpf, status, foto_perfil',
+      fields: [
+        { id: 'nome', name: 'Nome completo', field_type: 'text', is_required: true, native: true },
+        { id: 'email', name: 'E-mail', field_type: 'text', native: true },
+        { id: 'telefone', name: 'Telefone', field_type: 'text', native: true },
+        { id: 'cargo', name: 'Cargo', field_type: 'text', native: true },
+        { id: 'cpf', name: 'CPF', field_type: 'text', native: true },
+        { id: 'status', name: 'Status', field_type: 'option', native: true, options: ['Lead', 'Visitante', 'Lead qualificado - MQL', 'Lead qualificado - SQL', 'Oportunidade', 'Cliente', 'Cliente promotor'] }
+      ],
+      view(row) {
+        const email = primaryContactEmail(row);
+        const phone = primaryContactPhone(row);
+        return { id: String(row.id), name: row.nome || 'Contato', meta: email || row.cargo || '', email, phone, search: fold([row.nome, email, phone, row.cargo, row.cpf].filter(Boolean).join(' ')), linkKind: 'contato', photo: row.foto_perfil || '', data: { nome: row.nome || '', email: row.email || '', telefone: row.telefone || '', cargo: row.cargo || '', cpf: row.cpf || '', status: row.status || '' } };
+      }
+    }
+  };
+  let linkPanel = null;
+  let linkPanelToken = 0;
+  let cardMenuOpen = false;
+  let pendingLinkEditId = null;
+  const linkCheckSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1136 18.1592L3.26359 12.3092C2.91214 11.9577 2.91214 11.3879 3.26359 11.0364L4.53636 9.7636C4.88781 9.4121 5.4577 9.4121 5.80915 9.7636L9.75 13.7044L18.1908 5.26359C18.5423 4.91214 19.1122 4.91214 19.4636 5.26359L20.7364 6.53639C21.0879 6.88785 21.0879 7.4577 20.7364 7.80919L10.3864 18.1592C10.0349 18.5107 9.46506 18.5107 9.1136 18.1592Z"/></svg>';
+  const linkEllipsisSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.3226 9.67742C13.6065 9.67742 14.6452 10.7161 14.6452 12C14.6452 13.2839 13.6065 14.3226 12.3226 14.3226C11.0387 14.3226 10 13.2839 10 12C10 10.7161 11.0387 9.67742 12.3226 9.67742ZM10 6.32258C10 7.60645 11.0387 8.64516 12.3226 8.64516C13.6065 8.64516 14.6452 7.60645 14.6452 6.32258C14.6452 5.03871 13.6065 4 12.3226 4C11.0387 4 10 5.03871 10 6.32258ZM10 17.6774C10 18.9613 11.0387 20 12.3226 20C13.6065 20 14.6452 18.9613 14.6452 17.6774C14.6452 16.3935 13.6065 15.3548 12.3226 15.3548C11.0387 15.3548 10 16.3935 10 17.6774Z"/></svg>';
+  const linkStarOutlineSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.1806 9.11964L14.8114 8.48353L12.8588 4.53164C12.6833 4.17851 12.3409 4 11.9985 4C11.6583 4 11.3183 4.17612 11.1421 4.53164L9.18903 8.48323L4.81953 9.11875C4.03595 9.23218 3.72193 10.196 4.28998 10.7483L7.45084 13.8229L6.70279 18.1655C6.59652 18.7858 7.09174 19.2834 7.64636 19.2834C7.79352 19.2834 7.94486 19.2485 8.09023 19.1715L11.9991 17.1213L15.9078 19.1721C16.0528 19.2482 16.2039 19.2828 16.3504 19.2828C16.9057 19.2828 17.4018 18.787 17.2955 18.1664L16.5483 13.8235L19.7098 10.7495C20.2782 10.1972 19.9641 9.23307 19.1806 9.11964ZM15.5466 12.7972L15.0057 13.3232L15.1334 14.0659L15.7161 17.4524L12.6675 15.8527L11.9994 15.5023L11.3372 15.8527L8.28835 17.4524L8.87502 14.0659L8.99946 13.3244L8.45724 12.7972L5.99502 10.3978L9.40835 9.90142L10.1461 9.77778L10.4839 9.11725L12.0003 6.03401L13.5236 9.11725L13.8573 9.79277L14.6039 9.90142L18.0137 10.3978L15.5466 12.7972Z"/></svg>';
+  const linkStarSolidSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.1417 4.52566L9.18879 8.43281L4.81945 9.06138C4.0359 9.17352 3.72188 10.1267 4.29011 10.6726L7.45122 13.7122L6.70356 18.0059C6.56898 18.7821 7.39739 19.3634 8.09122 19.0004L12 16.9731L15.9088 19.0004C16.6026 19.3605 17.431 18.7821 17.2964 18.0059L16.5488 13.7122L19.7099 10.6726C20.2781 10.1267 19.9641 9.17352 19.1805 9.06138L14.8112 8.43281L12.8583 4.52566C12.5084 3.82921 11.4946 3.82036 11.1417 4.52566Z"/></svg>';
+  const linkPrincipalTip = document.createElement('div');
+  linkPrincipalTip.className = 'company-principal-tooltip';
+  linkPrincipalTip.id = 'link-principal-tooltip';
+  linkPrincipalTip.setAttribute('role', 'tooltip');
+  linkPrincipalTip.textContent = 'Marcar como principal';
+  linkPrincipalTip.hidden = true;
+  document.body.appendChild(linkPrincipalTip);
+
+  function showLinkError(message) {
+    const error = document.getElementById('link-drawer-error');
+    error.textContent = message || '';
+    error.style.display = message ? 'block' : 'none';
+  }
+
+  function describeRecord(fields, row) {
+    const ordered = fields.slice().sort((a, b) => (a.position || 0) - (b.position || 0));
+    const values = ordered.map(field => {
+      const raw = row && row.data ? (row.data[field.id] ?? row.data[field.name]) : '';
+      if (Array.isArray(raw)) return raw.filter(Boolean).join(', ');
+      return raw ? String(raw) : '';
+    }).filter(Boolean);
+    return { id: String(row.id), name: values[0] || 'Registro', meta: values[1] || '', search: fold(values.join(' ')), linkKind: 'custom_record', photo: row.data && (row.data.foto_perfil || row.data.foto) || '', data: { ...(row.data || {}) } };
+  }
+
+  function createControl(field) {
+    const id = 'link-field-' + field.id;
+    if (field.field_type === 'date') {
+      return '<input class="drawer-input" id="' + id + '" data-field-id="' + escapeHtml(field.id) + '" data-field-type="date" placeholder="DD/MM/AAAA" autocomplete="off">';
+    }
+    if (field.field_type === 'option') {
+      const options = (Array.isArray(field.options) ? field.options : []).map(option => (
+        '<option value="' + escapeHtml(option) + '">' + escapeHtml(option) + '</option>'
+      )).join('');
+      return '<select class="drawer-select" id="' + id + '" data-field-id="' + escapeHtml(field.id) + '" data-field-type="option"><option value="">Selecione</option>' + options + '</select>';
+    }
+    if (field.field_type === 'multiple_choice') {
+      const options = (Array.isArray(field.options) ? field.options : []).map(option => (
+        '<label class="link-check"><input type="checkbox" value="' + escapeHtml(option) + '" data-field-id="' + escapeHtml(field.id) + '"><span>' + escapeHtml(option) + '</span></label>'
+      )).join('');
+      return '<div class="link-checks">' + options + '</div>';
+    }
+    return '<input class="drawer-input" id="' + id + '" data-field-id="' + escapeHtml(field.id) + '" data-field-type="text" type="text" placeholder="Digite aqui" autocomplete="off">';
+  }
+
+  function readCreateData(fields) {
+    const data = {};
+    const missing = [];
+    const ordered = fields.slice().sort((a, b) => (a.position || 0) - (b.position || 0));
+    const nameField = ordered.find(field => field.is_primary) || ordered[0];
+    fields.forEach(field => {
+      let value = '';
+      if (field.field_type === 'multiple_choice') {
+        value = [...document.querySelectorAll('#link-create-fields input[data-field-id="' + field.id + '"]:checked')].map(input => input.value);
+      } else {
+        const input = document.querySelector('#link-create-fields [data-field-id="' + field.id + '"]');
+        value = input ? String(input.value || '').trim() : '';
+        if (field.field_type === 'date' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+          const parts = value.split('-');
+          value = parts[2] + '/' + parts[1] + '/' + parts[0];
+        }
+      }
+      const empty = Array.isArray(value) ? !value.length : !value;
+      if (empty && (field.is_required || (nameField && field.id === nameField.id))) missing.push(field.name);
+      data[field.id] = value;
+    });
+    return { data, missing };
+  }
+
+  function updateLinkChrome() {
+    if (!linkPanel || linkPanel.editingId) return;
+    const hasItems = linkPanel.selected.size > 0;
+    const title = (hasItems ? 'Editar ' : 'Adicionar ') + linkPanel.type.singular;
+    document.getElementById('link-drawer-title').textContent = title;
+    document.getElementById('drawer-edit-link').setAttribute('aria-label', title);
+    document.getElementById('link-search-label').textContent = 'Buscar ' + linkPanel.type.singular;
+    document.getElementById('link-selected-heading').textContent = linkPanel.type.selectedTitle;
+    document.getElementById('link-drawer-save').textContent = linkPanel.tab === 'existing' ? 'Salvar' : 'Criar ' + linkPanel.type.singular;
+  }
+
+  function hideLinkPrincipalTip() {
+    linkPrincipalTip.hidden = true;
+  }
+
+  function showLinkPrincipalTip(button) {
+    linkPrincipalTip.hidden = false;
+    const rect = button.getBoundingClientRect();
+    const gap = 18;
+    linkPrincipalTip.classList.remove('is-below');
+    let top = rect.top - linkPrincipalTip.offsetHeight - gap;
+    if (top < 8) {
+      top = rect.bottom + gap;
+      linkPrincipalTip.classList.add('is-below');
+    }
+    let left = rect.right - linkPrincipalTip.offsetWidth;
+    const maxLeft = window.innerWidth - linkPrincipalTip.offsetWidth - 8;
+    if (left < 8) left = 8;
+    if (left > maxLeft) left = Math.max(8, maxLeft);
+    linkPrincipalTip.style.top = top + 'px';
+    linkPrincipalTip.style.left = left + 'px';
+    const arrowHalf = 6;
+    const buttonCenter = rect.left + rect.width / 2 - left;
+    const minCenter = 8 + arrowHalf;
+    const maxCenter = Math.max(minCenter, linkPrincipalTip.offsetWidth - 8 - arrowHalf);
+    linkPrincipalTip.style.setProperty('--tip-arrow-left', Math.max(minCenter, Math.min(buttonCenter, maxCenter)) + 'px');
+  }
+
+  function closeLinkMenu() {
+    cardMenuOpen = false;
+    if (linkPanel) linkPanel.menuId = null;
+    document.querySelectorAll('#link-selected-list .company-selected-menu-list, #assoc-cards .company-selected-menu-list').forEach(list => { list.hidden = true; });
+    document.querySelectorAll('#link-selected-list .company-selected-menu-btn, #assoc-cards .company-selected-menu-btn').forEach(button => {
+      button.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  function positionLinkMenu(button, list) {
+    const rect = button.getBoundingClientRect();
+    list.style.top = '0px';
+    list.style.left = '0px';
+    const width = list.offsetWidth;
+    const height = list.offsetHeight;
+    const left = Math.max(8, rect.right - width);
+    const below = rect.bottom + 4;
+    const top = below + height + 8 > window.innerHeight ? Math.max(8, rect.top - 4 - height) : below;
+    list.style.left = left + 'px';
+    list.style.top = top + 'px';
+  }
+
+  function openLinkMenu(button) {
+    closeLinkMenu();
+    const list = button.parentElement && button.parentElement.querySelector('.company-selected-menu-list');
+    if (!list) return;
+    const searchList = document.getElementById('link-search-list');
+    if (searchList) {
+      searchList.hidden = true;
+      const search = document.getElementById('link-search');
+      if (search) search.setAttribute('aria-expanded', 'false');
+    }
+    if (button.closest('#link-selected-list') && linkPanel) linkPanel.menuId = button.dataset.id;
+    else cardMenuOpen = true;
+    list.hidden = false;
+    button.setAttribute('aria-expanded', 'true');
+    positionLinkMenu(button, list);
+  }
+
+  function showLinkSelectedSkeleton(type) {
+    const list = document.getElementById('link-selected-list');
+    const search = document.getElementById('link-search');
+    list.classList.add('is-loading');
+    list.dataset.kind = type && type.key === 'contato' ? 'contato' : 'record';
+    list.setAttribute('aria-busy', 'true');
+    const row = '<div class="company-selected-item" aria-hidden="true"><span class="skeleton link-skeleton-mark"></span><div class="company-selected-info"><span class="skeleton" style="width:168px"></span><span class="skeleton" style="width:112px;height:12px"></span></div></div>';
+    list.innerHTML = row + row;
+    if (search) search.disabled = true;
+  }
+
+  function clearLinkSelectedSkeleton() {
+    const list = document.getElementById('link-selected-list');
+    const search = document.getElementById('link-search');
+    if (list) {
+      list.classList.remove('is-loading');
+      list.removeAttribute('aria-busy');
+      delete list.dataset.kind;
+    }
+    if (search) search.disabled = false;
+  }
+
+  function renderLinkSelected() {
+    if (!linkPanel) return;
+    clearLinkSelectedSkeleton();
+    closeLinkMenu();
+    hideLinkPrincipalTip();
+    const list = document.getElementById('link-selected-list');
+    list.innerHTML = [...linkPanel.selected.values()].map(item => (
+      '<div class="company-selected-item">'
+      + recordMarkHtml(linkPanel.type, item)
+      + '<div class="company-selected-info"><span class="company-selected-name">' + escapeHtml(item.name) + '</span>'
+      + (item.meta ? '<span class="company-selected-meta">' + escapeHtml(item.meta) + '</span>' : '')
+      + '</div>' + linkActionsHtml(item, item.id === linkPanel.principalId) + '</div>'
+    )).join('');
+    updateLinkChrome();
+  }
+
+  function renderLinkResults() {
+    if (!linkPanel) return;
+    const list = document.getElementById('link-search-list');
+    const query = fold(document.getElementById('link-search').value.trim());
+    const rows = linkPanel.records.filter(item => !query || item.search.includes(query)).slice(0, 30);
+    if (!rows.length) {
+      list.innerHTML = '<div class="company-autocomplete-empty">Nenhum registro encontrado</div>';
+    } else {
+      list.innerHTML = rows.map(item => (
+        '<button type="button" class="company-autocomplete-option' + (linkPanel.selected.has(item.id) ? ' is-selected' : '') + '" role="option" data-id="' + escapeHtml(item.id) + '">'
+        + '<span class="company-autocomplete-check">' + linkCheckSvg + '</span>'
+        + (linkPanel.type.key === 'contato' ? contactAvatarHtml(item.name, item.photo) : '')
+        + '<span class="company-autocomplete-option-text"><span class="company-autocomplete-option-name">' + escapeHtml(item.name) + '</span>'
+        + (item.meta ? '<span class="company-autocomplete-option-meta">' + escapeHtml(item.meta) + '</span>' : '')
+        + '</span></button>'
+      )).join('');
+    }
+    list.hidden = false;
+    document.getElementById('link-search').setAttribute('aria-expanded', 'true');
+  }
+
+  function showLinkTab(tab) {
+    if (!linkPanel) return;
+    linkPanel.tab = tab === 'create' ? 'create' : 'existing';
+    document.getElementById('link-create-form').hidden = linkPanel.tab !== 'create';
+    document.getElementById('link-existing-panel').hidden = linkPanel.tab !== 'existing';
+    document.querySelectorAll('[data-link-tab]').forEach(button => {
+      const active = button.dataset.linkTab === linkPanel.tab;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    document.getElementById('link-drawer-tabs').hidden = false;
+    showLinkError('');
+    if (linkPanel.tab === 'existing') document.getElementById('link-search-list').hidden = true;
+    updateLinkChrome();
+  }
+
+  function clearLinkDrawer() {
+    const selected = document.getElementById('link-selected-list');
+    const results = document.getElementById('link-search-list');
+    const search = document.getElementById('link-search');
+    clearLinkSelectedSkeleton();
+    if (selected) selected.innerHTML = '';
+    if (results) {
+      results.innerHTML = '';
+      results.hidden = true;
+    }
+    if (search) {
+      search.value = '';
+      search.setAttribute('aria-expanded', 'false');
+    }
+    const clear = document.getElementById('link-search-clear');
+    if (clear) clear.hidden = true;
+  }
+
+  function closeLinkPanel() {
+    linkPanelToken += 1;
+    closeLinkMenu();
+    hideLinkPrincipalTip();
+    document.querySelector('main.content').classList.remove('detail-open', 'detail-edit');
+    document.getElementById('detail-panel').setAttribute('aria-hidden', 'true');
+    document.getElementById('drawer-edit-link').classList.remove('open');
+    clearLinkDrawer();
+    showLinkError('');
+    linkPanel = null;
+  }
+
+  async function persistSelection() {
+    const api = window.__customObjectsDb;
+    const current = linkedRows.filter(row => String(row.object_link_id) === String(linkPanel.link.id));
+    const byOther = new Map();
+    current.forEach(row => {
+      const other = String(row.left_id) === String(recordId) ? String(row.right_id) : String(row.left_id);
+      byOther.set(other, row);
+    });
+    const wanted = new Set([...linkPanel.selected.keys()]);
+    const remove = [...byOther.entries()].filter(([id]) => !wanted.has(id)).map(([, row]) => row.id);
+    const add = [...wanted].filter(id => !byOther.has(id));
+    await api.deleteRecordLinks(remove);
+    const created = [];
+    for (const id of add) {
+      const item = linkPanel.selected.get(id);
+      created.push(await api.createRecordLink({
+        objectLinkId: linkPanel.link.id,
+        leftKind: 'custom_record',
+        leftId: recordId,
+        rightKind: (item && item.linkKind) || 'custom_record',
+        rightId: id
+      }));
+    }
+    linkedRows = linkedRows.filter(row => !remove.includes(row.id)).concat(created);
+    await persistPrincipal();
+  }
+
+  function linkOtherId(row) {
+    return String(row.left_id) === String(recordId) ? String(row.right_id) : String(row.left_id);
+  }
+
+  function linkRowFor(id) {
+    return linkedRows.find(row => String(row.object_link_id) === String(linkPanel.link.id) && linkOtherId(row) === String(id)) || null;
+  }
+
+  function applyPrincipalLocally(linkId, objectLinkId) {
+    const scope = String(objectLinkId || (linkPanel && linkPanel.link && linkPanel.link.id) || '');
+    linkedRows.forEach(row => {
+      if (String(row.object_link_id) !== scope) return;
+      if (String(row.left_id) !== String(recordId) && String(row.right_id) !== String(recordId)) return;
+      row.principal = row.id === linkId;
+    });
+  }
+
+  async function persistPrincipal() {
+    if (!linkPanel) return;
+    if (!linkPanel.principalId || !linkPanel.selected.has(linkPanel.principalId)) {
+      linkPanel.principalId = linkPanel.selected.keys().next().value || null;
+    }
+    const row = linkPanel.principalId ? linkRowFor(linkPanel.principalId) : null;
+    if (!row || typeof window.__customObjectsDb.setRecordLinkPrincipal !== 'function') return;
+    await window.__customObjectsDb.setRecordLinkPrincipal(row.id, linkPanel.link.id, recordId);
+    applyPrincipalLocally(row.id);
+  }
+
+  function refreshAssocCard() {
+    const current = document.getElementById('assoc-' + linkPanel.type.key);
+    const items = [...linkPanel.selected.values()].map(item => ({ ...item, principal: item.id === linkPanel.principalId }));
+    const html = assocCard(linkPanel.type, linkPanel.link, items);
+    if (current) current.outerHTML = html;
+    window.__bindAssocLists?.();
+  }
+
+  async function loadLinkCatalog(type, objectId) {
+    const api = window.__customObjectsDb;
+    const native = NATIVE_OBJECTS[type.key];
+    let fields = [];
+    let records = [];
+    try { fields = await api.listFields(objectId); } catch (error) { fields = []; }
+    try {
+      const rows = await api.listRecords(objectId);
+      records = rows.map(row => describeRecord(fields, row));
+    } catch (error) {
+      records = [];
+    }
+    if (native && window.__sbClient) {
+      const { data, error } = await window.__sbClient.from(native.table).select(native.columns).order('nome');
+      if (!error && Array.isArray(data)) {
+        const known = new Set(records.map(item => item.id));
+        data.forEach(row => {
+          const view = native.view(row);
+          if (!known.has(view.id)) records.push(view);
+        });
+      }
+      if (!fields.length) fields = native.fields.map((field, index) => ({ ...field, position: index }));
+    }
+    records.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+    return { fields, records };
+  }
+
+  async function openLinkPanel(section) {
+    const type = ASSOC_TYPES.find(item => item.key === section.id.replace('assoc-', ''));
+    const api = window.__customObjectsDb;
+    if (!type || !section.dataset.objectId || !recordId || !api) return;
+    const token = ++linkPanelToken;
+    const link = { id: section.dataset.linkId, objectId: section.dataset.objectId, name: type.title };
+    const content = document.querySelector('main.content');
+    content.classList.add('detail-open', 'detail-edit');
+    document.getElementById('detail-panel').setAttribute('aria-hidden', 'false');
+    document.getElementById('drawer-edit-link').classList.add('open');
+    clearLinkDrawer();
+    document.getElementById('link-drawer-save').disabled = true;
+    showLinkError('');
+    linkPanel = { token, type, link, tab: 'existing', fields: [], records: [], selected: new Map() };
+    showLinkTab('existing');
+    showLinkSelectedSkeleton(type);
+    try {
+      const catalog = await loadLinkCatalog(type, link.objectId);
+      if (!linkPanel || linkPanel.token !== token) return;
+      linkPanel.fields = catalog.fields;
+      linkPanel.records = catalog.records;
+      const chosen = new Set(linkedRows.filter(row => String(row.object_link_id) === String(link.id)).map(row => (
+        String(row.left_id) === String(recordId) ? String(row.right_id) : String(row.left_id)
+      )));
+      linkPanel.selected = new Map(catalog.records.filter(item => chosen.has(item.id)).map(item => [item.id, item]));
+      const principalRow = linkedRows.find(row => String(row.object_link_id) === String(link.id) && row.principal && chosen.has(linkOtherId(row)));
+      linkPanel.principalId = principalRow ? linkOtherId(principalRow) : (linkPanel.selected.keys().next().value || null);
+      const ordered = catalog.fields.slice().sort((a, b) => (a.position || 0) - (b.position || 0));
+      const nameField = ordered.find(field => field.is_primary) || ordered[0];
+      document.getElementById('link-create-fields').innerHTML = ordered.length
+        ? ordered.map(field => (
+          '<div class="drawer-field"><label class="drawer-label" for="link-field-' + escapeHtml(field.id) + '">' + escapeHtml(field.name) + ((field.is_required || (nameField && field.id === nameField.id)) ? ' <span class="drawer-required">*</span>' : '') + '</label>' + createControl(field) + '</div>'
+        )).join('')
+        : '<p class="profile-empty">Este objeto não tem campos para cadastro.</p>';
+      renderLinkSelected();
+      document.getElementById('link-search-list').hidden = true;
+      document.getElementById('link-search').setAttribute('aria-expanded', 'false');
+      document.getElementById('link-drawer-save').disabled = false;
+      const editId = pendingLinkEditId;
+      pendingLinkEditId = null;
+      if (editId && (linkPanel.selected.has(editId) || linkPanel.records.some(record => record.id === editId))) openLinkEditor(editId);
+    } catch (error) {
+      if (linkPanel && linkPanel.token === token) pendingLinkEditId = null;
+      clearLinkSelectedSkeleton();
+      document.getElementById('link-selected-list').innerHTML = '';
+      showLinkError('Não foi possível carregar os registros.');
+      document.getElementById('link-drawer-save').disabled = false;
+    }
+  }
+
+  function clearCreateFields() {
+    document.querySelectorAll('#link-create-fields input, #link-create-fields select').forEach(input => {
+      if (input.type === 'checkbox') input.checked = false;
+      else input.value = '';
+    });
+  }
+
+  function fieldStoredValue(field, data) {
+    const raw = data ? (data[field.id] ?? data[field.name]) : '';
+    return raw == null ? '' : raw;
+  }
+
+  function fillCreateForm(item) {
+    const data = item && item.data ? item.data : {};
+    linkPanel.fields.forEach(field => {
+      const stored = fieldStoredValue(field, data);
+      if (field.field_type === 'multiple_choice') {
+        const values = Array.isArray(stored) ? stored.map(String) : String(stored || '').split(',').map(part => part.trim()).filter(Boolean);
+        document.querySelectorAll('#link-create-fields input[data-field-id="' + field.id + '"]').forEach(input => {
+          input.checked = values.includes(input.value);
+        });
+        return;
+      }
+      const input = document.querySelector('#link-create-fields [data-field-id="' + field.id + '"]');
+      if (!input) return;
+      input.value = Array.isArray(stored) ? stored.join(', ') : String(stored || '');
+    });
+  }
+
+  function openLinkEditor(id) {
+    const item = linkPanel.selected.get(id) || linkPanel.records.find(record => record.id === id);
+    if (!item) return;
+    closeLinkMenu();
+    hideLinkPrincipalTip();
+    linkPanel.editingId = id;
+    document.getElementById('link-drawer-tabs').hidden = true;
+    document.getElementById('link-existing-panel').hidden = true;
+    document.getElementById('link-create-form').hidden = false;
+    document.getElementById('link-search-list').hidden = true;
+    fillCreateForm(item);
+    const title = 'Editar ' + linkPanel.type.singular;
+    document.getElementById('link-drawer-title').textContent = title;
+    document.getElementById('drawer-edit-link').setAttribute('aria-label', title);
+    document.getElementById('link-drawer-save').textContent = 'Salvar ' + linkPanel.type.singular;
+    linkPanel.editorSnapshot = JSON.stringify(readCreateData(linkPanel.fields).data);
+    const first = document.querySelector('#link-create-fields input, #link-create-fields select');
+    if (first) first.focus();
+  }
+
+  function leaveLinkEditor() {
+    if (!linkPanel) return;
+    linkPanel.editingId = null;
+    linkPanel.editorSnapshot = null;
+    clearCreateFields();
+    document.getElementById('link-drawer-save').disabled = false;
+    showLinkTab('existing');
+    renderLinkSelected();
+  }
+
+  function paintAssocItem(item) {
+    const card = document.getElementById('assoc-' + linkPanel.type.key);
+    if (!card || !item) return;
+    const row = card.querySelector('[data-record-id="' + CSS.escape(item.id) + '"]');
+    if (!row) return;
+    const mark = row.querySelector('.company-selected-logo, .avatar');
+    const info = row.querySelector('.company-selected-info');
+    if (mark) mark.outerHTML = recordMarkHtml(linkPanel.type, item);
+    if (info) info.outerHTML = recordInfoHtml(linkPanel.type, item);
+  }
+
+  function replaceLinkRecord(view) {
+    const index = linkPanel.records.findIndex(record => record.id === view.id);
+    if (index >= 0) linkPanel.records[index] = view;
+    else linkPanel.records.push(view);
+    if (linkPanel.selected.has(view.id)) linkPanel.selected.set(view.id, view);
+    paintAssocItem(view);
+  }
+
+  async function saveEditedLinkRecord() {
+    const saveBtn = document.getElementById('link-drawer-save');
+    const { data, missing } = readCreateData(linkPanel.fields);
+    if (missing.length) {
+      showLinkError('Preencha: ' + missing.join(', ') + '.');
+      return;
+    }
+    if (linkPanel.editorSnapshot === JSON.stringify(data)) {
+      leaveLinkEditor();
+      return;
+    }
+    const id = linkPanel.editingId;
+    const current = linkPanel.selected.get(id) || linkPanel.records.find(record => record.id === id) || { data: {} };
+    saveBtn.disabled = true;
+    showLinkError('');
+    try {
+      const native = linkPanel.fields.some(field => field.native) ? NATIVE_OBJECTS[linkPanel.type.key] : null;
+      let view;
+      if (native) {
+        const payload = {};
+        native.fields.forEach(field => { payload[field.id] = data[field.id] || null; });
+        const { data: row, error } = await window.__sbClient.from(native.table).update(payload).eq('id', id).select(native.columns).single();
+        if (error) throw error;
+        view = native.view(row);
+      } else {
+        const next = { ...(current.data || {}), ...data };
+        await window.__customObjectsDb.updateRecord(id, next);
+        view = describeRecord(linkPanel.fields, { id, data: next });
+      }
+      replaceLinkRecord(view);
+      leaveLinkEditor();
+      const singular = linkPanel ? linkPanel.type.singular : '';
+      const label = singular ? singular.charAt(0).toLocaleUpperCase('pt-BR') + singular.slice(1) : 'Registro';
+      window.__showToast?.(label + ' atualizado com sucesso');
+    } catch (error) {
+      showLinkError('Não foi possível salvar o registro.');
+      saveBtn.disabled = false;
+    }
+  }
+
+  function removeSelectedRecord(id) {
+    if (!linkPanel.selected.has(id)) return;
+    linkPanel.selected.delete(id);
+    if (linkPanel.principalId === id) linkPanel.principalId = linkPanel.selected.keys().next().value || null;
+    renderLinkSelected();
+    if (!document.getElementById('link-search-list').hidden) renderLinkResults();
+  }
+
+  async function markLinkPrincipal(id) {
+    if (!linkPanel.selected.has(id) || linkPanel.principalId === id) return;
+    const previous = linkPanel.principalId;
+    linkPanel.principalId = id;
+    renderLinkSelected();
+    const row = linkRowFor(id);
+    if (!row || typeof window.__customObjectsDb.setRecordLinkPrincipal !== 'function') return;
+    try {
+      await window.__customObjectsDb.setRecordLinkPrincipal(row.id, linkPanel.link.id, recordId);
+      applyPrincipalLocally(row.id);
+    } catch (error) {
+      linkPanel.principalId = previous;
+      renderLinkSelected();
+      showLinkError('Não foi possível marcar como principal.');
+    }
+  }
+
+  async function saveLinkPanel() {
+    if (!linkPanel) return;
+    if (linkPanel.editingId) {
+      await saveEditedLinkRecord();
+      return;
+    }
+    const saveBtn = document.getElementById('link-drawer-save');
+    showLinkError('');
+    if (linkPanel.tab === 'create') {
+      const { data, missing } = readCreateData(linkPanel.fields);
+      if (missing.length) {
+        showLinkError('Preencha: ' + missing.join(', ') + '.');
+        return;
+      }
+      saveBtn.disabled = true;
+      try {
+        const native = linkPanel.fields.some(field => field.native) ? NATIVE_OBJECTS[linkPanel.type.key] : null;
+        let view;
+        if (native) {
+          const payload = {};
+          native.fields.forEach(field => { payload[field.id] = data[field.id] || null; });
+          const { data: row, error } = await window.__sbClient.from(native.table).insert(payload).select(native.columns).single();
+          if (error) throw error;
+          view = native.view(row);
+        } else {
+          const created = await window.__customObjectsDb.createRecord(linkPanel.link.objectId, data);
+          view = describeRecord(linkPanel.fields, created);
+        }
+        linkPanel.records.push(view);
+        linkPanel.selected.set(view.id, view);
+        await persistSelection();
+        refreshAssocCard();
+        closeLinkPanel();
+        window.__showToast?.('Registro criado com sucesso');
+      } catch (error) {
+        showLinkError('Não foi possível criar o registro.');
+        saveBtn.disabled = false;
+      }
+      return;
+    }
+    saveBtn.disabled = true;
+    try {
+      await persistSelection();
+      refreshAssocCard();
+      closeLinkPanel();
+      window.__showToast?.('Vínculo salvo com sucesso');
+    } catch (error) {
+      showLinkError('Não foi possível salvar o vínculo.');
+      saveBtn.disabled = false;
+    }
+  }
+
+  function sectionLink(section) {
+    const type = ASSOC_TYPES.find(item => item.key === section.id.replace('assoc-', ''));
+    if (!type) return null;
+    return { type, link: { id: section.dataset.linkId, objectId: section.dataset.objectId, name: type.title } };
+  }
+
+  async function repaintAssocCard(section) {
+    const context = sectionLink(section);
+    if (!context) return;
+    const rows = linkedRows.filter(row => String(row.object_link_id) === String(context.link.id));
+    const ids = rows.map(linkOtherId).filter(Boolean);
+    const names = await associatedNames(window.__customObjectsDb, context.link, ids);
+    const items = ids.map(id => {
+      const row = rows.find(item => linkOtherId(item) === String(id));
+      return { id: String(id), principal: !!(row && row.principal), ...(names[id] || names[String(id)] || { name: context.type.title, meta: '' }) };
+    });
+    if (items.length && !items.some(item => item.principal)) items[0].principal = true;
+    const current = document.getElementById(section.id);
+    if (current) current.outerHTML = assocCard(context.type, context.link, items);
+    window.__bindAssocLists?.();
+  }
+
+  async function markCardPrincipal(section, id) {
+    const row = linkedRows.find(item => String(item.object_link_id) === String(section.dataset.linkId) && linkOtherId(item) === String(id));
+    const button = section.querySelector('.company-selected-principal[data-id="' + CSS.escape(id) + '"]');
+    if (!row || (button && button.getAttribute('aria-pressed') === 'true')) return;
+    try {
+      await window.__customObjectsDb.setRecordLinkPrincipal(row.id, section.dataset.linkId, recordId);
+      applyPrincipalLocally(row.id, section.dataset.linkId);
+      if (linkPanel && String(linkPanel.link.id) === String(section.dataset.linkId)) {
+        linkPanel.principalId = String(id);
+        renderLinkSelected();
+      }
+      await repaintAssocCard(section);
+    } catch (error) {
+      window.__showToast?.('Não foi possível marcar como principal');
+    }
+  }
+
+  async function removeCardRecord(section, id) {
+    const linkId = section.dataset.linkId;
+    const row = linkedRows.find(item => String(item.object_link_id) === String(linkId) && linkOtherId(item) === String(id));
+    if (!row) return;
+    const remaining = linkedRows.filter(item => item.id !== row.id && String(item.object_link_id) === String(linkId));
+    try {
+      await window.__customObjectsDb.deleteRecordLinks([row.id]);
+      linkedRows = linkedRows.filter(item => item.id !== row.id);
+      if (row.principal && remaining[0]) {
+        await window.__customObjectsDb.setRecordLinkPrincipal(remaining[0].id, linkId, recordId);
+        applyPrincipalLocally(remaining[0].id, linkId);
+      }
+      if (linkPanel && String(linkPanel.link.id) === String(linkId)) {
+        linkPanel.selected.delete(String(id));
+        if (linkPanel.principalId === String(id)) linkPanel.principalId = linkPanel.selected.keys().next().value || null;
+        renderLinkSelected();
+        if (!document.getElementById('link-search-list').hidden) renderLinkResults();
+      }
+      await repaintAssocCard(section);
+    } catch (error) {
+      window.__showToast?.('Não foi possível remover a associação');
+    }
+  }
+
+  document.getElementById('assoc-cards').addEventListener('click', event => {
+    const section = event.target.closest('section[data-link-id]');
+    const principalButton = event.target.closest('.company-selected-principal');
+    if (principalButton && section) {
+      markCardPrincipal(section, principalButton.dataset.id);
+      return;
+    }
+    const item = event.target.closest('.company-selected-menu-item');
+    if (item && section) {
+      closeLinkMenu();
+      if (item.dataset.action === 'edit') {
+        pendingLinkEditId = String(item.dataset.id);
+        openLinkPanel(section);
+      }
+      if (item.dataset.action === 'remove') removeCardRecord(section, item.dataset.id);
+      return;
+    }
+    const menuButton = event.target.closest('.company-selected-menu-btn');
+    if (menuButton) {
+      if (menuButton.getAttribute('aria-expanded') === 'true') closeLinkMenu();
+      else openLinkMenu(menuButton);
+      return;
+    }
+    const button = event.target.closest('[data-assoc-edit]');
+    if (!button || !section) return;
+    openLinkPanel(section);
+  });
+  document.getElementById('assoc-cards').addEventListener('mouseover', event => {
+    const button = event.target.closest('.company-selected-principal');
+    if (button) showLinkPrincipalTip(button);
+  });
+  document.getElementById('assoc-cards').addEventListener('mouseout', event => {
+    const button = event.target.closest('.company-selected-principal');
+    if (!button || button.contains(event.relatedTarget)) return;
+    hideLinkPrincipalTip();
+  });
+  document.getElementById('assoc-cards').addEventListener('focusin', event => {
+    const button = event.target.closest('.company-selected-principal');
+    if (button) showLinkPrincipalTip(button);
+  });
+  document.getElementById('assoc-cards').addEventListener('focusout', event => {
+    const button = event.target.closest('.company-selected-principal');
+    if (!button || button.contains(event.relatedTarget)) return;
+    hideLinkPrincipalTip();
+  });
+  document.getElementById('link-drawer-tabs').addEventListener('click', event => {
+    const tab = event.target.closest('[data-link-tab]');
+    if (tab) showLinkTab(tab.dataset.linkTab);
+  });
+  document.getElementById('link-search').addEventListener('input', () => {
+    document.getElementById('link-search-clear').hidden = document.getElementById('link-search').value === '';
+    renderLinkResults();
+  });
+  document.getElementById('link-search').addEventListener('focus', renderLinkResults);
+  document.getElementById('link-search-clear').addEventListener('click', () => {
+    document.getElementById('link-search').value = '';
+    document.getElementById('link-search-clear').hidden = true;
+    renderLinkResults();
+    document.getElementById('link-search').focus();
+  });
+  document.getElementById('link-search-list').addEventListener('mousedown', event => {
+    if (event.target.closest('.company-autocomplete-option')) event.preventDefault();
+  });
+  document.getElementById('link-search-list').addEventListener('click', event => {
+    const option = event.target.closest('.company-autocomplete-option');
+    if (!option || !linkPanel) return;
+    event.stopPropagation();
+    const record = linkPanel.records.find(item => item.id === option.dataset.id);
+    if (!record) return;
+    if (linkPanel.selected.has(record.id)) {
+      linkPanel.selected.delete(record.id);
+      if (linkPanel.principalId === record.id) linkPanel.principalId = linkPanel.selected.keys().next().value || null;
+    } else {
+      linkPanel.selected.set(record.id, record);
+      if (!linkPanel.principalId || !linkPanel.selected.has(linkPanel.principalId)) linkPanel.principalId = record.id;
+    }
+    renderLinkSelected();
+    renderLinkResults();
+  });
+  document.getElementById('link-selected-list').addEventListener('click', event => {
+    if (!linkPanel) return;
+    const principalButton = event.target.closest('.company-selected-principal');
+    if (principalButton) {
+      markLinkPrincipal(principalButton.dataset.id);
+      return;
+    }
+    const item = event.target.closest('.company-selected-menu-item');
+    if (item) {
+      const id = item.dataset.id;
+      closeLinkMenu();
+      if (item.dataset.action === 'edit') openLinkEditor(id);
+      if (item.dataset.action === 'remove') removeSelectedRecord(id);
+      return;
+    }
+    const button = event.target.closest('.company-selected-menu-btn');
+    if (!button) return;
+    if (button.getAttribute('aria-expanded') === 'true') closeLinkMenu();
+    else openLinkMenu(button);
+  });
+  document.getElementById('link-selected-list').addEventListener('mouseover', event => {
+    const button = event.target.closest('.company-selected-principal');
+    if (button) showLinkPrincipalTip(button);
+  });
+  document.getElementById('link-selected-list').addEventListener('mouseout', event => {
+    const button = event.target.closest('.company-selected-principal');
+    if (!button || button.contains(event.relatedTarget)) return;
+    hideLinkPrincipalTip();
+  });
+  document.getElementById('link-selected-list').addEventListener('focusin', event => {
+    const button = event.target.closest('.company-selected-principal');
+    if (button) showLinkPrincipalTip(button);
+  });
+  document.getElementById('link-selected-list').addEventListener('focusout', event => {
+    const button = event.target.closest('.company-selected-principal');
+    if (!button || button.contains(event.relatedTarget)) return;
+    hideLinkPrincipalTip();
+  });
+  document.getElementById('link-create-form').addEventListener('submit', event => event.preventDefault());
+  document.getElementById('link-drawer-save').addEventListener('click', saveLinkPanel);
+  document.getElementById('link-drawer-cancel').addEventListener('click', () => {
+    if (linkPanel && linkPanel.editingId) {
+      leaveLinkEditor();
+      return;
+    }
+    closeLinkPanel();
+  });
+  document.getElementById('link-drawer-close').addEventListener('click', closeLinkPanel);
+  document.addEventListener('click', event => {
+    if ((cardMenuOpen || (linkPanel && linkPanel.menuId)) && !event.target.closest('.company-selected-menu')) closeLinkMenu();
+    if (!linkPanel) return;
+    if (linkPanel.tab !== 'existing' || linkPanel.editingId) return;
+    if (event.target.closest('#link-search-box')) return;
+    document.getElementById('link-search-list').hidden = true;
+    document.getElementById('link-search').setAttribute('aria-expanded', 'false');
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    if (cardMenuOpen || (linkPanel && linkPanel.menuId)) {
+      closeLinkMenu();
+      return;
+    }
+    if (!linkPanel) return;
+    const list = document.getElementById('link-search-list');
+    if (list && !list.hidden) {
+      list.hidden = true;
+      document.getElementById('link-search').setAttribute('aria-expanded', 'false');
+      return;
+    }
+    if (linkPanel.editingId) {
+      leaveLinkEditor();
+      return;
+    }
+    closeLinkPanel();
+  });
+  document.querySelector('#drawer-edit-link .drawer-body').addEventListener('scroll', () => {
+    hideLinkPrincipalTip();
+    if (linkPanel && linkPanel.menuId) closeLinkMenu();
+  });
+  document.addEventListener('scroll', () => {
+    hideLinkPrincipalTip();
+    if (cardMenuOpen || (linkPanel && linkPanel.menuId)) closeLinkMenu();
+  }, true);
+  document.addEventListener('error', event => {
+    const image = event.target;
+    if (!image || image.tagName !== 'IMG') return;
+    const avatar = image.closest('.avatar');
+    if (!avatar || !avatar.closest('#assoc-cards, #link-selected-list, #link-search-list')) return;
+    avatar.innerHTML = contactAvatarSvg(image.alt || '');
+  }, true);
+
+  document.querySelector('.profile-col').addEventListener('click', event => {
+    const button = event.target.closest('button.overview-accordion-head');
+    if (!button) return;
+    const card = button.closest('.overview-card');
+    const collapsed = card.classList.toggle('is-collapsed');
+    button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    card.dataset.accordionUser = '1';
+  });
+
+  document.getElementById('profile-tabs').addEventListener('click', event => {
+    const tab = event.target.closest('.profile-tab[data-tab]');
+    if (!tab) return;
+    document.querySelectorAll('.profile-tab').forEach(item => item.classList.toggle('active', item === tab));
+    document.querySelectorAll('.profile-tab-panel').forEach(panel => {
+      panel.classList.toggle('active', panel.dataset.tabPanel === tab.dataset.tab);
+    });
+  });
+
+  async function loadProfile() {
+    const api = window.__customObjectsDb;
+    const failed = { failed: true };
+    try {
+      const session = await window.__auth?.getSession?.();
+      if (!session || !api || !objectName) {
+        render(failed);
+        bindHistoryFilter();
+        return;
+      }
+      const current = await api.getObjectByName(objectName);
+      if (!current) {
+        render(failed);
+        bindHistoryFilter();
+        return;
+      }
+      const fields = await api.listFields(current.id);
+      let links = [];
+      try { links = await api.listObjectLinks(current.id); } catch (error) { links = []; }
+      const rows = await api.listRecords(current.id);
+      const record = rows.find(row => String(row.id) === String(recordId)) || null;
+      let recordLinks = [];
+      if (record) {
+        try { recordLinks = await api.listLinksForRecord(record.id); } catch (error) { recordLinks = []; }
+      }
+      linkedRows = recordLinks;
+      const ordered = fields.slice().sort((a, b) => (a.position || 0) - (b.position || 0));
+      const primary = ordered.filter(field => field.is_primary).slice(0, 3);
+      const secondary = ordered.filter(field => !field.is_primary);
+      const data = record ? (record.data || {}) : {};
+      const raw = {};
+      ordered.forEach(field => { raw[field.id] = fieldValue(field, data); });
+      const first = primary[0] ? raw[primary[0].id] : '';
+      window.__saveCustomRecordField = async (fieldId, value) => {
+        if (!record) throw new Error('Não foi possível salvar. Tente novamente.');
+        const field = ordered.find(item => item.id === fieldId);
+        let stored = value || '';
+        if (field && field.field_type === 'date' && /^\d{4}-\d{2}-\d{2}$/.test(stored)) {
+          const [year, month, day] = stored.split('-');
+          stored = day + '/' + month + '/' + year;
+        }
+        if (field && field.field_type === 'multiple_choice') {
+          stored = String(stored).split(',').map(item => item.trim()).filter(Boolean);
+        }
+        data[fieldId] = stored;
+        const display = Array.isArray(stored) ? stored.join(', ') : stored;
+        window.__profileFieldRaw[fieldId] = display;
+        await api.updateRecord(record.id, data);
+        historyEvents = await api.listRecordEvents(record.id);
+        paintHistory();
+        if (primary[0] && primary[0].id === fieldId) {
+          document.getElementById('profile-title').textContent = display || cardLabel || objectName || 'Registro';
+          document.title = document.getElementById('profile-title').textContent + ' — RD Station';
+        }
+      };
+      const sidebarLinks = ASSOC_TYPES.map(type => links.find(link => assocType(link.name) === type)).filter(Boolean);
+      const assocHtml = (await Promise.all(sidebarLinks.map(async link => {
+        const type = assocType(link.name);
+        const ids = recordLinks.map(row => {
+          if (String(row.object_link_id) !== String(link.id)) return '';
+          if (String(row.left_id) === String(record?.id)) return row.right_id;
+          if (String(row.right_id) === String(record?.id)) return row.left_id;
+          return '';
+        }).filter(Boolean);
+        const names = await associatedNames(api, link, ids);
+        const linkRows = recordLinks.filter(row => String(row.object_link_id) === String(link.id));
+        const items = ids.map(id => {
+          const row = linkRows.find(item => {
+            const other = String(item.left_id) === String(record.id) ? String(item.right_id) : String(item.left_id);
+            return other === String(id);
+          });
+          return { id: String(id), principal: !!(row && row.principal), ...(names[id] || names[String(id)] || { name: type.title, meta: '' }) };
+        });
+        if (items.length && !items.some(item => item.principal)) items[0].principal = true;
+        return assocCard(type, link, items);
+      }))).join('');
+      const singular = String(current.singular || '').trim();
+      const cardLabel = singular
+        ? singular.charAt(0).toLocaleUpperCase('pt-BR') + singular.slice(1)
+        : 'Objeto';
+      historyLabel = cardLabel;
+      historyEvents = [];
+      if (record) {
+        try { historyEvents = await api.listRecordEvents(record.id); } catch (error) { historyEvents = []; }
+      }
+      render({
+        objectLabel: current.name || objectName,
+        cardLabel,
+        recordLabel: first || current.name || objectName || 'Registro',
+        primaryHtml: fieldRows(primary, data),
+        secondaryHtml: fieldRows(secondary, data),
+        raw,
+        assocHtml
+      });
+      paintHistory();
+      bindHistoryFilter();
+    } catch (error) {
+      historyEvents = [];
+      render(failed);
+      paintHistory();
+      bindHistoryFilter();
+    }
+  }
+
+  loadProfile();
+})();
+</script>
+<script src="../../shared/products.js"></script>
+<script src="../../shared/app-toast.js"></script>
+</body>
+</html>

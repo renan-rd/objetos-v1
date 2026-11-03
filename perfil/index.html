@@ -1155,9 +1155,33 @@
     #drawer-edit-tags:not(.open),
     #drawer-edit-company:not(.open),
     #drawer-edit-responsible:not(.open),
-    #drawer-add-contact:not(.open) {
+    #drawer-add-contact:not(.open),
+    #drawer-edit-custom-link:not(.open) {
       display: none !important;
     }
+
+    #profile-custom-object-cards { display: contents; }
+    #custom-link-selected-list.is-loading { pointer-events: none; }
+    #custom-link-selected-list.is-loading:empty::after { content: none; }
+    #custom-link-selected-list .custom-link-skeleton-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      flex-shrink: 0;
+      display: block;
+    }
+    #custom-link-selected-list.is-loading .company-selected-info { gap: 8px; }
+    #custom-link-selected-list.is-loading .skeleton { display: block; height: 14px; }
+    #custom-link-selected-list.company-selected-list:empty::after {
+      content: "Nenhum registro selecionado";
+      color: var(--color-text-low);
+      font: 500 14px/1.4 var(--font);
+    }
+    #custom-link-search-list .company-autocomplete-option { align-items: center; }
+    #custom-link-search-list .company-autocomplete-check { margin-top: 0; }
+    .custom-link-checks { display: flex; flex-direction: column; gap: 8px; }
+    .custom-link-check { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+    .custom-link-required { color: #c62828; }
 
 
     .drawer-header {
@@ -3522,6 +3546,64 @@
 .profile-bar-btn:hover { background: #B2F4FF; color: #005580; }
 .profile-bar-btn:hover svg { fill: #005580; }
 .profile-bar-btn svg { width: 24px; height: 24px; fill: var(--color-primary-text); transition: fill .15s; }
+.history-message {
+  display: flex; align-items: flex-start; gap: 16px; width: 100%;
+  position: relative; overflow: hidden;
+  padding: 12px 16px 12px 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+.history-message[hidden] { display: none; }
+.history-message::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px;
+  background: #8800f7;
+  border-radius: 7px 0 0 7px;
+}
+.history-message-icon { display: flex; padding-top: 4px; flex-shrink: 0; }
+.history-message-text {
+  flex: 1; min-width: 0; margin: 0; padding: 4px 0;
+  font-family: var(--font); font-size: 16px; font-weight: 700; line-height: 1.5;
+  letter-spacing: -0.16px; color: var(--color-text-high);
+}
+.history-message-close {
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 32px; height: 32px; margin-left: 8px; padding: 6px;
+  border: 0; border-radius: var(--radius-sm); background: transparent; cursor: pointer;
+}
+.history-message-close:hover { background: var(--color-surface-low); }
+.history-filters { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; padding: 10px 0; }
+.history-filter { position: relative; width: 300px; max-width: 100%; }
+.history-filter-trigger {
+  display: flex; align-items: center; width: 100%; height: 40px;
+  padding: 4px 4px 4px 12px; border: 1px solid var(--color-border-interactive); border-radius: var(--radius-md);
+  background: var(--color-surface); cursor: pointer; text-align: left; font-family: var(--font);
+}
+.history-filter-trigger:hover { border-color: #8c9ba3; }
+.history-filter-trigger[aria-expanded="true"] { border-color: var(--color-primary-border, #00dbff); }
+.history-filter-value {
+  flex: 1; min-width: 0; padding-right: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 16px; font-weight: 500; line-height: 1.5; letter-spacing: -0.16px; color: var(--color-text-low);
+}
+.history-filter-caret { width: 32px; height: 32px; padding: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.history-filter-caret svg { width: 20px; height: 20px; fill: var(--color-icon-low); }
+#history-filter-list .company-autocomplete-option { align-items: center; font-family: var(--font); }
+#history-filter-list .company-autocomplete-check { margin-top: 0; }
+#history-filter-list .company-autocomplete-option-name {
+  font-family: var(--font); font-size: 16px; font-weight: 700; line-height: 24px; letter-spacing: -0.16px; color: var(--color-text-high);
+}
+.history-filter-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.history-filter-tags:empty { display: none; }
+.history-filter-tag {
+  display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: var(--radius-xs);
+  background: var(--color-surface-low); color: var(--color-text-high);
+  font-size: 12px; font-weight: 900; line-height: 1.3; letter-spacing: -0.12px; text-transform: uppercase; white-space: nowrap;
+}
+.history-filter-tag-remove { display: flex; padding: 0 0 0 4px; border: none; background: none; cursor: pointer; color: var(--color-text-high); }
+.history-filter-tag-remove svg { width: 16px; height: 16px; fill: currentColor; }
+.history-filter-empty { margin: 0; font-size: 14px; font-weight: 500; line-height: 1.4; color: var(--color-text-low); }
+.history-filter-empty[hidden] { display: none; }
+.overview-timeline-item.is-history-hidden { display: none; }
 /* ── Timeline (overview structure) ── */
 .overview-timeline {
   display: flex;
@@ -4462,10 +4544,10 @@
             <div class="profile-tabs-wrapper">
               <div class="profile-tabs-scroll">
                 <button class="profile-tab active" data-tab="atividades">Histórico</button>
-                <button class="profile-tab" data-tab="pre-vendas">Pré-vendas</button>
-                <button class="profile-tab" data-tab="negociacoes">Negociações</button>
-                <button class="profile-tab" data-tab="atendimentos">Atendimentos</button>
-                <button class="profile-tab" data-tab="tickets">Tickets</button>
+                <button class="profile-tab" data-tab="pre-vendas" hidden>Pré-vendas</button>
+                <button class="profile-tab" data-tab="negociacoes" hidden>Negociações</button>
+                <button class="profile-tab" data-tab="atendimentos" hidden>Atendimentos</button>
+                <button class="profile-tab" data-tab="tickets" hidden>Tickets</button>
               </div>
               <div class="profile-tabs-fade"></div>
             </div>
@@ -4477,26 +4559,27 @@
           </div>
           <!-- ── Painel: Atividades ── -->
           <div class="profile-tab-panel active" data-tab-panel="atividades">
-          <div class="profile-activities-bar">
-            <div class="profile-search-wrap">
-              <input type="text" placeholder="Buscar atividade" />
-              <div class="profile-search-icon">
-                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-              </div>
+          <div class="history-message" id="history-message" role="status">
+            <span class="history-message-icon"><img src="icons/message-info.svg" width="24" height="24" alt=""></span>
+            <p class="history-message-text">Histórico do RD Station Marketing vinculado pelo e-mail ou via telefone em contatos sem e-mail.</p>
+            <button type="button" class="history-message-close" id="history-message-close" aria-label="Fechar mensagem">
+              <img src="icons/message-times.svg" width="20" height="20" alt="">
+            </button>
+          </div>
+          <div class="history-filters">
+            <div class="history-filter" id="history-filter">
+              <button type="button" class="history-filter-trigger" id="history-filter-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="history-filter-list">
+                <span class="history-filter-value">Filtre por tipo de evento</span>
+                <span class="history-filter-caret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.53907 10H15.4609C15.9402 10 16.1803 10.6386 15.8414 11.0121L12.3804 14.8264C12.1703 15.0579 11.8297 15.0579 11.6196 14.8264L8.15866 11.0121C7.81973 10.6386 8.05978 10 8.53907 10Z"/></svg></span>
+              </button>
+              <div class="company-autocomplete-dropdown" id="history-filter-list" role="listbox" aria-multiselectable="true" hidden></div>
             </div>
-            <button class="profile-bar-btn">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.5 8.25H19.5C19.7762 8.25 20 8.02616 20 7.75V6.5C20 6.22384 19.7762 6 19.5 6H4.5C4.22384 6 4 6.22384 4 6.5V7.75C4 8.02616 4.22384 8.25 4.5 8.25ZM6.5 13.25H17.5C17.7762 13.25 18 13.0262 18 12.75V11.5C18 11.2238 17.7762 11 17.5 11H6.5C6.22384 11 6 11.2238 6 11.5V12.75C6 13.0262 6.22384 13.25 6.5 13.25ZM8.5 18.25H15.5C15.7762 18.25 16 18.0262 16 17.75V16.5C16 16.2238 15.7762 16 15.5 16H8.5C8.22384 16 8 16.2238 8 16.5V17.75C8 18.0262 8.22384 18.25 8.5 18.25Z" fill="currentColor"/></svg>
-              Filtros
-            </button>
-            <button class="profile-bar-btn sort">
-              Mais recentes
-              <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg>
-            </button>
+            <div class="history-filter-tags" id="history-filter-tags"></div>
           </div>
           <div class="overview-timeline">
 
             <!-- 1. Contrato assinado — hoje -->
-            <div class="overview-timeline-item">
+            <div class="overview-timeline-item" data-history-type="venda">
               <div class="overview-timeline-rail">
                 <div class="overview-timeline-dot overview-timeline-dot--mint">
                   <img src="../contatos/painel-visao/case.svg" width="24" height="24" alt="">
@@ -4514,7 +4597,7 @@
             </div>
 
             <!-- 2. Proposta enviada — 3 dias atrás -->
-            <div class="overview-timeline-item">
+            <div class="overview-timeline-item" data-history-type="negociacao">
               <div class="overview-timeline-rail">
                 <div class="overview-timeline-dot overview-timeline-dot--primary">
                   <img src="../contatos/painel-visao/mail.svg" width="24" height="24" alt="">
@@ -4532,7 +4615,7 @@
             </div>
 
             <!-- 3. Reunião de demo — 1 semana atrás -->
-            <div class="overview-timeline-item">
+            <div class="overview-timeline-item" data-history-type="reuniao">
               <div class="overview-timeline-rail">
                 <div class="overview-timeline-dot overview-timeline-dot--pink">
                   <img src="../contatos/painel-visao/click.svg" width="24" height="24" alt="">
@@ -4550,7 +4633,7 @@
             </div>
 
             <!-- 4. E-mail de agendamento — 10 dias atrás -->
-            <div class="overview-timeline-item">
+            <div class="overview-timeline-item" data-history-type="email">
               <div class="overview-timeline-rail">
                 <div class="overview-timeline-dot overview-timeline-dot--primary">
                   <img src="../contatos/painel-visao/mail.svg" width="24" height="24" alt="">
@@ -4568,7 +4651,7 @@
             </div>
 
             <!-- 5. WhatsApp — 2 semanas atrás -->
-            <div class="overview-timeline-item">
+            <div class="overview-timeline-item" data-history-type="whatsapp">
               <div class="overview-timeline-rail">
                 <div class="overview-timeline-dot overview-timeline-dot--mint">
                   <img src="../contatos/painel-visao/whatsapp.svg" width="24" height="24" alt="">
@@ -4586,7 +4669,7 @@
             </div>
 
             <!-- 6. Lead convertido — 3 semanas atrás -->
-            <div class="overview-timeline-item">
+            <div class="overview-timeline-item" data-history-type="conversao">
               <div class="overview-timeline-rail">
                 <div class="overview-timeline-dot overview-timeline-dot--pink">
                   <img src="../contatos/painel-visao/person.svg" width="24" height="24" alt="">
@@ -4615,6 +4698,7 @@
             </div>
 
           </div>
+          <p class="history-filter-empty" id="history-filter-empty" hidden>Nenhuma atividade registrada</p>
           </div><!-- /painel atividades -->
 
           <!-- ── Painel: Pré-vendas ── -->
@@ -5229,6 +5313,51 @@
   </div>
 </div>
 
+<!-- ─── PAINEL: OBJETO PERSONALIZADO VINCULADO ───────────── -->
+<div class="drawer" id="drawer-edit-custom-link" role="dialog" aria-modal="false" aria-label="Editar vínculo">
+  <div class="drawer-header">
+    <span class="drawer-title" id="custom-link-drawer-title">Editar vínculo</span>
+    <button class="drawer-close" id="custom-link-drawer-close" type="button" title="Fechar" aria-label="Fechar">
+      <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body">
+    <div class="company-drawer-tabs" id="custom-link-drawer-tabs">
+      <div class="company-drawer-tabs-nav" role="tablist" aria-label="Como adicionar o registro">
+        <button class="company-drawer-tab" id="custom-link-tab-create" type="button" role="tab" data-custom-link-tab="create" aria-selected="false">Criar novo</button>
+        <button class="company-drawer-tab is-active" id="custom-link-tab-existing" type="button" role="tab" data-custom-link-tab="existing" aria-selected="true">Adicionar existente</button>
+      </div>
+    </div>
+    <form id="custom-link-create-form" hidden novalidate>
+      <div class="drawer-section-title">Identificação</div>
+      <div id="custom-link-create-fields"></div>
+    </form>
+    <div id="custom-link-existing-panel">
+      <div class="drawer-field">
+        <label class="drawer-label" id="custom-link-search-label" for="custom-link-search">Buscar</label>
+        <div class="company-autocomplete" id="custom-link-search-box">
+          <div class="company-autocomplete-control">
+            <input class="company-autocomplete-input" id="custom-link-search" type="text" placeholder="Digite o nome" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="custom-link-search-list">
+            <button class="company-autocomplete-clear" id="custom-link-search-clear" type="button" hidden aria-label="Limpar">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4z"/></svg>
+            </button>
+          </div>
+          <div class="company-autocomplete-dropdown" id="custom-link-search-list" role="listbox" hidden></div>
+        </div>
+      </div>
+      <div class="drawer-section-title" id="custom-link-selected-heading">Registros selecionados</div>
+      <div class="company-selected-list" id="custom-link-selected-list" aria-live="polite"></div>
+    </div>
+    <div id="custom-link-drawer-error" class="drawer-error" style="display:none"></div>
+  </div>
+  <div class="drawer-footer">
+    <div class="drawer-actions">
+      <button class="drawer-btn-cancel" id="custom-link-drawer-cancel" type="button">Cancelar</button>
+      <button class="drawer-btn-save" id="custom-link-drawer-save" type="button">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ─── PAINEL: EDITAR EMPRESA ───────────── -->
 <div class="drawer" id="drawer-edit-company" role="dialog" aria-modal="false" aria-label="Editar empresa">
   <div class="drawer-header">
@@ -5518,6 +5647,9 @@
 <script src="../contatos/tag-picker.js"></script>
 <script src="../shared/profile-tags-card.js"></script>
 <script src="../shared/profile-card-empty.js"></script>
+<script src="../shared/profile-assoc-scroll.js"></script>
+<script src="../shared/custom-objects-db.js"></script>
+<script src="profile-custom-object-cards.js"></script>
 <script src="../shared/profile-tags-panel.js"></script>
 <script>
   // ─── TABLE COLUMNS STATE ─────────────────────────────────
@@ -7135,6 +7267,101 @@
   })();
 </script>
 <script src="../shared/products.js"></script>
+<script>
+  (function () {
+    const types = [
+      { key: 'venda', label: 'Venda' },
+      { key: 'negociacao', label: 'Negociação' },
+      { key: 'reuniao', label: 'Reunião' },
+      { key: 'email', label: 'E-mail' },
+      { key: 'whatsapp', label: 'WhatsApp' },
+      { key: 'conversao', label: 'Conversão' }
+    ];
+    const selected = new Set();
+    const check = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1136 18.1592L3.26359 12.3092C2.91214 11.9577 2.91214 11.3879 3.26359 11.0364L4.53636 9.7636C4.88781 9.4121 5.4577 9.4121 5.80915 9.7636L9.75 13.7044L18.1908 5.26359C18.5423 4.91214 19.1122 4.91214 19.4636 5.26359L20.7364 6.53639C21.0879 6.88785 21.0879 7.4577 20.7364 7.80919L10.3864 18.1592C10.0349 18.5107 9.46506 18.5107 9.1136 18.1592Z"/></svg>';
+    const times = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.2745 12L17.686 8.58852C18.1047 8.16989 18.1047 7.49114 17.686 7.07216L16.9278 6.31398C16.5092 5.89534 15.8305 5.89534 15.4115 6.31398L12 9.72545L8.58852 6.31398C8.16989 5.89534 7.49114 5.89534 7.07216 6.31398L6.31398 7.07216C5.89534 7.4908 5.89534 8.16955 6.31398 8.58852L9.72545 12L6.31398 15.4115C5.89534 15.8301 5.89534 16.5089 6.31398 16.9278L7.07216 17.686C7.4908 18.1047 8.16989 18.1047 8.58852 17.686L12 14.2745L15.4115 17.686C15.8301 18.1047 16.5092 18.1047 16.9278 17.686L17.686 16.9278C18.1047 16.5092 18.1047 15.8305 17.686 15.4115L14.2745 12Z"/></svg>';
+    const root = document.getElementById('history-filter');
+    const trigger = document.getElementById('history-filter-trigger');
+    const list = document.getElementById('history-filter-list');
+    const tags = document.getElementById('history-filter-tags');
+    const empty = document.getElementById('history-filter-empty');
+    const message = document.getElementById('history-message');
+    const messageClose = document.getElementById('history-message-close');
+    if (message && messageClose) {
+      messageClose.addEventListener('click', () => { message.hidden = true; });
+    }
+    if (!root || !trigger || !list || !tags) return;
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+    }
+
+    function renderList() {
+      list.innerHTML = types.map(type => {
+        const on = selected.has(type.key);
+        return '<button type="button" class="company-autocomplete-option' + (on ? ' is-selected' : '') + '" role="option" aria-selected="' + (on ? 'true' : 'false') + '" data-history-type="' + type.key + '">'
+          + '<span class="company-autocomplete-check">' + check + '</span>'
+          + '<span class="company-autocomplete-option-text"><span class="company-autocomplete-option-name">' + escapeHtml(type.label) + '</span></span></button>';
+      }).join('');
+    }
+
+    function renderTags() {
+      tags.innerHTML = types.filter(type => selected.has(type.key)).map(type => (
+        '<span class="history-filter-tag">' + escapeHtml(type.label)
+        + '<button type="button" class="history-filter-tag-remove" data-history-remove="' + type.key + '" aria-label="Remover filtro ' + escapeHtml(type.label) + '">' + times + '</button></span>'
+      )).join('');
+    }
+
+    function applyFilter() {
+      const items = document.querySelectorAll('[data-tab-panel="atividades"] .overview-timeline-item[data-history-type]');
+      let visible = 0;
+      items.forEach(item => {
+        const show = !selected.size || selected.has(item.dataset.historyType);
+        item.classList.toggle('is-history-hidden', !show);
+        if (show) visible += 1;
+      });
+      if (empty) empty.hidden = visible > 0;
+    }
+
+    function setOpen(open) {
+      if (open) renderList();
+      list.hidden = !open;
+      trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    trigger.addEventListener('click', () => setOpen(list.hidden));
+    list.addEventListener('mousedown', event => {
+      if (event.target.closest('[data-history-type]')) event.preventDefault();
+    });
+    list.addEventListener('click', event => {
+      const option = event.target.closest('[data-history-type]');
+      if (!option) return;
+      const key = option.dataset.historyType;
+      if (selected.has(key)) selected.delete(key);
+      else selected.add(key);
+      renderList();
+      renderTags();
+      applyFilter();
+    });
+    tags.addEventListener('click', event => {
+      const remove = event.target.closest('[data-history-remove]');
+      if (!remove) return;
+      selected.delete(remove.dataset.historyRemove);
+      renderTags();
+      if (!list.hidden) renderList();
+      applyFilter();
+    });
+    document.addEventListener('mousedown', event => {
+      if (!list.hidden && !root.contains(event.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !list.hidden) {
+        setOpen(false);
+        trigger.focus();
+      }
+    });
+  })();
+</script>
 
 </body>
 </html>

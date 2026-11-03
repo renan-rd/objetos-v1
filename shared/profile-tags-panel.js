@@ -42,6 +42,7 @@
     ['drawer-edit-responsible', 'drawer-edit-company'].forEach(id => {
       document.getElementById(id)?.classList.remove('open');
     });
+    window.__closeCustomObjectPanel?.();
   }
 
   async function openTagsPanel(contactId) {

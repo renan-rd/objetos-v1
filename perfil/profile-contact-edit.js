@@ -591,6 +591,7 @@
       }
       document.getElementById('drawer-edit-company')?.classList.remove('open');
       document.getElementById('drawer-edit-responsible')?.classList.remove('open');
+      window.__closeCustomObjectPanel?.();
       detailPanel.appendChild(drawer);
       content.classList.add("detail-open", "detail-edit");
       detailPanel.setAttribute("aria-hidden", "false");

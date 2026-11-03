@@ -351,6 +351,7 @@
       document.getElementById('drawer-edit-tags')?.classList.remove('open');
       document.getElementById('drawer-edit-company')?.classList.remove('open');
       document.getElementById('drawer-add-contact')?.classList.remove('open');
+      window.__closeCustomObjectPanel?.();
       content.classList.remove('detail-open', 'detail-edit');
     }
 

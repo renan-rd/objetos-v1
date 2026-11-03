@@ -247,6 +247,14 @@
         label: opt.label,
       }));
     }
+    if (item.dataset.options) {
+      try {
+        const parsed = JSON.parse(item.dataset.options);
+        if (Array.isArray(parsed) && parsed.length) {
+          return parsed.map(value => ({ value: String(value), label: String(value) }));
+        }
+      } catch (error) {}
+    }
     if (Array.isArray(item._inlineOptions)) return item._inlineOptions;
     return type === 'select' || type === 'autocomplete' ? [] : null;
   }
@@ -693,7 +701,7 @@
         item.appendChild(helper);
       }
 
-      if (this.type === 'select' || this.type === 'autocomplete' || this.type === 'phone') {
+      if (this.type === 'select' || this.type === 'multiselect' || this.type === 'autocomplete' || this.type === 'phone') {
         if (!item.querySelector('.inline-field__menu')) {
           const menu = document.createElement('div');
           menu.className = 'inline-field__menu';
@@ -739,7 +747,7 @@
     }
 
     _actionsHtml() {
-      const caret = (this.type === 'select' || this.type === 'autocomplete' || this.type === 'date')
+      const caret = (this.type === 'select' || this.type === 'multiselect' || this.type === 'autocomplete' || this.type === 'date')
         ? `<button type="button" class="inline-field__action inline-field__action--caret" aria-label="Abrir lista">${icon('caret-down')}</button>`
         : '';
       return `<div class="inline-field__actions">
@@ -793,10 +801,10 @@
         } else if (e.key === 'Escape') {
           e.preventDefault();
           this.cancel();
-        } else if (e.key === 'ArrowDown' && (this.type === 'autocomplete' || this.type === 'select')) {
+        } else if (e.key === 'ArrowDown' && (this.type === 'autocomplete' || this.type === 'select' || this.type === 'multiselect')) {
           e.preventDefault();
           this._moveOption(1);
-        } else if (e.key === 'ArrowUp' && (this.type === 'autocomplete' || this.type === 'select')) {
+        } else if (e.key === 'ArrowUp' && (this.type === 'autocomplete' || this.type === 'select' || this.type === 'multiselect')) {
           e.preventDefault();
           this._moveOption(-1);
         }
@@ -816,7 +824,7 @@
 
     async enter() {
       if (this.editing) {
-        if (this.type === 'select' || this.type === 'autocomplete') this._renderMenu(this._inputEl()?.value || '');
+        if (this.type === 'select' || this.type === 'multiselect' || this.type === 'autocomplete') this._renderMenu(this._inputEl()?.value || '');
         if (this.type === 'date') this._renderCalendar(this.originalRaw);
         return;
       }
@@ -859,9 +867,15 @@
         input.value = this.originalRaw?.rede === 'site_pessoal'
           ? u
           : (u ? (u.startsWith('@') ? u : '@' + u) : '');
-      } else if (this.type === 'select' || this.type === 'autocomplete') {
-        const match = this.options.find(opt => opt.value === this.originalRaw);
-        input.value = match?.label || (this.originalRaw && this.originalRaw !== '—' ? this.originalRaw : '');
+      } else if (this.type === 'select' || this.type === 'autocomplete' || this.type === 'multiselect') {
+        if (this.type === 'multiselect') {
+          this._multiDraft = this._splitChoices(this.originalRaw);
+          input.value = this._multiDraft.join(', ');
+          input.readOnly = true;
+        } else {
+          const match = this.options.find(opt => opt.value === this.originalRaw);
+          input.value = match?.label || (this.originalRaw && this.originalRaw !== '—' ? this.originalRaw : '');
+        }
         this._renderMenu(this.type === 'autocomplete' ? input.value : '');
       } else {
         const shown = valueEl.textContent.trim();
@@ -962,7 +976,11 @@
       const phoneWrap = this.el.querySelector('.inline-field__phone-text');
       if (valueEl) valueEl.hidden = false;
       if (phoneWrap) phoneWrap.hidden = true;
-      if (input) input.hidden = true;
+      if (input) {
+        input.hidden = true;
+        input.readOnly = false;
+      }
+      this._multiDraft = null;
       this._closeOverlays();
       document.removeEventListener('mousedown', this._onDocClick);
       document.removeEventListener('keydown', this._onDocKey);
@@ -1005,6 +1023,7 @@
         const rede = this.originalRaw?.rede || this.el.dataset.socialRede || 'instagram';
         return { rede, usuario: typed.replace(/^@/, '') };
       }
+      if (this.type === 'multiselect') return (this._multiDraft || this._splitChoices(typed)).join(', ');
       if (this.type === 'select' || this.type === 'autocomplete') {
         const match = this.options.find(opt =>
           opt.label.toLowerCase() === typed.toLowerCase() || opt.value === typed
@@ -1032,6 +1051,7 @@
     }
 
     _restoreDisplay(raw) {
+      if (this.el.dataset.customRecord === '1') raw = getRawFromStore(this.el);
       const valueEl = this._valueEl();
       if (!valueEl) return;
       valueEl.classList.remove('skeleton');
@@ -1062,6 +1082,10 @@
 
     async _persist(raw) {
       if (this.field === 'categoria_interesse') return;
+      if (this.el.dataset.customRecord === '1' && typeof window.__saveCustomRecordField === 'function') {
+        await window.__saveCustomRecordField(this.field, raw);
+        return;
+      }
 
       const db = window.__profileDb;
       const contactId = window.__profileContactId;
@@ -1195,10 +1219,13 @@
         return;
       }
 
-      const current = this._readRaw();
-      menu.innerHTML = list.map(opt =>
-        `<div class="inline-field__option${opt.value === current ? ' is-selected' : ''}" data-value="${esc(opt.value)}">${esc(opt.label)}</div>`
-      ).join('');
+      const current = this.type === 'multiselect' ? '' : this._readRaw();
+      const selected = new Set(this.type === 'multiselect' ? (this._multiDraft || []) : []);
+      const check = '<span class="inline-field__check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.1136 18.1592L3.26359 12.3092C2.91214 11.9577 2.91214 11.3879 3.26359 11.0364L4.53636 9.7636C4.88781 9.4121 5.4577 9.4121 5.80915 9.7636L9.75 13.7044L18.1908 5.26359C18.5423 4.91214 19.1122 4.91214 19.4636 5.26359L20.7364 6.53639C21.0879 6.88785 21.0879 7.4577 20.7364 7.80919L10.3864 18.1592C10.0349 18.5107 9.46506 18.5107 9.1136 18.1592Z"/></svg></span>';
+      menu.innerHTML = list.map(opt => {
+        const on = this.type === 'multiselect' ? selected.has(opt.value) : opt.value === current;
+        return `<div class="inline-field__option${on ? ' is-selected' : ''}" data-value="${esc(opt.value)}" role="option" aria-selected="${on ? 'true' : 'false'}">${this.type === 'multiselect' ? check : ''}${esc(opt.label)}</div>`;
+      }).join('');
       menu.querySelectorAll('.inline-field__option').forEach(optEl => {
         optEl.addEventListener('mousedown', (e) => {
           e.preventDefault();
@@ -1208,8 +1235,22 @@
       menu.classList.add('is-open');
     }
 
+    _splitChoices(raw) {
+      if (Array.isArray(raw)) return raw.map(item => String(item || '').trim()).filter(Boolean);
+      return String(raw || '').split(',').map(item => item.trim()).filter(item => item && item !== '—');
+    }
+
     _pickOption(value) {
       const input = this._inputEl();
+      if (this.type === 'multiselect') {
+        const selected = new Set(this._multiDraft || []);
+        if (selected.has(value)) selected.delete(value);
+        else selected.add(value);
+        this._multiDraft = this.options.map(opt => opt.value).filter(item => selected.has(item));
+        if (input) input.value = this._multiDraft.join(', ');
+        this._renderMenu('');
+        return;
+      }
       const match = this.options.find(opt => opt.value === value);
       if (input) input.value = match?.label || value;
       this.commit();

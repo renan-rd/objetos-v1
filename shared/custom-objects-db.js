@@ -175,6 +175,11 @@
     if (error) throw error;
   }
 
+  async function updateRecord(id, data) {
+    const { error } = await db().from('custom_records').update({ data: data || {} }).eq('id', id);
+    if (error) throw error;
+  }
+
   async function createRecord(objectId, data) {
     const { data: row, error } = await db()
       .from('custom_records')
@@ -185,6 +190,13 @@
     return row;
   }
 
+  async function deleteRecordLinks(ids) {
+    const linkIds = (ids || []).filter(Boolean);
+    if (!linkIds.length) return;
+    const { error } = await db().from('custom_record_links').delete().in('id', linkIds);
+    if (error) throw error;
+  }
+
   async function createRecordLink(payload) {
     const { data, error } = await db()
       .from('custom_record_links')
@@ -193,9 +205,10 @@
         left_kind: payload.leftKind,
         left_id: payload.leftId,
         right_kind: payload.rightKind,
-        right_id: payload.rightId
+        right_id: payload.rightId,
+        principal: payload.principal === true
       })
-      .select('id, object_link_id, left_kind, left_id, right_kind, right_id')
+      .select('id, object_link_id, left_kind, left_id, right_kind, right_id, principal')
       .single();
     if (error) throw error;
     return data;
@@ -204,10 +217,46 @@
   async function listRecordLinks(kind, id) {
     const { data, error } = await db()
       .from('custom_record_links')
-      .select('id, object_link_id, left_kind, left_id, right_kind, right_id, created_at')
+      .select('id, object_link_id, left_kind, left_id, right_kind, right_id, principal, created_at')
       .or('and(left_kind.eq.' + kind + ',left_id.eq.' + id + '),and(right_kind.eq.' + kind + ',right_id.eq.' + id + ')');
     if (error) throw error;
     return data || [];
+  }
+
+  async function listLinksForRecord(id) {
+    const { data, error } = await db()
+      .from('custom_record_links')
+      .select('id, object_link_id, left_kind, left_id, right_kind, right_id, principal, created_at')
+      .or('left_id.eq.' + id + ',right_id.eq.' + id);
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function listRecordEvents(recordId) {
+    const { data, error } = await db()
+      .from('custom_record_events')
+      .select('id, record_id, kind, changes, created_at')
+      .eq('record_id', recordId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function setRecordLinkPrincipal(linkId, objectLinkId, recordId) {
+    const { error: clearError } = await db()
+      .from('custom_record_links')
+      .update({ principal: false })
+      .eq('object_link_id', objectLinkId)
+      .or('left_id.eq.' + recordId + ',right_id.eq.' + recordId);
+    if (clearError) throw clearError;
+    const { data, error } = await db()
+      .from('custom_record_links')
+      .update({ principal: true })
+      .eq('id', linkId)
+      .select('id, object_link_id, left_kind, left_id, right_kind, right_id, principal')
+      .single();
+    if (error) throw error;
+    return data;
   }
 
   window.__customObjectsDb = {
@@ -225,9 +274,14 @@
     createObjectLink,
     deleteObjectLink,
     listRecords,
+    updateRecord,
     createRecord,
     deleteRecords,
     createRecordLink,
-    listRecordLinks
+    deleteRecordLinks,
+    listRecordLinks,
+    listLinksForRecord,
+    listRecordEvents,
+    setRecordLinkPrincipal
   };
 })();

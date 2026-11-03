@@ -578,6 +578,7 @@
       }
       document.getElementById('drawer-add-contact')?.classList.remove('open');
       document.getElementById('drawer-edit-responsible')?.classList.remove('open');
+      window.__closeCustomObjectPanel?.();
       editContactId = contactId;
       detailPanel.appendChild(drawer);
       content.classList.add('detail-open', 'detail-edit');

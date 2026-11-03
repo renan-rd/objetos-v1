@@ -245,6 +245,80 @@
   content: none;
 }
 
+#profile-companies-list.company-selected-list,
+#profile-responsible-list.company-selected-list,
+.assoc-record-list.company-selected-list {
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+#profile-companies-list.company-selected-list::-webkit-scrollbar,
+#profile-responsible-list.company-selected-list::-webkit-scrollbar,
+.assoc-record-list.company-selected-list::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.assoc-scroll {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+}
+
+.assoc-scroll > #profile-companies-list,
+.assoc-scroll > #profile-responsible-list,
+.assoc-scroll > .assoc-record-list {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+}
+
+.assoc-scroll-track {
+  display: none;
+  position: relative;
+  flex: 0 0 auto;
+  align-self: stretch;
+}
+
+.assoc-scroll.is-scrollable .assoc-scroll-track {
+  display: block;
+  width: 4px;
+  background: #e5e8ea;
+  border-radius: 8px;
+}
+
+.assoc-scroll-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #c5cdd4;
+  border-radius: 8px;
+  touch-action: none;
+}
+
+#profile-companies-list .company-selected-item,
+#profile-responsible-list .company-selected-item,
+.assoc-record-list .company-selected-item {
+  margin-inline: 0;
+}
+
+.assoc-record-list.company-selected-list:empty::after {
+  content: none;
+}
+
+#profile-companies-list.company-selected-list,
+.assoc-record-list.company-selected-list {
+  max-height: calc(4 * (16px + 24px + 19.6px) + 3 * 8px);
+}
+
+#profile-responsible-list.company-selected-list {
+  max-height: calc(4 * (16px + 24px + 19.6px) + 3 * 12px);
+}
+
 .company-selected-item {
   display: flex;
   align-items: center;

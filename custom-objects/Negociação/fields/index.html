@@ -2353,9 +2353,10 @@
     <script>
   (function () {
     const CATALOG = {
-      'Negociação': { kind: 'padrao', description: 'Informações gerais das negociações.', links: ['Empresa', 'Contato', 'Alunos', 'Contratos'], first: 'Nome da negociação' },
-      'Empresa': { kind: 'padrao', description: 'Informações gerais das empresas.', links: ['Negociação', 'Contato', 'Alunos', 'Contratos'], first: 'Nome da empresa' },
-      'Contato': { kind: 'padrao', description: 'Informações gerais dos contatos.', links: ['Negociação', 'Empresa', 'Alunos', 'Contratos'], first: 'Nome do contato' },
+      'Negociação': { kind: 'padrao', description: 'Informações gerais das negociações.', links: ['Empresa', 'Contato', 'Lead', 'Alunos', 'Contratos'], first: 'Nome da negociação' },
+      'Empresa': { kind: 'padrao', description: 'Informações gerais das empresas.', links: ['Negociação', 'Contato', 'Lead', 'Alunos', 'Contratos'], first: 'Nome da empresa' },
+      'Contato': { kind: 'padrao', description: 'Informações gerais dos contatos.', links: ['Negociação', 'Empresa', 'Lead', 'Alunos', 'Contratos'], first: 'Nome do contato' },
+      'Lead': { kind: 'padrao', description: 'Informações gerais dos leads.', links: ['Contato', 'Empresa', 'Negociação'], first: 'Nome do lead' },
       'Alunos': { kind: 'personalizado', description: 'Informações gerais dos alunos da escola.', links: ['Negociação', 'Contato'], first: 'Nome do aluno' },
       'Contratos': { kind: 'personalizado', description: 'Informações gerais dos contratos.', links: ['Negociação'], first: 'Nome do contrato' }
     };

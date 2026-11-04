@@ -19,7 +19,7 @@
       .select('id, object_a_id, object_b_id');
     if (error) throw error;
     const byId = Object.fromEntries(objects.map(item => [item.id, item]));
-    const order = ['Negociação', 'Empresa', 'Contato', 'Alunos', 'Contratos'];
+    const order = ['Negociação', 'Empresa', 'Contato', 'Lead', 'Alunos', 'Contratos'];
     function byCatalogOrder(a, b) {
       const ai = order.indexOf(a);
       const bi = order.indexOf(b);

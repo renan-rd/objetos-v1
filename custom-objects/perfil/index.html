@@ -656,6 +656,8 @@
     }).filter(Boolean);
   }
 
+  const GRID_ASSOC_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.569 2h4.138a2.07 2.07 0 0 1 2.069 2.069v4.138a2.07 2.07 0 0 1-2.07 2.069H3.57A2.07 2.07 0 0 1 1.5 8.206V4.07A2.07 2.07 0 0 1 3.569 2zm0 11.034h4.138a2.07 2.07 0 0 1 2.069 2.07v4.137a2.07 2.07 0 0 1-2.07 2.07H3.57A2.07 2.07 0 0 1 1.5 19.24v-4.138a2.07 2.07 0 0 1 2.069-2.069zm8.965-8.965A2.07 2.07 0 0 1 14.604 2h4.137a2.07 2.07 0 0 1 2.07 2.069v4.138a2.07 2.07 0 0 1-2.07 2.069h-4.138a2.07 2.07 0 0 1-2.069-2.07V4.07zm4.138 8.276c.574 0 1.035.461 1.035 1.034v2.759h2.758c.574 0 1.035.461 1.035 1.034 0 .574-.461 1.035-1.035 1.035h-2.758v2.758c0 .574-.461 1.035-1.035 1.035a1.032 1.032 0 0 1-1.034-1.035v-2.758h-2.759a1.032 1.032 0 0 1-1.034-1.035c0-.573.461-1.034 1.034-1.034h2.759v-2.759c0-.573.461-1.034 1.034-1.034z"/></svg>';
+
   const ASSOC_TYPES = [
     {
       key: 'empresa',
@@ -686,6 +688,49 @@
   function assocType(name) {
     const key = fold(name);
     return ASSOC_TYPES.find(type => key === type.singular || key === type.plural || key === type.key) || null;
+  }
+
+  function assocTypeByKey(key) {
+    return ASSOC_TYPES.find(type => type.key === key)
+      || (window.__profileDynamicAssocTypes && window.__profileDynamicAssocTypes[key])
+      || null;
+  }
+
+  function dynamicAssocType(object, link) {
+    const title = object.name || link.name || 'Objeto';
+    const singular = String(object.singular || title).trim() || title;
+    const plural = String(object.plural || title).trim() || title;
+    return {
+      key: 'custom-' + String(object.id),
+      title,
+      singular,
+      plural,
+      selectedTitle: title + ' selecionados',
+      icon: GRID_ASSOC_ICON
+    };
+  }
+
+  function resolveLinkAssocType(link, objectsById) {
+    const fromLinkName = assocType(link.name);
+    if (fromLinkName) return fromLinkName;
+    const object = objectsById[String(link.objectId)];
+    if (!object) return null;
+    const fromObject = assocType(object.name) || assocType(object.plural) || assocType(object.singular);
+    if (fromObject) return fromObject;
+    const type = dynamicAssocType(object, link);
+    window.__profileDynamicAssocTypes[type.key] = type;
+    return type;
+  }
+
+  function sortAssocEntries(entries) {
+    return entries.slice().sort((a, b) => {
+      const ia = ASSOC_TYPES.findIndex(type => type.key === a.type.key);
+      const ib = ASSOC_TYPES.findIndex(type => type.key === b.type.key);
+      const orderA = ia >= 0 ? ia : 1000;
+      const orderB = ib >= 0 ? ib : 1000;
+      if (orderA !== orderB) return orderA - orderB;
+      return a.type.title.localeCompare(b.type.title, 'pt-BR');
+    });
   }
 
   function initials(name) {
@@ -1400,7 +1445,7 @@
   }
 
   async function openLinkPanel(section) {
-    const type = ASSOC_TYPES.find(item => item.key === section.id.replace('assoc-', ''));
+    const type = assocTypeByKey(section.id.replace('assoc-', ''));
     const api = window.__customObjectsDb;
     if (!type || !section.dataset.objectId || !recordId || !api) return;
     const token = ++linkPanelToken;
@@ -1645,7 +1690,7 @@
   }
 
   function sectionLink(section) {
-    const type = ASSOC_TYPES.find(item => item.key === section.id.replace('assoc-', ''));
+    const type = assocTypeByKey(section.id.replace('assoc-', ''));
     if (!type) return null;
     return { type, link: { id: section.dataset.linkId, objectId: section.dataset.objectId, name: type.title } };
   }
@@ -1950,9 +1995,17 @@
           document.title = document.getElementById('profile-title').textContent + ' — RD Station';
         }
       };
-      const sidebarLinks = ASSOC_TYPES.map(type => links.find(link => assocType(link.name) === type)).filter(Boolean);
-      const assocHtml = (await Promise.all(sidebarLinks.map(async link => {
-        const type = assocType(link.name);
+      window.__profileDynamicAssocTypes = Object.create(null);
+      const objectsById = Object.fromEntries((await api.listObjects()).map(item => [String(item.id), item]));
+      const sidebarLinks = sortAssocEntries(
+        links.map(link => {
+          const object = objectsById[String(link.objectId)];
+          if (object && object.status && object.status !== 'ativo') return null;
+          const type = resolveLinkAssocType(link, objectsById);
+          return type ? { link, type } : null;
+        }).filter(Boolean)
+      );
+      const assocHtml = (await Promise.all(sidebarLinks.map(async ({ link, type }) => {
         const ids = recordLinks.map(row => {
           if (String(row.object_link_id) !== String(link.id)) return '';
           if (String(row.left_id) === String(record?.id)) return row.right_id;

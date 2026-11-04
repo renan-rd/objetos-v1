@@ -1581,9 +1581,10 @@
 <script>
   (function () {
     let OBJECTS = [
-      { name: 'Negociação', kind: 'padrao', status: 'ativo', links: 'Empresa, Contato, Alunos, Contratos' },
-      { name: 'Empresa', kind: 'padrao', status: 'ativo', links: 'Negociação, Contato, Alunos, Contratos' },
-      { name: 'Contato', kind: 'padrao', status: 'ativo', links: 'Negociação, Empresa, Alunos, Contratos' },
+      { name: 'Negociação', kind: 'padrao', status: 'ativo', links: 'Empresa, Contato, Lead, Alunos, Contratos' },
+      { name: 'Empresa', kind: 'padrao', status: 'ativo', links: 'Negociação, Contato, Lead, Alunos, Contratos' },
+      { name: 'Contato', kind: 'padrao', status: 'ativo', links: 'Negociação, Empresa, Lead, Alunos, Contratos' },
+      { name: 'Lead', kind: 'padrao', status: 'ativo', links: 'Contato, Empresa, Negociação' },
       { name: 'Alunos', kind: 'personalizado', status: 'desativado', links: 'Negociação, Contato', singular: 'Aluno', description: 'Informações gerais dos alunos da escola.' },
       { name: 'Contratos', kind: 'personalizado', status: 'ativo', links: 'Negociação', singular: 'Contrato', description: 'Informações gerais dos contratos.' }
     ];

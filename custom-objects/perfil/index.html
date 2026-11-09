@@ -227,6 +227,9 @@
     .overview-card.is-collapsed .overview-card-body { display: none; }
     .overview-card-body { display: flex; flex-direction: column; gap: 12px; padding: 0 16px 16px; }
     #assoc-cards { display: flex; flex-direction: column; gap: 16px; }
+    #assoc-cards .company-selected-principal,
+    #profile-panels .company-selected-principal,
+    #link-selected-list .company-selected-principal { display: none; }
     #assoc-cards .overview-card { padding: 16px; }
     #assoc-cards .overview-accordion-head { padding: 0; }
     #assoc-cards .overview-card-body { padding: 12px 0 0; }
@@ -1183,16 +1186,17 @@
   const NATIVE_OBJECTS = {
     empresa: {
       table: 'claude_empresas',
-      columns: 'id, nome, cnpj, segmento, site, telefone',
+      columns: 'id, nome, cnpj, segmento, site, descricao, telefone',
       fields: [
-        { id: 'nome', name: 'Nome da empresa', field_type: 'text', is_required: true, native: true },
+        { id: 'nome', name: 'Nome da empresa', field_type: 'text', native: true },
         { id: 'cnpj', name: 'CNPJ', field_type: 'text', native: true },
         { id: 'segmento', name: 'Segmento', field_type: 'text', native: true },
-        { id: 'site', name: 'Site', field_type: 'text', native: true },
+        { id: 'site', name: 'URL', field_type: 'text', native: true },
+        { id: 'descricao', name: 'Resumo', field_type: 'text', native: true },
         { id: 'telefone', name: 'Telefone', field_type: 'text', native: true }
       ],
       view(row) {
-        return { id: String(row.id), name: row.nome || 'Empresa', meta: row.cnpj || '', search: fold([row.nome, row.cnpj, row.segmento, row.site, row.telefone].filter(Boolean).join(' ')), linkKind: 'empresa', data: { nome: row.nome || '', cnpj: row.cnpj || '', segmento: row.segmento || '', site: row.site || '', telefone: row.telefone || '' } };
+        return { id: String(row.id), name: row.nome || 'Empresa', meta: row.cnpj || '', search: fold([row.nome, row.cnpj, row.segmento, row.site, row.descricao, row.telefone].filter(Boolean).join(' ')), linkKind: 'empresa', data: { nome: row.nome || '', cnpj: row.cnpj || '', segmento: row.segmento || '', site: row.site || '', descricao: row.descricao || '', telefone: row.telefone || '' } };
       }
     },
     contato: {
@@ -1235,6 +1239,63 @@
     error.style.display = message ? 'block' : 'none';
   }
 
+  const NATIVE_FIELD_COLUMNS = {
+    empresa: {
+      'nome da empresa': 'nome',
+      nome: 'nome',
+      cnpj: 'cnpj',
+      segmento: 'segmento',
+      url: 'site',
+      site: 'site',
+      resumo: 'descricao',
+      descricao: 'descricao',
+      telefone: 'telefone'
+    },
+    contato: {
+      'nome completo': 'nome',
+      'nome do contato': 'nome',
+      nome: 'nome',
+      'e-mail': 'email',
+      email: 'email',
+      telefone: 'telefone',
+      cargo: 'cargo',
+      cpf: 'cpf',
+      status: 'status'
+    }
+  };
+
+  function nativeColumnFor(typeKey, field) {
+    const columns = NATIVE_FIELD_COLUMNS[typeKey] || {};
+    return columns[fold(field.name)] || (field.native ? field.id : '');
+  }
+
+  function mergeNativeFields(typeKey, customFields) {
+    const native = NATIVE_OBJECTS[typeKey];
+    if (!native) return customFields;
+    const covered = new Set();
+    const fields = native.fields.map((field, index) => {
+      covered.add(nativeColumnFor(typeKey, field));
+      covered.add(fold(field.name));
+      return { ...field, position: index };
+    });
+    customFields.forEach(field => {
+      const column = nativeColumnFor(typeKey, field);
+      if ((column && covered.has(column)) || covered.has(fold(field.name))) return;
+      fields.push({ ...field, position: fields.length });
+    });
+    return fields;
+  }
+
+  function applyNativeValues(typeKey, fields, data) {
+    const next = { ...(data || {}) };
+    fields.forEach(field => {
+      if (next[field.id] != null && next[field.id] !== '') return;
+      const column = nativeColumnFor(typeKey, field);
+      if (column && next[column] != null && next[column] !== '') next[field.id] = next[column];
+    });
+    return next;
+  }
+
   function describeRecord(fields, row) {
     const ordered = fields.slice().sort((a, b) => (a.position || 0) - (b.position || 0));
     const values = ordered.map(field => {
@@ -1265,11 +1326,14 @@
     return '<input class="drawer-input" id="' + id + '" data-field-id="' + escapeHtml(field.id) + '" data-field-type="text" type="text" placeholder="Digite aqui" autocomplete="off">';
   }
 
+  function linkFieldIsRequired(field) {
+    if (linkPanel && linkPanel.type && linkPanel.type.key === 'empresa') return false;
+    return !!field.is_required;
+  }
+
   function readCreateData(fields) {
     const data = {};
     const missing = [];
-    const ordered = fields.slice().sort((a, b) => (a.position || 0) - (b.position || 0));
-    const nameField = ordered.find(field => field.is_primary) || ordered[0];
     fields.forEach(field => {
       let value = '';
       if (field.field_type === 'multiple_choice') {
@@ -1283,7 +1347,7 @@
         }
       }
       const empty = Array.isArray(value) ? !value.length : !value;
-      if (empty && (field.is_required || (nameField && field.id === nameField.id))) missing.push(field.name);
+      if (empty && linkFieldIsRequired(field)) missing.push(field.name);
       data[field.id] = value;
     });
     return { data, missing };
@@ -1539,10 +1603,17 @@
     const native = NATIVE_OBJECTS[type.key];
     let fields = [];
     let records = [];
+    const extras = new Map();
     try { fields = await api.listFields(objectId); } catch (error) { fields = []; }
     try {
       const rows = await api.listRecords(objectId);
-      records = rows.map(row => describeRecord(fields, row));
+      const stored = [];
+      rows.forEach(row => {
+        const sourceId = row.data && row.data._source_id;
+        if (sourceId) extras.set(String(sourceId), row);
+        else stored.push(row);
+      });
+      records = stored.map(row => describeRecord(fields, row));
     } catch (error) {
       records = [];
     }
@@ -1555,7 +1626,16 @@
           if (!known.has(view.id)) records.push(view);
         });
       }
-      if (!fields.length) fields = native.fields.map((field, index) => ({ ...field, position: index }));
+      fields = mergeNativeFields(type.key, fields);
+      records.forEach(record => {
+        if (record.linkKind !== 'empresa' && record.linkKind !== 'contato') return;
+        const extra = extras.get(record.id);
+        if (extra) {
+          record.extraRecordId = extra.id;
+          record.data = { ...record.data, ...extra.data };
+        }
+        record.data = applyNativeValues(type.key, fields, record.data);
+      });
     }
     records.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
     return { fields, records };
@@ -1589,10 +1669,9 @@
       const principalRow = linkedRows.find(row => String(row.object_link_id) === String(link.id) && row.principal && chosen.has(linkOtherId(row)));
       linkPanel.principalId = principalRow ? linkOtherId(principalRow) : (linkPanel.selected.keys().next().value || null);
       const ordered = catalog.fields.slice().sort((a, b) => (a.position || 0) - (b.position || 0));
-      const nameField = ordered.find(field => field.is_primary) || ordered[0];
       document.getElementById('link-create-fields').innerHTML = ordered.length
         ? ordered.map(field => (
-          '<div class="drawer-field"><label class="drawer-label" for="link-field-' + escapeHtml(field.id) + '">' + escapeHtml(field.name) + ((field.is_required || (nameField && field.id === nameField.id)) ? ' <span class="drawer-required">*</span>' : '') + '</label>' + createControl(field) + '</div>'
+          '<div class="drawer-field"><label class="drawer-label" for="link-field-' + escapeHtml(field.id) + '">' + escapeHtml(field.name) + (linkFieldIsRequired(field) ? ' <span class="drawer-required">*</span>' : '') + '</label>' + createControl(field) + '</div>'
         )).join('')
         : '<p class="profile-empty">Este objeto não tem campos para cadastro.</p>';
       renderLinkSelected();
@@ -1689,6 +1768,33 @@
     paintAssocItem(view);
   }
 
+  async function saveNativeExtras(recordId, data, extraRecordId) {
+    const extraFields = linkPanel.fields.filter(field => !field.native);
+    if (!extraFields.length) return extraRecordId || '';
+    const extraData = { _source_id: recordId };
+    extraFields.forEach(field => { extraData[field.id] = data[field.id]; });
+    if (extraRecordId) {
+      await window.__customObjectsDb.updateRecord(extraRecordId, extraData);
+      return extraRecordId;
+    }
+    const hasValue = extraFields.some(field => {
+      const value = data[field.id];
+      return Array.isArray(value) ? value.length > 0 : !!value;
+    });
+    if (!hasValue) return '';
+    const created = await window.__customObjectsDb.createRecord(linkPanel.link.objectId, extraData);
+    return created.id;
+  }
+
+  function withNativeExtras(view, data, extraRecordId) {
+    if (!view) return view;
+    if (extraRecordId) view.extraRecordId = extraRecordId;
+    linkPanel.fields.forEach(field => {
+      if (!field.native && data[field.id] != null) view.data[field.id] = data[field.id];
+    });
+    return view;
+  }
+
   async function saveEditedLinkRecord() {
     const saveBtn = document.getElementById('link-drawer-save');
     const { data, missing } = readCreateData(linkPanel.fields);
@@ -1712,7 +1818,8 @@
         native.fields.forEach(field => { payload[field.id] = data[field.id] || null; });
         const { data: row, error } = await window.__sbClient.from(native.table).update(payload).eq('id', id).select(native.columns).single();
         if (error) throw error;
-        view = native.view(row);
+        const extraRecordId = await saveNativeExtras(id, data, current.extraRecordId);
+        view = withNativeExtras(native.view(row), data, extraRecordId);
       } else {
         const next = { ...(current.data || {}), ...data };
         await window.__customObjectsDb.updateRecord(id, next);
@@ -1777,7 +1884,8 @@
           native.fields.forEach(field => { payload[field.id] = data[field.id] || null; });
           const { data: row, error } = await window.__sbClient.from(native.table).insert(payload).select(native.columns).single();
           if (error) throw error;
-          view = native.view(row);
+          const extraRecordId = await saveNativeExtras(row.id, data, '');
+          view = withNativeExtras(native.view(row), data, extraRecordId);
         } else {
           const created = await window.__customObjectsDb.createRecord(linkPanel.link.objectId, data);
           view = describeRecord(linkPanel.fields, created);

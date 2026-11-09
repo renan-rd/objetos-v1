@@ -312,10 +312,9 @@
 
   function paintCreateFields() {
     const ordered = panel.fields.slice().sort((a, b) => (a.position || 0) - (b.position || 0));
-    const nameField = ordered.find(field => field.is_primary) || ordered[0];
     document.getElementById('custom-link-create-fields').innerHTML = ordered.length
       ? ordered.map(field => (
-        '<div class="drawer-field"><label class="drawer-label" for="custom-field-' + escapeHtml(field.id) + '">' + escapeHtml(field.name) + ((field.is_required || (nameField && field.id === nameField.id)) ? ' <span class="custom-link-required">*</span>' : '') + '</label>' + createControl(field) + '</div>'
+        '<div class="drawer-field"><label class="drawer-label" for="custom-field-' + escapeHtml(field.id) + '">' + escapeHtml(field.name) + (field.is_required ? ' <span class="custom-link-required">*</span>' : '') + '</label>' + createControl(field) + '</div>'
       )).join('')
       : '<p class="profile-empty">Este objeto não tem campos para cadastro.</p>';
   }
@@ -323,8 +322,6 @@
   function readCreateData() {
     const data = {};
     const missing = [];
-    const ordered = panel.fields.slice().sort((a, b) => (a.position || 0) - (b.position || 0));
-    const nameField = ordered.find(field => field.is_primary) || ordered[0];
     panel.fields.forEach(field => {
       let value = '';
       if (field.field_type === 'multiple_choice') {
@@ -334,7 +331,7 @@
         value = input ? String(input.value || '').trim() : '';
       }
       const empty = Array.isArray(value) ? !value.length : !value;
-      if (empty && (field.is_required || (nameField && field.id === nameField.id))) missing.push(field.name);
+      if (empty && field.is_required) missing.push(field.name);
       data[field.id] = value;
     });
     return { data, missing };

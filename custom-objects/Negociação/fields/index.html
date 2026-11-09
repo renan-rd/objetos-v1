@@ -1293,6 +1293,12 @@
 
     .field-type { position: relative; z-index: 3; }
 
+    #create-field-form.is-editing #field-type-label,
+    #create-field-form.is-editing #field-type,
+    #create-field-form.is-editing #field-type-error { display: none; }
+
+    #create-field-form.is-editing #field-type-field:not(:has(#field-options:not([hidden]))) { display: none; }
+
     .field-type.is-open { z-index: 4; }
 
     .field-type-trigger {
@@ -2277,7 +2283,7 @@
           </div>
           <span class="object-drawer-feedback" id="field-name-error" hidden>O nome do campo é obrigatório.</span>
         </div>
-        <div class="object-drawer-field">
+        <div class="object-drawer-field" id="field-type-field">
           <span class="object-drawer-label" id="field-type-label">Tipo do campo <span class="object-drawer-required">*</span></span>
           <div class="field-type" id="field-type">
             <button type="button" class="field-type-trigger" id="field-type-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="field-type-label" aria-required="true" aria-describedby="field-type-error">
@@ -2809,6 +2815,7 @@
       setFieldNameError(false);
       setFieldTypeError(false);
       clearFieldOptions();
+      fieldForm.classList.remove('is-editing');
     }
 
     function applyFieldType(type, option) {
@@ -2845,6 +2852,8 @@
         }
         readRowOptions(editingRow).forEach(item => addFieldOption(item));
       }
+      fieldForm.classList.toggle('is-editing', Boolean(editingRow));
+      if (editingRow) closeFieldTypeMenu();
       fieldDrawer.hidden = false;
       fieldNameInput.focus();
     }
@@ -2952,6 +2961,7 @@
       if (fieldNameInput.value.trim()) setFieldNameError(false);
     });
     fieldTypeTrigger.addEventListener('click', () => {
+      if (editingRow) return;
       if (fieldTypeMenu.hidden) openFieldTypeMenu();
       else closeFieldTypeMenu();
     });

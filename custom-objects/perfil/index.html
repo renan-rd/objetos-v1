@@ -230,6 +230,63 @@
     #assoc-cards .overview-card { padding: 16px; }
     #assoc-cards .overview-accordion-head { padding: 0; }
     #assoc-cards .overview-card-body { padding: 12px 0 0; }
+    .profile-assoc-tab-section .overview-card-body { padding: 0; }
+    .profile-assoc-tab-section .profile-card-empty { display: none; flex-direction: column; align-items: center; gap: 16px; width: 100%; }
+    .profile-assoc-tab-section.is-card-empty .profile-card-empty { display: flex; }
+    .profile-assoc-tab-section.is-card-empty .overview-card-body > :not(.profile-card-empty) { display: none; }
+    .profile-tab-panel:has(> .profile-assoc-tab-section.is-card-empty) {
+      justify-content: center;
+      align-items: stretch;
+    }
+    .profile-assoc-tab-section.is-card-empty {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: center;
+      min-height: 0;
+    }
+    .profile-assoc-tab-section.is-card-empty .overview-card-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      width: 100%;
+    }
+    .profile-assoc-tab-section.is-card-empty .profile-card-empty {
+      width: auto;
+      max-width: 360px;
+      align-items: center;
+      text-align: center;
+    }
+    .profile-assoc-tab-section .profile-card-empty-hero,
+    .profile-assoc-tab-section .profile-card-empty-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .profile-assoc-tab-section .profile-card-empty-art { display: block; }
+    .profile-assoc-tab-section .profile-card-empty-copy { color: var(--color-text-high); text-align: center; }
+    .profile-assoc-tab-section .profile-card-empty-title {
+      margin: 0;
+      width: 100%;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+      text-align: center;
+    }
+    .profile-assoc-tab-section .profile-card-empty-text {
+      margin: 0;
+      max-width: 310px;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      text-align: center;
+    }
     .overview-btn-secondary {
       width: 100%; height: 32px; margin-top: 4px; padding: 6px 12px;
       border: none; border-radius: var(--radius-sm);
@@ -238,6 +295,16 @@
       cursor: pointer;
     }
     .overview-btn-secondary:hover { background: #66EBFF; color: #005580; }
+    .profile-assoc-tab-section.is-card-empty .profile-card-empty > .overview-btn-secondary {
+      width: max-content;
+      max-width: min(280px, 100%);
+      margin-top: 0;
+      margin-left: auto;
+      margin-right: auto;
+      align-self: center;
+      display: block;
+      text-align: center;
+    }
     .profile-detail-list { display: flex; flex-direction: column; gap: 8px; }
     .profile-field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     .profile-field-label { font-size: 12px; font-weight: 500; letter-spacing: -0.12px; line-height: 1.3; color: var(--color-text-low); }
@@ -274,8 +341,16 @@
       color: var(--color-primary-text);
       border-bottom-color: #00DBFF;
     }
-    .profile-tab-panel { display: none; flex-direction: column; gap: 16px; }
-    .profile-tab-panel.active { display: flex; }
+    .profile-tab-panel {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      min-height: min(430px, calc(100vh - 240px));
+    }
+    .profile-tab-panel.active {
+      display: flex;
+      min-height: min(430px, calc(100vh - 240px));
+    }
     .overview-timeline { display: flex; flex-direction: column; }
     .overview-timeline-item { display: flex; align-items: stretch; }
     .overview-timeline-rail {
@@ -733,6 +808,23 @@
     });
   }
 
+  const ASSOC_TAB_ORDER = ['negociacao', 'lead'];
+
+  function assocTabKeyForLink(link, objectsById) {
+    const object = objectsById[String(link.objectId)];
+    const names = [link.name, object && object.name, object && object.singular, object && object.plural].filter(Boolean);
+    for (let index = 0; index < names.length; index += 1) {
+      const key = fold(names[index]);
+      if (key === 'negociacao' || key === 'negociacoes') return 'negociacao';
+      if (key === 'lead' || key === 'leads') return 'lead';
+    }
+    return null;
+  }
+
+  function assocTabLabel(tabKey) {
+    return tabKey === 'negociacao' ? 'Negociação' : 'Lead';
+  }
+
   function initials(name) {
     const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
     if (!parts.length) return '?';
@@ -821,8 +913,7 @@
       + '</div></div></div>';
   }
 
-  function assocCard(type, link, items) {
-    const empty = !items.length;
+  function assocLinkItemsBody(type, link, items) {
     const label = 'Editar ' + (items.length > 1 ? type.plural : type.singular);
     const rows = items.map(item => (
       '<div class="company-selected-item"' + (item.id ? ' data-record-id="' + escapeHtml(item.id) + '"' : '') + '>'
@@ -830,18 +921,35 @@
       + recordInfoHtml(type, item)
       + (item.id ? linkActionsHtml(item, item.principal === true) : '') + '</div>'
     )).join('');
-    return '<section class="overview-card' + (empty ? ' is-card-empty is-collapsed' : '') + '" id="assoc-' + type.key + '" data-link-id="' + escapeHtml(link.id) + '" data-object-id="' + escapeHtml(link.objectId) + '">'
+    return '<div class="overview-card-body">'
+      + '<div class="profile-card-empty"><div class="profile-card-empty-hero"><img class="profile-card-empty-art" src="../../shared/profile-empty-illustration.svg" width="128" height="128" alt=""><div class="profile-card-empty-copy"><p class="profile-card-empty-title">Nenhuma informação disponível</p><p class="profile-card-empty-text">Não foram adicionados dados para exibição aqui.</p></div></div><button type="button" class="overview-btn-secondary" data-assoc-edit>' + escapeHtml(label) + '</button></div>'
+      + '<div class="company-selected-list assoc-record-list" id="assoc-' + type.key + '-list">' + rows + '</div>'
+      + '<button type="button" class="overview-btn-secondary" data-assoc-edit>' + escapeHtml(label) + '</button>'
+      + '</div>';
+  }
+
+  function assocLinkSectionAttrs(type, link) {
+    return ' id="assoc-' + type.key + '" data-link-id="' + escapeHtml(link.id) + '" data-object-id="' + escapeHtml(link.objectId) + '"';
+  }
+
+  function assocCard(type, link, items) {
+    const empty = !items.length;
+    return '<section class="overview-card' + (empty ? ' is-card-empty is-collapsed' : '') + '"' + assocLinkSectionAttrs(type, link) + '>'
       + '<button type="button" class="overview-accordion-head" aria-expanded="' + (empty ? 'false' : 'true') + '">'
       + '<span class="overview-accordion-icon" aria-hidden="true">' + type.icon + '</span>'
       + '<span class="overview-accordion-title">' + escapeHtml(type.title) + '</span>'
       + '<span class="overview-accordion-alert" aria-hidden="true"><img src="../../shared/profile-empty-alert.svg" width="24" height="24" alt=""></span>'
       + '<img class="overview-accordion-chevron" src="../../contatos/painel-visao/chevron-up.svg" width="24" height="24" alt="">'
       + '</button>'
-      + '<div class="overview-card-body">'
-      + '<div class="profile-card-empty"><div class="profile-card-empty-hero"><img class="profile-card-empty-art" src="../../shared/profile-empty-illustration.svg" width="128" height="128" alt=""><div class="profile-card-empty-copy"><p class="profile-card-empty-title">Nenhuma informação disponível</p><p class="profile-card-empty-text">Não foram adicionados dados para exibição aqui.</p></div></div><button type="button" class="overview-btn-secondary" data-assoc-edit>' + escapeHtml(label) + '</button></div>'
-      + '<div class="company-selected-list assoc-record-list" id="assoc-' + type.key + '-list">' + rows + '</div>'
-      + '<button type="button" class="overview-btn-secondary" data-assoc-edit>' + escapeHtml(label) + '</button>'
-      + '</div></section>';
+      + assocLinkItemsBody(type, link, items)
+      + '</section>';
+  }
+
+  function assocTabSection(type, link, items) {
+    const empty = !items.length;
+    return '<section class="profile-assoc-tab-section' + (empty ? ' is-card-empty' : '') + '"' + assocLinkSectionAttrs(type, link) + '>'
+      + assocLinkItemsBody(type, link, items)
+      + '</section>';
   }
 
   async function associatedNames(api, link, ids) {
@@ -1054,9 +1162,18 @@
     window.InlineField?.mountCard('#object-card');
     window.InlineField?.mountCard('#fields-card');
 
+    const assocTabs = state.assocTabs || [];
     document.getElementById('profile-tabs').removeAttribute('aria-busy');
-    document.getElementById('profile-tabs-scroll').innerHTML = '<button type="button" class="profile-tab active" data-tab="historico">Histórico</button>';
-    document.getElementById('profile-panels').innerHTML = panel('historico', 'Buscar atividade', 'Nenhuma atividade registrada');
+    document.getElementById('profile-tabs-scroll').innerHTML = '<button type="button" class="profile-tab active" data-tab="historico">Histórico</button>'
+      + assocTabs.map(tab => '<button type="button" class="profile-tab" data-tab="' + escapeHtml(tab.key) + '">' + escapeHtml(tab.label) + '</button>').join('');
+    document.getElementById('profile-panels').innerHTML = panel('historico', 'Buscar atividade', 'Nenhuma atividade registrada')
+      + assocTabs.map(tab => '<div class="profile-tab-panel" data-tab-panel="' + escapeHtml(tab.key) + '">' + tab.html + '</div>').join('');
+  }
+
+  function assocSectionMarkup(type, link, items, section) {
+    return section && section.classList.contains('profile-assoc-tab-section')
+      ? assocTabSection(type, link, items)
+      : assocCard(type, link, items);
   }
 
   document.getElementById('profile-title-label').textContent = objectName || 'Registro';
@@ -1213,8 +1330,8 @@
   function closeLinkMenu() {
     cardMenuOpen = false;
     if (linkPanel) linkPanel.menuId = null;
-    document.querySelectorAll('#link-selected-list .company-selected-menu-list, #assoc-cards .company-selected-menu-list').forEach(list => { list.hidden = true; });
-    document.querySelectorAll('#link-selected-list .company-selected-menu-btn, #assoc-cards .company-selected-menu-btn').forEach(button => {
+    document.querySelectorAll('#link-selected-list .company-selected-menu-list, #assoc-cards .company-selected-menu-list, #profile-panels .company-selected-menu-list').forEach(list => { list.hidden = true; });
+    document.querySelectorAll('#link-selected-list .company-selected-menu-btn, #assoc-cards .company-selected-menu-btn, #profile-panels .company-selected-menu-btn').forEach(button => {
       button.setAttribute('aria-expanded', 'false');
     });
   }
@@ -1412,7 +1529,7 @@
   function refreshAssocCard() {
     const current = document.getElementById('assoc-' + linkPanel.type.key);
     const items = [...linkPanel.selected.values()].map(item => ({ ...item, principal: item.id === linkPanel.principalId }));
-    const html = assocCard(linkPanel.type, linkPanel.link, items);
+    const html = assocSectionMarkup(linkPanel.type, linkPanel.link, items, current);
     if (current) current.outerHTML = html;
     window.__bindAssocLists?.();
   }
@@ -1707,7 +1824,7 @@
     });
     if (items.length && !items.some(item => item.principal)) items[0].principal = true;
     const current = document.getElementById(section.id);
-    if (current) current.outerHTML = assocCard(context.type, context.link, items);
+    if (current) current.outerHTML = assocSectionMarkup(context.type, context.link, items, current);
     window.__bindAssocLists?.();
   }
 
@@ -1752,7 +1869,7 @@
     }
   }
 
-  document.getElementById('assoc-cards').addEventListener('click', event => {
+  function handleAssocSurfaceClick(event) {
     const section = event.target.closest('section[data-link-id]');
     const principalButton = event.target.closest('.company-selected-principal');
     if (principalButton && section) {
@@ -1770,7 +1887,7 @@
       return;
     }
     const menuButton = event.target.closest('.company-selected-menu-btn');
-    if (menuButton) {
+    if (menuButton && section) {
       if (menuButton.getAttribute('aria-expanded') === 'true') closeLinkMenu();
       else openLinkMenu(menuButton);
       return;
@@ -1778,24 +1895,27 @@
     const button = event.target.closest('[data-assoc-edit]');
     if (!button || !section) return;
     openLinkPanel(section);
-  });
-  document.getElementById('assoc-cards').addEventListener('mouseover', event => {
+  }
+
+  function handleAssocPrincipalOver(event) {
     const button = event.target.closest('.company-selected-principal');
     if (button) showLinkPrincipalTip(button);
-  });
-  document.getElementById('assoc-cards').addEventListener('mouseout', event => {
+  }
+
+  function handleAssocPrincipalOut(event) {
     const button = event.target.closest('.company-selected-principal');
     if (!button || button.contains(event.relatedTarget)) return;
     hideLinkPrincipalTip();
-  });
-  document.getElementById('assoc-cards').addEventListener('focusin', event => {
-    const button = event.target.closest('.company-selected-principal');
-    if (button) showLinkPrincipalTip(button);
-  });
-  document.getElementById('assoc-cards').addEventListener('focusout', event => {
-    const button = event.target.closest('.company-selected-principal');
-    if (!button || button.contains(event.relatedTarget)) return;
-    hideLinkPrincipalTip();
+  }
+
+  ['assoc-cards', 'profile-panels'].forEach(hostId => {
+    const host = document.getElementById(hostId);
+    if (!host) return;
+    host.addEventListener('click', handleAssocSurfaceClick);
+    host.addEventListener('mouseover', handleAssocPrincipalOver);
+    host.addEventListener('mouseout', handleAssocPrincipalOut);
+    host.addEventListener('focusin', handleAssocPrincipalOver);
+    host.addEventListener('focusout', handleAssocPrincipalOut);
   });
   document.getElementById('link-drawer-tabs').addEventListener('click', event => {
     const tab = event.target.closest('[data-link-tab]');
@@ -1918,7 +2038,7 @@
     const image = event.target;
     if (!image || image.tagName !== 'IMG') return;
     const avatar = image.closest('.avatar');
-    if (!avatar || !avatar.closest('#assoc-cards, #link-selected-list, #link-search-list')) return;
+    if (!avatar || !avatar.closest('#assoc-cards, #profile-panels, #link-selected-list, #link-search-list')) return;
     avatar.innerHTML = contactAvatarSvg(image.alt || '');
   }, true);
 
@@ -2005,7 +2125,7 @@
           return type ? { link, type } : null;
         }).filter(Boolean)
       );
-      const assocHtml = (await Promise.all(sidebarLinks.map(async ({ link, type }) => {
+      const builtAssocs = await Promise.all(sidebarLinks.map(async ({ link, type }) => {
         const ids = recordLinks.map(row => {
           if (String(row.object_link_id) !== String(link.id)) return '';
           if (String(row.left_id) === String(record?.id)) return row.right_id;
@@ -2022,8 +2142,23 @@
           return { id: String(id), principal: !!(row && row.principal), ...(names[id] || names[String(id)] || { name: type.title, meta: '' }) };
         });
         if (items.length && !items.some(item => item.principal)) items[0].principal = true;
-        return assocCard(type, link, items);
-      }))).join('');
+        return { link, type, items, tabKey: assocTabKeyForLink(link, objectsById) };
+      }));
+      const assocTabByKey = new Map();
+      const sidebarAssocParts = [];
+      builtAssocs.forEach(entry => {
+        if (entry.tabKey) {
+          assocTabByKey.set(entry.tabKey, {
+            key: entry.tabKey,
+            label: assocTabLabel(entry.tabKey),
+            html: assocTabSection(entry.type, entry.link, entry.items)
+          });
+        } else {
+          sidebarAssocParts.push(assocCard(entry.type, entry.link, entry.items));
+        }
+      });
+      const assocTabs = ASSOC_TAB_ORDER.filter(key => assocTabByKey.has(key)).map(key => assocTabByKey.get(key));
+      const assocHtml = sidebarAssocParts.join('');
       const singular = String(current.singular || '').trim();
       const cardLabel = singular
         ? singular.charAt(0).toLocaleUpperCase('pt-BR') + singular.slice(1)
@@ -2040,7 +2175,8 @@
         primaryHtml: fieldRows(primary, data),
         secondaryHtml: fieldRows(secondary, data),
         raw,
-        assocHtml
+        assocHtml,
+        assocTabs
       });
       paintHistory();
       bindHistoryFilter();

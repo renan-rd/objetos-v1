@@ -1616,6 +1616,13 @@
       background: #b2f4ff;
     }
 
+    .fields-icon-btn.fields-actions[aria-disabled="true"],
+    .fields-icon-btn.fields-actions[aria-disabled="true"]:hover {
+      color: #8c98a3;
+      background: transparent;
+      cursor: default;
+    }
+
     .fields-icon-btn.fields-actions svg path { fill: currentColor; }
 
     .fields-back:focus-visible,
@@ -1659,6 +1666,7 @@
       justify-content: space-between;
       gap: 16px;
       padding-top: 24px;
+      margin-bottom: 24px;
     }
 
     .fields-toolbar .search-input {
@@ -1773,6 +1781,8 @@
     }
 
     .fields-table .col-order { width: 81px; }
+
+    .fields-main.is-standard .fields-table .col-order { display: none; }
     .fields-table .col-created { width: 143px; }
     .fields-table .col-actions { width: 72px; }
 
@@ -2101,7 +2111,7 @@
     <main class="content">
     <div class="content-main fields-main">
       <header class="fields-header">
-        <p class="fields-kicker">Objetos Personalizados</p>
+        <p class="fields-kicker">Objeto Personalizado</p>
         <div class="fields-title-row">
           <a class="fields-back" href="../../index.html" aria-label="Voltar">
             <img src="../../icons/fields-arrow-left.svg" width="24" height="24" alt="">
@@ -2115,7 +2125,7 @@
       </header>
 
       <div class="fields-tabs" role="tablist">
-        <button type="button" class="fields-tab" id="fields-tab-campos" role="tab" aria-selected="true" aria-controls="fields-panel-campos">Campos personalizados</button>
+        <button type="button" class="fields-tab" id="fields-tab-campos" role="tab" aria-selected="true" aria-controls="fields-panel-campos">Campos do objeto</button>
         <button type="button" class="fields-tab" id="fields-tab-vinculos" role="tab" aria-selected="false" aria-controls="fields-panel-vinculos">Vínculos</button>
       </div>
 
@@ -2141,6 +2151,28 @@
           </div>
           <button type="button" class="btn-primary" id="fields-create-btn">Criar campo</button>
         </div>
+        <section class="fields-group" data-group="padroes" id="fields-standard-group" hidden>
+          <h2 class="fields-group-heading">
+            <button type="button" class="fields-group-toggle" aria-expanded="true">
+              <span>Campos padrões</span>
+              <img class="fields-chevron" src="../../icons/fields-chevron-up.svg" width="24" height="24" alt="">
+            </button>
+          </h2>
+          <div class="fields-group-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th class="col-order" scope="col">Ordem</th>
+                  <th scope="col">Nome do campo</th>
+                  <th scope="col">Tipo</th>
+                  <th class="col-created" scope="col">Criado em</th>
+                  <th class="col-actions" scope="col">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="fields-standard"></tbody>
+            </table>
+          </div>
+        </section>
         <section class="fields-group" data-group="principais">
           <h2 class="fields-group-heading">
             <button type="button" class="fields-group-toggle" aria-expanded="true">
@@ -2167,7 +2199,7 @@
         <section class="fields-group" data-group="secundarios">
           <h2 class="fields-group-heading">
             <button type="button" class="fields-group-toggle" aria-expanded="true">
-              <span>Campos secundários</span>
+              <span>Campos personalizados</span>
               <img class="fields-chevron" src="../../icons/fields-chevron-up.svg" width="24" height="24" alt="">
             </button>
           </h2>
@@ -2353,15 +2385,83 @@
     <script>
   (function () {
     const CATALOG = {
-      'Negociação': { kind: 'padrao', description: 'Informações gerais das negociações.', links: ['Empresa', 'Contato', 'Lead', 'Alunos', 'Contratos'], first: 'Nome da negociação' },
+      'Negociação': { kind: 'padrao', description: 'Informações gerais das negociações.', links: ['Empresa', 'Contato', 'Lead', 'Produto', 'Serviço'], first: 'Nome da negociação' },
+      'Produto': { kind: 'padrao', description: 'Informações gerais dos produtos.', links: ['Negociação'], first: 'Nome do produto' },
+      'Serviço': { kind: 'padrao', description: 'Informações gerais dos serviços.', links: ['Negociação'], first: 'Nome do serviço' },
       'Empresa': { kind: 'padrao', description: 'Informações gerais das empresas.', links: ['Negociação', 'Contato', 'Lead', 'Alunos', 'Contratos'], first: 'Nome da empresa' },
       'Contato': { kind: 'padrao', description: 'Informações gerais dos contatos.', links: ['Negociação', 'Empresa', 'Lead', 'Alunos', 'Contratos'], first: 'Nome do contato' },
-      'Lead': { kind: 'padrao', description: 'Informações gerais dos leads.', links: ['Contato', 'Empresa', 'Negociação'], first: 'Nome do lead' },
+      'Lead': { kind: 'padrao', description: 'Informações gerais dos leads.', links: ['Contato', 'Empresa'], first: 'Nome do lead' },
       'Alunos': { kind: 'personalizado', description: 'Informações gerais dos alunos da escola.', links: ['Negociação', 'Contato'], first: 'Nome do aluno' },
       'Contratos': { kind: 'personalizado', description: 'Informações gerais dos contratos.', links: ['Negociação'], first: 'Nome do contrato' }
     };
     const MAX_PRIMARY_FIELDS = 3;
     const PRIMARY_LIMIT_TOOLTIP = 'Só é possível ter 3 campos principais. Desmarque um campo para marcar outro.';
+    const STANDARD_FIELD_TOOLTIP = 'Não é possível editar campos padrões.';
+    const STANDARD_LINK_TOOLTIP = 'Não é possível remover vínculos padrões,\nmas você pode adicionar vínculos com objetos personalizados.';
+    const ADDRESS_STANDARD_FIELDS = [
+      { name: 'CEP', type: 'Texto curto' },
+      { name: 'Rua', type: 'Texto curto' },
+      { name: 'Número', type: 'Texto curto' },
+      { name: 'Complemento', type: 'Texto curto' },
+      { name: 'Bairro', type: 'Texto curto' },
+      { name: 'Cidade', type: 'Texto curto' },
+      { name: 'Estado', type: 'Texto curto' },
+      { name: 'País', type: 'Texto curto' }
+    ];
+    const CONTACT_STANDARD_FIELDS = [
+      { name: 'Nome', type: 'Texto curto' },
+      { name: 'Avatar', type: 'URL' },
+      { name: 'CPF', type: 'Texto curto' },
+      { name: 'RG', type: 'Texto curto' },
+      { name: 'Email Principal', type: 'Texto curto' },
+      { name: 'Emails Adicionais', type: 'Texto curto' },
+      { name: 'Telefone Principal', type: 'Texto curto' },
+      { name: 'Telefone Principal Tipo', type: 'Texto curto' },
+      { name: 'Telefone Celular', type: 'Texto curto' },
+      { name: 'Telefone Comercial', type: 'Texto curto' },
+      { name: 'Telefone Residencial', type: 'Texto curto' },
+      { name: 'Data de Nascimento', type: 'Data' },
+      { name: 'Cargo', type: 'Texto curto' },
+      ...ADDRESS_STANDARD_FIELDS,
+      { name: 'Facebook', type: 'Texto curto' },
+      { name: 'X', type: 'Texto curto' },
+      { name: 'Instagram', type: 'Texto curto' },
+      { name: 'Teams', type: 'Texto curto' },
+      { name: 'Site pessoal', type: 'URL' },
+      { name: 'Linkedin', type: 'Texto curto' }
+    ];
+    const COMPANY_STANDARD_FIELDS = [
+      { name: 'Nome da empresa', type: 'Texto curto' },
+      { name: 'CNPJ', type: 'Texto curto' },
+      { name: 'Segmento', type: 'Texto curto' },
+      { name: 'URL', type: 'URL' },
+      { name: 'Resumo', type: 'Texto longo' },
+      ...ADDRESS_STANDARD_FIELDS
+    ];
+    const DEAL_STANDARD_FIELDS = [
+      { name: 'Nome da negociação', type: 'Texto curto' },
+      { name: 'Valor total', type: 'Decimal (moeda)' },
+      { name: 'Valor único', type: 'Decimal (moeda)' },
+      { name: 'Funil', type: 'Seleção única' },
+      { name: 'Etapa do funil', type: 'Seleção única' },
+      { name: 'Qualificação', type: 'Seleção única' },
+      { name: 'Previsão de fechamento', type: 'Data' },
+      { name: 'Fonte', type: 'Texto curto' },
+      { name: 'Campanha', type: 'Texto curto' },
+      { name: 'Data de criação', type: 'Data' }
+    ];
+    const LEAD_STANDARD_FIELDS = [
+      { name: 'Nome do lead', type: 'Texto curto' },
+      { name: 'Etapa', type: 'Seleção única' },
+      { name: 'Fonte', type: 'Texto curto' },
+      { name: 'Campanha', type: 'Texto curto' }
+    ];
+    const STANDARD_FIELDS = {
+      'Contato': CONTACT_STANDARD_FIELDS,
+      'Empresa': COMPANY_STANDARD_FIELDS,
+      'Negociação': DEAL_STANDARD_FIELDS,
+      'Lead': LEAD_STANDARD_FIELDS
+    };
     const starSolid = '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.1417 4.52566L9.18879 8.43281L4.81945 9.06138C4.0359 9.17352 3.72188 10.1267 4.29011 10.6726L7.45122 13.7122L6.70356 18.0059C6.56898 18.7821 7.39739 19.3634 8.09122 19.0004L12 16.9731L15.9088 19.0004C16.6026 19.3605 17.431 18.7821 17.2964 18.0059L16.5488 13.7122L19.7099 10.6726C20.2781 10.1267 19.9641 9.17352 19.1805 9.06138L14.8112 8.43281L12.8583 4.52566C12.5084 3.82921 11.4946 3.82036 11.1417 4.52566Z" fill="currentColor"/></svg>';
     const starOutline = '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.1806 9.11964L14.8114 8.48353L12.8588 4.53164C12.6833 4.17851 12.3409 4 11.9985 4C11.6583 4 11.3183 4.17612 11.1421 4.53164L9.18903 8.48323L4.81953 9.11875C4.03595 9.23218 3.72193 10.196 4.28998 10.7483L7.45084 13.8229L6.70279 18.1655C6.59652 18.7858 7.09174 19.2834 7.64636 19.2834C7.79352 19.2834 7.94486 19.2485 8.09023 19.1715L11.9991 17.1213L15.9078 19.1721C16.0528 19.2482 16.2039 19.2828 16.3504 19.2828C16.9057 19.2828 17.4018 18.787 17.2955 18.1664L16.5483 13.8235L19.7098 10.7495C20.2782 10.1972 19.9641 9.23307 19.1806 9.11964ZM15.5466 12.7972L15.0057 13.3232L15.1334 14.0659L15.7161 17.4524L12.6675 15.8527L11.9994 15.5023L11.3372 15.8527L8.28835 17.4524L8.87502 14.0659L8.99946 13.3244L8.45724 12.7972L5.99502 10.3978L9.40835 9.90142L10.1461 9.77778L10.4839 9.11725L12.0003 6.03401L13.5236 9.11725L13.8573 9.79277L14.6039 9.90142L18.0137 10.3978L15.5466 12.7972Z" fill="currentColor"/></svg>';
     const ellipsis = '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.3226 9.67742C13.6065 9.67742 14.6452 10.7161 14.6452 12C14.6452 13.2839 13.6065 14.3226 12.3226 14.3226C11.0387 14.3226 10 13.2839 10 12C10 10.7161 11.0387 9.67742 12.3226 9.67742ZM10 6.32258C10 7.60645 11.0387 8.64516 12.3226 8.64516C13.6065 8.64516 14.6452 7.60645 14.6452 6.32258C14.6452 5.03871 13.6065 4 12.3226 4C11.0387 4 10 5.03871 10 6.32258ZM10 17.6774C10 18.9613 11.0387 20 12.3226 20C13.6065 20 14.6452 18.9613 14.6452 17.6774C14.6452 16.3935 13.6065 15.3548 12.3226 15.3548C11.0387 15.3548 10 16.3935 10 17.6774Z" fill="currentColor"/></svg>';
@@ -2383,22 +2483,28 @@
 
     function fieldRow(row, primary) {
       const star = primary ? starSolid : starOutline;
+      const locked = Boolean(row.locked);
+      const detail = row.detail ? `<div class="fields-cell-detail">${escapeHtml(row.detail)}</div>` : '';
+      const typeDetail = row.typeDetail ? `<div class="fields-cell-detail">${escapeHtml(row.typeDetail)}</div>` : '';
+      const actions = locked
+        ? `<button type="button" class="fields-icon-btn fields-actions fields-row-actions" aria-disabled="true" aria-label="Ações de ${escapeHtml(row.name)}" data-tooltip="${escapeHtml(STANDARD_FIELD_TOOLTIP)}">${ellipsis}</button>`
+        : `<button type="button" class="fields-icon-btn fields-actions fields-row-actions" aria-label="Ações de ${escapeHtml(row.name)}" aria-haspopup="menu" aria-expanded="false">${ellipsis}</button>`;
       return `
-        <tr data-field-id="${escapeHtml(row.id || '')}" data-type-label="${escapeHtml(row.type)}" data-type-detail="${escapeHtml(row.typeDetail)}" data-description="${escapeHtml(row.description || '')}" data-options="${escapeHtml(JSON.stringify(row.options || []))}">
+        <tr data-field-id="${escapeHtml(row.id || '')}" data-standard="${locked ? 'true' : 'false'}" data-type-label="${escapeHtml(row.type)}" data-type-detail="${escapeHtml(row.typeDetail || '')}" data-description="${escapeHtml(row.description || '')}" data-options="${escapeHtml(JSON.stringify(row.options || []))}">
           <td class="col-order">
             <button type="button" class="fields-icon-btn fields-star" aria-pressed="${primary ? 'true' : 'false'}" aria-label="${primary ? 'Desmarcar' : 'Marcar'} ${escapeHtml(row.name)} como campo principal">${star}</button>
           </td>
           <td>
             <div class="fields-cell-title">${escapeHtml(row.name)}</div>
-            <div class="fields-cell-detail">${escapeHtml(row.detail)}</div>
+            ${detail}
           </td>
           <td>
             <div class="fields-cell-title">${escapeHtml(row.type)}</div>
-            <div class="fields-cell-detail">${escapeHtml(row.typeDetail)}</div>
+            ${typeDetail}
           </td>
           <td>${escapeHtml(row.created)}</td>
           <td class="col-actions">
-            <button type="button" class="fields-icon-btn fields-actions fields-row-actions" aria-label="Ações de ${escapeHtml(row.name)}" aria-haspopup="menu" aria-expanded="false">${ellipsis}</button>
+            ${actions}
           </td>
         </tr>
       `;
@@ -2408,19 +2514,70 @@
       target.innerHTML = rows.map(row => fieldRow(row, primary)).join('');
     }
 
+    function syncCustomGroups() {
+      const standard = objectKind !== 'personalizado';
+      const primaryGroup = primaryBody.closest('.fields-group');
+      const secondaryGroup = secondaryBody.closest('.fields-group');
+      if (!standard) {
+        primaryGroup.hidden = false;
+        secondaryGroup.hidden = false;
+        return;
+      }
+      primaryGroup.hidden = true;
+      secondaryGroup.hidden = secondaryBody.querySelectorAll('tr').length === 0 && !standardGroup.hidden;
+    }
+
     function syncFieldsEmpty() {
-      const total = primaryBody.querySelectorAll('tr').length + secondaryBody.querySelectorAll('tr').length;
+      const total = standardBody.querySelectorAll('tr').length + primaryBody.querySelectorAll('tr').length + secondaryBody.querySelectorAll('tr').length;
       document.getElementById('fields-empty').hidden = total > 0;
       document.getElementById('fields-filled').hidden = total === 0;
+      syncCustomGroups();
     }
 
     const name = objectName();
     const object = CATALOG[name] || { description: '', links: [], first: 'Nome' };
+    let objectKind = object.kind;
+    function syncObjectPresentation(kind) {
+      objectKind = kind;
+      const standard = kind !== 'personalizado';
+      document.querySelector('.fields-main').classList.toggle('is-standard', standard);
+      document.querySelector('.fields-kicker').textContent = standard ? 'Objeto Padrão' : 'Objeto Personalizado';
+      document.getElementById('fields-tab-campos').textContent = standard ? 'Campos do objeto' : 'Campos personalizados';
+      document.querySelector('[data-group="secundarios"] .fields-group-toggle span').textContent = standard ? 'Campos personalizados' : 'Campos secundários';
+      document.title = (name || 'Objeto') + (standard ? ' — Objeto padrão' : ' — Objeto personalizado');
+    }
+    syncObjectPresentation(object.kind);
     document.getElementById('fields-title').textContent = name || 'Objeto';
     document.getElementById('fields-description').textContent = object.description;
-    document.title = (name || 'Objeto') + ' — Objetos personalizados';
+    const standardGroup = document.getElementById('fields-standard-group');
+    const standardBody = document.getElementById('fields-standard');
     const primaryBody = document.getElementById('fields-primary');
     const secondaryBody = document.getElementById('fields-secondary');
+    const standardNames = new Set((STANDARD_FIELDS[name] || []).map(field => field.name.toLocaleLowerCase()));
+    if (object.first) standardNames.add(object.first.toLocaleLowerCase());
+
+    function isCoveredByStandardField(fieldName) {
+      return standardNames.has(String(fieldName || '').trim().toLocaleLowerCase());
+    }
+
+    function renderStandardFields() {
+      const fields = STANDARD_FIELDS[name];
+      if (!fields) return;
+      standardGroup.hidden = false;
+      renderRows(standardBody, fields.map(field => ({
+        name: field.name,
+        detail: '',
+        type: field.type,
+        typeDetail: field.typeDetail,
+        description: '',
+        options: [],
+        created: '—',
+        locked: true
+      })), false);
+      syncFieldsEmpty();
+    }
+
+    renderStandardFields();
 
     let starTooltip = null;
     let starTooltipAnchor = null;
@@ -2456,6 +2613,36 @@
       starTooltip.style.setProperty('--tip-arrow-top', Math.max(minCenter, Math.min(center, maxCenter)) + 'px');
     }
 
+    function placeLockTooltip() {
+      if (!starTooltip || starTooltip.hidden || !starTooltipAnchor) return;
+      const rect = starTooltipAnchor.getBoundingClientRect();
+      const gap = 8;
+      starTooltip.classList.remove('is-right');
+      starTooltip.classList.remove('is-below');
+      const width = starTooltip.offsetWidth;
+      const height = starTooltip.offsetHeight;
+      let top = rect.top - height - gap;
+      if (top < 8) {
+        top = rect.bottom + gap;
+        starTooltip.classList.add('is-below');
+      }
+      let left = rect.right - width;
+      if (left < 8) left = 8;
+      if (left + width > window.innerWidth - 8) left = Math.max(8, window.innerWidth - width - 8);
+      starTooltip.style.top = top + 'px';
+      starTooltip.style.left = left + 'px';
+      starTooltip.style.right = 'auto';
+      const tipRect = starTooltip.getBoundingClientRect();
+      const center = rect.left + rect.width / 2 - tipRect.left;
+      starTooltip.style.setProperty('--tip-arrow-left', Math.max(12, Math.min(center, tipRect.width - 12)) + 'px');
+    }
+
+    function placeActiveFieldTooltip() {
+      if (!starTooltipAnchor) return;
+      if (starTooltipAnchor.classList.contains('fields-row-actions') || starTooltipAnchor.classList.contains('links-remove')) placeLockTooltip();
+      else placeStarTooltip();
+    }
+
     function showStarTooltip(button) {
       if (!starTooltip) {
         starTooltip = document.createElement('div');
@@ -2467,13 +2654,15 @@
       }
       const tipText = button.dataset.tooltip || PRIMARY_LIMIT_TOOLTIP;
       const sentenceBreak = tipText.indexOf('. ');
-      starTooltip.innerHTML = sentenceBreak === -1
-        ? escapeHtml(tipText)
-        : `${escapeHtml(tipText.slice(0, sentenceBreak + 1))}<br>${escapeHtml(tipText.slice(sentenceBreak + 2))}`;
+      starTooltip.innerHTML = tipText.includes('\n')
+        ? tipText.split('\n').map(line => escapeHtml(line)).join('<br>')
+        : sentenceBreak === -1
+          ? escapeHtml(tipText)
+          : `${escapeHtml(tipText.slice(0, sentenceBreak + 1))}<br>${escapeHtml(tipText.slice(sentenceBreak + 2))}`;
       starTooltip.hidden = false;
       starTooltipAnchor = button;
       button.setAttribute('aria-describedby', starTooltip.id);
-      placeStarTooltip();
+      placeActiveFieldTooltip();
     }
 
     function setStar(button, primary) {
@@ -2717,7 +2906,7 @@
     async function addCreatedField(type) {
       await hydratePromise;
       const total = primaryBody.querySelectorAll('tr').length + secondaryBody.querySelectorAll('tr').length;
-      const primary = total < MAX_PRIMARY_FIELDS;
+      const primary = objectKind === 'personalizado' && total < MAX_PRIMARY_FIELDS;
       const fieldName = fieldNameInput.value.trim();
       let id = '';
       if (currentObjectId && window.__customObjectsDb) {
@@ -2858,13 +3047,13 @@
     });
 
     document.getElementById('fields-panel-campos').addEventListener('mouseover', event => {
-      const button = event.target.closest('.fields-star[aria-disabled="true"]');
+      const button = event.target.closest('.fields-star[aria-disabled="true"], .fields-row-actions[aria-disabled="true"]');
       if (!button) return;
       showStarTooltip(button);
     });
 
     document.getElementById('fields-panel-campos').addEventListener('mouseout', event => {
-      const button = event.target.closest('.fields-star');
+      const button = event.target.closest('.fields-star, .fields-row-actions');
       if (!button || (event.relatedTarget && button.contains(event.relatedTarget))) return;
       if (starTooltipAnchor === button) hideStarTooltip();
     });
@@ -2890,6 +3079,8 @@
       { name: 'Lead', status: 'ativo' },
       { name: 'Negociação', status: 'ativo' },
       { name: 'Empresa', status: 'ativo' },
+      { name: 'Produto', status: 'ativo' },
+      { name: 'Serviço', status: 'ativo' },
       { name: 'Alunos', status: 'desativado' },
       { name: 'Contratos', status: 'ativo' }
     ];
@@ -2967,18 +3158,45 @@
       renderLinkMenu();
     }
 
+    function linksForObject(dbLinks) {
+      if (name !== 'Negociação' && name !== 'Lead') return dbLinks || [];
+      return (object.links || []).map(linkName => {
+        const existing = (dbLinks || []).find(item => item.name === linkName);
+        return existing || { name: linkName, status: 'ativo' };
+      });
+    }
+
+    function linkTargetIsStandard(linkName) {
+      const catalog = CATALOG[linkName];
+      if (catalog) return catalog.kind !== 'personalizado';
+      const fromList = catalogObjects.find(row => row.name === linkName);
+      return Boolean(fromList && fromList.kind && fromList.kind !== 'personalizado');
+    }
+
+    function isLockedStandardLink(item) {
+      if (objectKind === 'personalizado') return false;
+      if ((object.links || []).includes(item.name)) return true;
+      return linkTargetIsStandard(item.name);
+    }
+
     function renderLinkedObjects() {
       const hasLinks = linkedObjects.length > 0;
       linksEmpty.hidden = hasLinks;
       linksList.hidden = !hasLinks;
-      linksBody.innerHTML = linkedObjects.map(item => `
+      linksBody.innerHTML = linkedObjects.map(item => {
+        const locked = isLockedStandardLink(item);
+        const removeButton = locked
+          ? `<button type="button" class="fields-icon-btn fields-actions links-remove" data-link-name="${escapeHtml(item.name)}" aria-disabled="true" aria-label="Excluir vínculo com ${escapeHtml(item.name)}" data-tooltip="${escapeHtml(STANDARD_LINK_TOOLTIP)}">${linkTrash}</button>`
+          : `<button type="button" class="fields-icon-btn fields-actions links-remove" data-link-name="${escapeHtml(item.name)}" aria-label="Excluir vínculo com ${escapeHtml(item.name)}">${linkTrash}</button>`;
+        return `
         <tr>
           <td class="links-col-icon"><span class="links-icon">${linkIcon}</span></td>
           <td class="links-col-name"><div class="fields-cell-title">${escapeHtml(item.name)}</div></td>
           <td class="links-col-status"><span class="links-tag${item.status === 'ativo' ? '' : ' links-tag--off'}">${item.status === 'ativo' ? 'Ativo' : 'Desativado'}</span></td>
-          <td class="links-col-options"><button type="button" class="fields-icon-btn fields-actions links-remove" data-link-name="${escapeHtml(item.name)}" aria-label="Excluir vínculo com ${escapeHtml(item.name)}">${linkTrash}</button></td>
+          <td class="links-col-options">${removeButton}</td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
     }
 
     function openLinkDrawer(returnFocus) {
@@ -3037,9 +3255,19 @@
         window.__showToast?.('Não foi possível salvar o vínculo', { kind: 'error' });
       }
     });
+    linksPanel.addEventListener('mouseover', event => {
+      const button = event.target.closest('.links-remove[aria-disabled="true"]');
+      if (!button) return;
+      showStarTooltip(button);
+    });
+    linksPanel.addEventListener('mouseout', event => {
+      const button = event.target.closest('.links-remove');
+      if (!button || (event.relatedTarget && button.contains(event.relatedTarget))) return;
+      if (starTooltipAnchor === button) hideStarTooltip();
+    });
     linksBody.addEventListener('click', async event => {
       const button = event.target.closest('.links-remove');
-      if (!button) return;
+      if (!button || button.getAttribute('aria-disabled') === 'true') return;
       const index = linkedObjects.findIndex(item => item.name === button.dataset.linkName);
       if (index < 0) {
         window.__showToast?.('Não foi possível excluir o vínculo', { kind: 'error' });
@@ -3203,7 +3431,7 @@
       positionActionsMenu();
       positionRowMenu();
       placeActionsTooltip();
-      placeStarTooltip();
+      placeActiveFieldTooltip();
     });
     window.addEventListener('resize', () => {
       positionActionsMenu();
@@ -3332,6 +3560,7 @@
     document.addEventListener('click', event => {
       const rowButton = event.target.closest('.fields-row-actions');
       if (rowButton) {
+        if (rowButton.getAttribute('aria-disabled') === 'true') return;
         if (activeRowMenu && activeRowButton === rowButton) closeRowMenu();
         else openRowMenu(rowButton);
         return;
@@ -3378,14 +3607,16 @@
         const current = catalogObjects.find(item => item.name === name);
         if (!current) return;
         currentObjectId = current.id;
+        syncObjectPresentation(current.kind);
         if (current.description) document.getElementById('fields-description').textContent = current.description;
-        const fields = await api.listFields(current.id);
-        renderRows(primaryBody, fields.filter(field => field.is_primary).map(rowFromField), true);
-        renderRows(secondaryBody, fields.filter(field => !field.is_primary).map(rowFromField), false);
+        const fields = (await api.listFields(current.id)).filter(field => !isCoveredByStandardField(field.name));
+        const standard = current.kind !== 'personalizado';
+        renderRows(primaryBody, standard ? [] : fields.filter(field => field.is_primary).map(rowFromField), true);
+        renderRows(secondaryBody, (standard ? fields : fields.filter(field => !field.is_primary)).map(rowFromField), false);
         syncPrimaryLimit();
         filterFields();
         const links = await api.listObjectLinks(current.id);
-        linkedObjects.splice(0, linkedObjects.length, ...links);
+        linkedObjects.splice(0, linkedObjects.length, ...linksForObject(links));
         renderLinkedObjects();
         renderLinkMenu();
       } catch (error) {
@@ -3394,6 +3625,9 @@
         syncFieldsEmpty();
       }
     }
+
+    linkedObjects.splice(0, linkedObjects.length, ...linksForObject([]));
+    renderLinkedObjects();
 
     const hydratePromise = hydrateCustomObject();
   })();

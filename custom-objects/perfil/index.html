@@ -135,6 +135,39 @@
       background: var(--color-surface); font: 500 16px/1.5 var(--font); color: var(--color-text-high);
     }
     .drawer-input:focus, .drawer-select:focus { outline: none; border-color: var(--color-primary-border); box-shadow: 0 0 0 2px rgba(0,219,255,.15); }
+    .link-select { position: relative; }
+    .link-select.is-open { z-index: 4; }
+    .link-select-trigger {
+      display: flex; align-items: center; gap: 8px; width: 100%; height: 40px;
+      padding: 8px 8px 8px 12px; background: var(--color-surface);
+      border: 1px solid var(--color-border-interactive); border-radius: var(--radius-md);
+      color: #596B7A; cursor: pointer; text-align: left;
+    }
+    .link-select-trigger:hover { border-color: #8c9ba3; }
+    .link-select-trigger:focus-visible { outline: 4px solid rgba(0, 18, 36, 0.16); outline-offset: 0; }
+    .link-select-value {
+      flex: 1; min-width: 0; overflow: hidden; color: var(--color-text-high);
+      font-family: var(--font); font-size: 16px; font-weight: 500; line-height: 1.5;
+      letter-spacing: -0.16px; white-space: nowrap; text-overflow: ellipsis;
+    }
+    .link-select-value.is-placeholder { color: var(--color-text-low); }
+    .link-select-caret { display: block; flex-shrink: 0; transition: transform .15s; }
+    .link-select-trigger[aria-expanded="true"] .link-select-caret { transform: rotate(180deg); }
+    .link-select-menu {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 5;
+      display: flex; flex-direction: column; max-height: 416px; padding: 8px; overflow-y: auto;
+      background: var(--color-surface); border-radius: var(--radius-md);
+      box-shadow: 0 4px 12px rgba(0, 34, 51, 0.14);
+    }
+    .link-select-menu[hidden] { display: none; }
+    .link-select-option {
+      display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 16px; border: 0; border-radius: var(--radius-sm);
+      background: transparent; cursor: pointer; text-align: left; font-family: var(--font);
+      font-size: 16px; font-weight: 700; line-height: 24px; letter-spacing: -0.16px;
+      color: var(--color-text-high);
+    }
+    .link-select-option:hover, .link-select-option[aria-selected="true"] { background: var(--color-surface-low); }
+    .link-select-check { width: 16px; height: 16px; margin: 0; flex-shrink: 0; accent-color: #0077B2; }
     .drawer-footer { min-height: 48px; padding: 8px 24px; display: flex; justify-content: flex-end; flex-shrink: 0; }
     .drawer-actions { display: flex; gap: 12px; align-items: center; }
     .drawer-btn-cancel, .drawer-btn-save {
@@ -308,6 +341,103 @@
       display: block;
       text-align: center;
     }
+    .pv-focus { display: flex; flex-direction: column; gap: 16px; min-width: 0; padding-top: 8px; }
+    .pv-stats-row { display: flex; flex-wrap: wrap; gap: 16px; }
+    .pv-stat-card {
+      flex: 1; min-width: 140px; padding: 12px; border-radius: 16px;
+      display: flex; flex-direction: column; gap: 2px; overflow: hidden;
+    }
+    .pv-stat-card--blue { background: #B2F4FF; }
+    .pv-stat-card--green { background: #D6FAE8; }
+    .pv-stat-card--red { background: #FFD6E4; }
+    .pv-stat-card--neutral { background: #ECEEEF; }
+    .pv-stat-card .vg-stat-label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; font-weight: 700; line-height: 19.6px; color: #405466;
+    }
+    .pv-stat-card .vg-stat-label svg { flex-shrink: 0; }
+    .pv-stat-card .vg-stat-value { display: flex; align-items: flex-end; }
+    .pv-stat-card .vg-stat-main { font-size: 36px; font-weight: 900; line-height: 46px; color: #002233; }
+    .pv-stat-card .vg-stat-affix { font-size: 16px; font-weight: 500; line-height: 24px; color: #002233; padding-bottom: 4px; }
+    .pv-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; padding-top: 16px; }
+    .pv-search {
+      flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px;
+      height: 40px; padding: 4px 4px 4px 12px; border-radius: 12px;
+      border: 1px solid #B2BCC1; background: #fff;
+    }
+    .pv-search input {
+      flex: 1; min-width: 0; border: none; outline: none; background: none;
+      font-family: var(--font); font-size: 16px; font-weight: 500; line-height: 24px; color: #405466;
+    }
+    .pv-search-btn, .pv-btn-link {
+      border: none; background: none; cursor: pointer; color: #0077B2; font-family: var(--font);
+    }
+    .pv-search-btn {
+      width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: #596B7A;
+    }
+    .pv-search-btn:hover { background: #ECEEEF; }
+    .pv-btn-link {
+      height: 40px; padding: 8px 12px; border-radius: 12px; display: flex; align-items: center; gap: 8px;
+      font-size: 16px; font-weight: 700; white-space: nowrap;
+    }
+    .pv-btn-link:hover { background: #B2F4FF; }
+    .pv-sort { position: relative; }
+    .pv-sort-menu {
+      position: absolute; top: calc(100% + 4px); right: 0; z-index: 30;
+      min-width: 196px; padding: 8px; background: #fff; border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 34, 51, 0.14);
+    }
+    .pv-sort-menu[hidden] { display: none; }
+    .pv-sort-option {
+      display: block; width: 100%; padding: 8px 12px; border: none; border-radius: 8px;
+      background: none; text-align: left; font-family: var(--font); font-size: 16px; font-weight: 700;
+      line-height: 24px; color: var(--color-text-high); cursor: pointer;
+    }
+    .pv-sort-option:hover, .pv-sort-option.is-selected { background: var(--color-surface-low); }
+    .pv-btn-link svg, .pv-th svg { width: 24px; height: 24px; flex-shrink: 0; fill: currentColor; }
+    .pv-badge-caret { color: #596B7A; }
+    .pv-badge-caret svg { width: 16px; height: 16px; fill: currentColor; }
+    .pv-table { display: flex; flex-direction: column; min-width: 0; overflow-x: auto; }
+    .pv-table-head, .pv-table-row {
+      display: grid;
+      grid-template-columns: minmax(180px, 1.5fr) minmax(148px, 181px) minmax(88px, 0.7fr) minmax(120px, 151px) 72px;
+      min-width: 560px;
+    }
+    .pv-table-row[hidden] { display: none; }
+    .pv-th {
+      min-height: 58px; padding: 17px 16px; border-bottom: 2px solid rgba(0, 34, 51, 0.34);
+      display: flex; align-items: center; gap: 12px; background: #fff;
+      font-size: 12px; font-weight: 800; line-height: 15.6px; text-transform: uppercase; color: rgba(0, 34, 51, 0.70);
+    }
+    .pv-th-center { justify-content: center; }
+    .pv-th svg { flex-shrink: 0; }
+    .pv-td {
+      min-height: 72px; padding: 16px; border-bottom: 1px solid var(--color-border); background: #fff;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .pv-table-row:last-child .pv-td { border-bottom: none; }
+    .pv-td--center, .pv-th--actions, .pv-td--actions { justify-content: center; }
+    .pv-deal-copy { display: flex; flex: 1; flex-direction: column; gap: 4px; min-width: 0; }
+    .pv-deal-name { font-size: 16px; font-weight: 700; line-height: 24px; color: #0077B2; }
+    .pv-deal-aux { font-size: 14px; font-weight: 500; line-height: 19.6px; color: #405466; }
+    .pv-badge {
+      display: inline-flex; align-items: center; gap: 4px; width: 100%; padding: 4px 8px;
+      background: #ECEEEF; border-radius: 999px; font-size: 12px; font-weight: 500; line-height: 15.6px; color: #002233;
+    }
+    .pv-badge-icon, .pv-badge-caret { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .pv-badge-caret { margin-left: auto; }
+    .pv-badge-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pv-empty-mark { font-size: 16px; font-weight: 700; line-height: 24px; color: #405466; }
+    .pv-value { font-size: 16px; font-weight: 700; line-height: 24px; color: #002233; }
+    .pv-pagination { display: flex; justify-content: flex-end; align-items: center; padding: 16px 0 0; }
+    .pv-page-btn {
+      height: 40px; padding: 8px 16px; border: none; background: none; border-radius: 12px;
+      font-family: var(--font); font-size: 16px; font-weight: 700; color: #0077B2; cursor: pointer;
+    }
+    .pv-page-btn:hover { background: #B2F4FF; }
+    .pv-page-btn:disabled { color: #7F8D99; cursor: default; }
+    .pv-page-btn:disabled:hover { background: none; }
     .profile-detail-list { display: flex; flex-direction: column; gap: 8px; }
     .profile-field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     .profile-field-label { font-size: 12px; font-weight: 500; letter-spacing: -0.12px; line-height: 1.3; color: var(--color-text-low); }
@@ -916,14 +1046,23 @@
       + '</div></div></div>';
   }
 
+  function assocProfileHref(type, link, id) {
+    if (!id || !type) return '';
+    if (type.key === 'empresa') return '';
+    if (type.key === 'contato') return '../../perfil/index.html?id=' + encodeURIComponent(id);
+    if (!link || !link.name) return '';
+    return '?objeto=' + encodeURIComponent(link.name) + '&id=' + encodeURIComponent(id);
+  }
+
   function assocLinkItemsBody(type, link, items) {
-    const label = 'Editar ' + (items.length > 1 ? type.plural : type.singular);
-    const rows = items.map(item => (
-      '<div class="company-selected-item"' + (item.id ? ' data-record-id="' + escapeHtml(item.id) + '"' : '') + '>'
-      + recordMarkHtml(type, item)
-      + recordInfoHtml(type, item)
-      + (item.id ? linkActionsHtml(item, item.principal === true) : '') + '</div>'
-    )).join('');
+    const label = 'Adicionar ' + (items.length > 1 ? type.plural : type.singular);
+    const rows = items.map(item => {
+      const href = assocProfileHref(type, link, item.id);
+      const content = recordMarkHtml(type, item) + recordInfoHtml(type, item);
+      return '<div class="company-selected-item"' + (item.id ? ' data-record-id="' + escapeHtml(item.id) + '"' : '') + '>'
+        + (href ? '<a class="company-selected-link" href="' + escapeHtml(href) + '">' + content + '</a>' : content)
+        + (item.id ? linkActionsHtml(item, item.principal === true) : '') + '</div>';
+    }).join('');
     return '<div class="overview-card-body">'
       + '<div class="profile-card-empty"><div class="profile-card-empty-hero"><img class="profile-card-empty-art" src="../../shared/profile-empty-illustration.svg" width="128" height="128" alt=""><div class="profile-card-empty-copy"><p class="profile-card-empty-title">Nenhuma informação disponível</p><p class="profile-card-empty-text">Não foram adicionados dados para exibição aqui.</p></div></div><button type="button" class="overview-btn-secondary" data-assoc-edit>' + escapeHtml(label) + '</button></div>'
       + '<div class="company-selected-list assoc-record-list" id="assoc-' + type.key + '-list">' + rows + '</div>'
@@ -948,10 +1087,155 @@
       + '</section>';
   }
 
+  const focusSortIcon = '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.53907 10H15.4609C15.9402 10 16.1803 10.6386 15.8414 11.0121L12.3804 14.8264C12.1703 15.0579 11.8297 15.0579 11.6196 14.8264L8.15866 11.0121C7.81973 10.6386 8.05978 10 8.53907 10Z" fill="currentColor"/></svg>';
+  const focusSearchIcon = '<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="currentColor"/></svg>';
+  const focusPendingIcon = '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 11H7v-2h4V6h2v7z" fill="#002233"/></svg>';
+  const focusInfoIcon = '<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5C5.85816 2.5 2.5 5.85936 2.5 10C2.5 14.1431 5.85816 17.5 10 17.5C14.1418 17.5 17.5 14.1431 17.5 10C17.5 5.85936 14.1418 2.5 10 2.5ZM10 5.82661C10.7015 5.82661 11.2702 6.39528 11.2702 7.09677C11.2702 7.79827 10.7015 8.36694 10 8.36694C9.29851 8.36694 8.72984 7.79827 8.72984 7.09677C8.72984 6.39528 9.29851 5.82661 10 5.82661ZM11.6935 13.5081C11.6935 13.7085 11.5311 13.871 11.3306 13.871H8.66935C8.46894 13.871 8.30645 13.7085 8.30645 13.5081V12.7823C8.30645 12.5818 8.46894 12.4194 8.66935 12.4194H9.03226V10.4839H8.66935C8.46894 10.4839 8.30645 10.3214 8.30645 10.121V9.39516C8.30645 9.19475 8.46894 9.03226 8.66935 9.03226H10.6048C10.8053 9.03226 10.9677 9.19475 10.9677 9.39516V12.4194H11.3306C11.5311 12.4194 11.6935 12.5818 11.6935 12.7823V13.5081Z" fill="#596B7A"/></svg>';
+
+  function dealField(item, names) {
+    const values = item && item.values ? item.values : {};
+    for (let index = 0; index < names.length; index += 1) {
+      const value = values[names[index]];
+      if (value) return String(value);
+    }
+    return '';
+  }
+
+  function parseDealAmount(value) {
+    const text = String(value || '').trim();
+    if (!text) return null;
+    const numeric = text.replace(/[^\d,.-]/g, '');
+    if (!numeric) return null;
+    if (numeric.includes(',')) {
+      const amount = Number(numeric.replace(/\./g, '').replace(',', '.'));
+      return Number.isFinite(amount) ? amount : null;
+    }
+    const parts = numeric.split('.');
+    const amount = parts.length > 1 && parts.every((part, index) => index === 0 || part.length === 3)
+      ? Number(parts.join(''))
+      : Number(numeric);
+    return Number.isFinite(amount) ? amount : null;
+  }
+
+  function formatDealAmount(amount) {
+    const rounded = Math.round(Number(amount) || 0);
+    return 'R$ ' + rounded.toLocaleString('pt-BR') + ',00';
+  }
+
+  function moneyStat(amount) {
+    const rounded = Math.round(Number(amount) || 0);
+    return '<span class="vg-stat-affix">R$</span><span class="vg-stat-main">' + escapeHtml(rounded.toLocaleString('pt-BR')) + '</span><span class="vg-stat-affix">,00</span>';
+  }
+
+  function dealStatus(item) {
+    return dealField(item, ['status', 'etapa do funil', 'etapa']) || 'Em andamento';
+  }
+
+  function dealBucket(item) {
+    const status = fold(dealStatus(item));
+    if (status.includes('perd')) return 'perdido';
+    if (status.includes('ganh') || status.includes('convert')) return 'convertido';
+    return 'andamento';
+  }
+
+  function dealCycleDays(item) {
+    const match = dealField(item, ['data de criacao', 'criado em']).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!match) return null;
+    const created = new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
+    if (Number.isNaN(created.getTime())) return null;
+    return Math.max(0, Math.round((Date.now() - created.getTime()) / 86400000));
+  }
+
+  function focusDealStats(items) {
+    const totals = { andamento: 0, convertido: 0, perdido: 0 };
+    const cycles = [];
+    items.forEach(item => {
+      const amount = parseDealAmount(dealField(item, ['valor total', 'valor'])) || 0;
+      totals[dealBucket(item)] += amount;
+      const days = dealCycleDays(item);
+      if (days != null) cycles.push(days);
+    });
+    const ticket = items.length ? (totals.andamento + totals.convertido + totals.perdido) / items.length : 0;
+    const cycle = cycles.length ? Math.round(cycles.reduce((sum, days) => sum + days, 0) / cycles.length) : null;
+    return { totals, count: items.length, ticket, cycle };
+  }
+
+  function focusDealRow(type, item) {
+    const amount = dealField(item, ['valor total', 'valor']);
+    const parsed = parseDealAmount(amount);
+    const value = parsed == null ? (amount || '—') : formatDealAmount(parsed);
+    const status = dealStatus(item);
+    const search = [item.name, item.meta, status, amount, dealField(item, ['fonte', 'campanha', 'qualificacao'])].filter(Boolean).join(' ');
+    const createdMatch = dealField(item, ['data de criacao', 'criado em']).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    const created = createdMatch ? new Date(Number(createdMatch[3]), Number(createdMatch[2]) - 1, Number(createdMatch[1])).getTime() : 0;
+    return '<div class="pv-table-row" data-deal-row data-search="' + escapeHtml(fold(search)) + '" data-name="' + escapeHtml(fold(item.name || '')) + '" data-amount="' + (parsed == null ? '' : String(parsed)) + '" data-created="' + (created || '') + '">'
+      + '<div class="pv-td"><div class="pv-deal-copy"><span class="pv-deal-name">' + escapeHtml(item.name || type.title) + '</span><span class="pv-deal-aux">Não há tarefas</span></div></div>'
+      + '<div class="pv-td"><div class="pv-badge"><span class="pv-badge-icon">' + focusPendingIcon + '</span><span class="pv-badge-label">' + escapeHtml(status) + '</span><span class="pv-badge-caret">' + focusSortIcon.replace('width="24" height="24"', 'width="16" height="16"') + '</span></div></div>'
+      + '<div class="pv-td pv-td--center"><span class="pv-empty-mark">—</span></div>'
+      + '<div class="pv-td"><span class="pv-value">' + escapeHtml(value) + '</span></div>'
+      + '<div class="pv-td pv-td--actions"><div class="company-selected-menu">'
+      + '<button type="button" class="company-selected-menu-btn" data-id="' + escapeHtml(item.id) + '" aria-label="Mais opções de ' + escapeHtml(item.name || type.title) + '" aria-haspopup="menu" aria-expanded="false">' + linkEllipsisSvg + '</button>'
+      + '<div class="company-selected-menu-list" role="menu" hidden>'
+      + '<button type="button" class="company-selected-menu-item" role="menuitem" data-action="edit" data-id="' + escapeHtml(item.id) + '">Editar campos</button>'
+      + '<button type="button" class="company-selected-menu-item" role="menuitem" data-action="remove" data-id="' + escapeHtml(item.id) + '">Remover associação</button>'
+      + '</div></div></div>'
+      + '</div>';
+  }
+
+  function focusDealPanel(type, items) {
+    const stats = focusDealStats(items);
+    const label = 'Adicionar ' + (items.length > 1 ? type.plural : type.singular);
+    const cycle = stats.cycle == null
+      ? '<span class="vg-stat-main">—</span>'
+      : '<span class="vg-stat-main">' + stats.cycle + '</span><span class="vg-stat-affix" style="padding-left:4px;">dias</span>';
+    const cycleLabel = type.title === 'Lead' ? 'Ciclo médio do lead' : 'Ciclo médio de negociação';
+    return '<div class="pv-focus">'
+      + '<div class="pv-stats-row">'
+      + '<div class="pv-stat-card pv-stat-card--blue"><div class="vg-stat-label"><span>Em andamento</span></div><div class="vg-stat-value">' + moneyStat(stats.totals.andamento) + '</div></div>'
+      + '<div class="pv-stat-card pv-stat-card--green"><div class="vg-stat-label"><span>Total convertido</span></div><div class="vg-stat-value">' + moneyStat(stats.totals.convertido) + '</div></div>'
+      + '<div class="pv-stat-card pv-stat-card--red"><div class="vg-stat-label"><span>Total perdido</span></div><div class="vg-stat-value">' + moneyStat(stats.totals.perdido) + '</div></div>'
+      + '</div>'
+      + '<div class="pv-stats-row">'
+      + '<div class="pv-stat-card pv-stat-card--neutral"><div class="vg-stat-label"><span>Total de oportunidades</span></div><div class="vg-stat-value"><span class="vg-stat-main">' + stats.count + '</span></div></div>'
+      + '<div class="pv-stat-card pv-stat-card--neutral"><div class="vg-stat-label"><span>Ticket médio</span>' + focusInfoIcon + '</div><div class="vg-stat-value">' + moneyStat(stats.ticket) + '</div></div>'
+      + '<div class="pv-stat-card pv-stat-card--neutral"><div class="vg-stat-label"><span>' + escapeHtml(cycleLabel) + '</span></div><div class="vg-stat-value">' + cycle + '</div></div>'
+      + '</div>'
+      + '<div class="pv-toolbar">'
+      + '<div class="pv-search"><input type="search" placeholder="Buscar ' + escapeHtml(type.singular) + '" aria-label="Buscar ' + escapeHtml(type.singular) + '"><button type="button" class="pv-search-btn" aria-label="Buscar">' + focusSearchIcon + '</button></div>'
+      + '<div class="pv-sort">'
+      + '<button type="button" class="pv-btn-link" data-deal-sort-trigger aria-haspopup="menu" aria-expanded="false"><span data-deal-sort-label>Mais recentes</span>' + focusSortIcon + '</button>'
+      + '<div class="pv-sort-menu" role="menu" hidden>'
+      + '<button type="button" class="pv-sort-option is-selected" role="menuitem" data-deal-sort="recent">Mais recentes</button>'
+      + '<button type="button" class="pv-sort-option" role="menuitem" data-deal-sort="oldest">Mais antigos</button>'
+      + '<button type="button" class="pv-sort-option" role="menuitem" data-deal-sort="value-desc">Maior valor</button>'
+      + '<button type="button" class="pv-sort-option" role="menuitem" data-deal-sort="value-asc">Menor valor</button>'
+      + '<button type="button" class="pv-sort-option" role="menuitem" data-deal-sort="name">Ordem alfabética</button>'
+      + '</div></div>'
+      + '<button type="button" class="pv-btn-link" data-assoc-edit>' + escapeHtml(label) + '</button>'
+      + '</div>'
+      + '<div class="pv-table"><div class="pv-table-head">'
+      + '<div class="pv-th">' + escapeHtml(type.title) + focusSortIcon + '</div>'
+      + '<div class="pv-th">Status' + focusSortIcon + '</div>'
+      + '<div class="pv-th pv-th-center">Responsável</div>'
+      + '<div class="pv-th">Valor total' + focusSortIcon + '</div>'
+      + '<div class="pv-th pv-th--actions">Ações</div>'
+      + '</div>'
+      + items.slice().sort((a, b) => {
+        const stamp = entry => {
+          const match = dealField(entry, ['data de criacao', 'criado em']).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+          return match ? new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1])).getTime() : 0;
+        };
+        return stamp(b) - stamp(a);
+      }).map(item => focusDealRow(type, item)).join('')
+      + '</div>'
+      + '<div class="pv-pagination"><button type="button" class="pv-page-btn" disabled>Anterior</button><button type="button" class="pv-page-btn" disabled>1</button><button type="button" class="pv-page-btn" disabled>Próxima</button></div>'
+      + '</div>';
+  }
+
   function assocTabSection(type, link, items) {
     const empty = !items.length;
-    return '<section class="profile-assoc-tab-section' + (empty ? ' is-card-empty' : '') + '"' + assocLinkSectionAttrs(type, link) + '>'
-      + assocLinkItemsBody(type, link, items)
+    return '<section class="profile-assoc-tab-section' + (empty ? ' is-card-empty' : ' is-focus-table') + '"' + assocLinkSectionAttrs(type, link) + '>'
+      + (empty ? assocLinkItemsBody(type, link, items) : focusDealPanel(type, items))
       + '</section>';
   }
 
@@ -983,10 +1267,13 @@
       const secondary = ordered.find(field => field !== primary);
       rows.forEach(row => {
         if (!pending.includes(String(row.id))) return;
+        const values = {};
+        ordered.forEach(field => { values[fold(field.name)] = fieldValue(field, row.data); });
         found[row.id] = {
           name: (primary && fieldValue(primary, row.data)) || link.name,
           meta: secondary ? fieldValue(secondary, row.data) : '',
-          photo: row.data && (row.data.foto_perfil || row.data.foto) || ''
+          photo: row.data && (row.data.foto_perfil || row.data.foto) || '',
+          values
         };
       });
     } catch (error) {}
@@ -1312,16 +1599,27 @@
       return '<input class="drawer-input" id="' + id + '" data-field-id="' + escapeHtml(field.id) + '" data-field-type="date" placeholder="DD/MM/AAAA" autocomplete="off">';
     }
     if (field.field_type === 'option') {
-      const options = (Array.isArray(field.options) ? field.options : []).map(option => (
-        '<option value="' + escapeHtml(option) + '">' + escapeHtml(option) + '</option>'
+      const caret = '<svg class="link-select-caret" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.53907 10H15.4609C15.9402 10 16.1803 10.6386 15.8414 11.0121L12.3804 14.8264C12.1703 15.0579 11.8297 15.0579 11.6196 14.8264L8.15866 11.0121C7.81973 10.6386 8.05978 10 8.53907 10Z" fill="currentColor"/></svg>';
+      const options = choiceOptions(field).map(option => (
+        '<button type="button" class="link-select-option" role="option" data-value="' + escapeHtml(option) + '" aria-selected="false">' + escapeHtml(option) + '</button>'
       )).join('');
-      return '<select class="drawer-select" id="' + id + '" data-field-id="' + escapeHtml(field.id) + '" data-field-type="option"><option value="">Selecione</option>' + options + '</select>';
+      return '<div class="link-select">'
+        + '<button type="button" class="link-select-trigger" id="' + id + '" aria-haspopup="listbox" aria-expanded="false" aria-controls="' + id + '-menu">'
+        + '<span class="link-select-value is-placeholder">Selecione</span>' + caret + '</button>'
+        + '<div class="link-select-menu" id="' + id + '-menu" role="listbox" hidden>' + options + '</div>'
+        + '<input type="hidden" data-field-id="' + escapeHtml(field.id) + '" data-field-type="option" value="">'
+        + '</div>';
     }
     if (field.field_type === 'multiple_choice') {
-      const options = (Array.isArray(field.options) ? field.options : []).map(option => (
-        '<label class="link-check"><input type="checkbox" value="' + escapeHtml(option) + '" data-field-id="' + escapeHtml(field.id) + '"><span>' + escapeHtml(option) + '</span></label>'
+      const caret = '<svg class="link-select-caret" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.53907 10H15.4609C15.9402 10 16.1803 10.6386 15.8414 11.0121L12.3804 14.8264C12.1703 15.0579 11.8297 15.0579 11.6196 14.8264L8.15866 11.0121C7.81973 10.6386 8.05978 10 8.53907 10Z" fill="currentColor"/></svg>';
+      const options = choiceOptions(field).map(option => (
+        '<label class="link-select-option"><input class="link-select-check" type="checkbox" value="' + escapeHtml(option) + '" data-field-id="' + escapeHtml(field.id) + '"><span>' + escapeHtml(option) + '</span></label>'
       )).join('');
-      return '<div class="link-checks">' + options + '</div>';
+      return '<div class="link-select" data-multiple="true" data-field-root="' + escapeHtml(field.id) + '">'
+        + '<button type="button" class="link-select-trigger" id="' + id + '" aria-haspopup="listbox" aria-expanded="false" aria-controls="' + id + '-menu">'
+        + '<span class="link-select-value is-placeholder">Selecione</span>' + caret + '</button>'
+        + '<div class="link-select-menu" id="' + id + '-menu" role="listbox" aria-multiselectable="true" hidden>' + options + '</div>'
+        + '</div>';
     }
     return '<input class="drawer-input" id="' + id + '" data-field-id="' + escapeHtml(field.id) + '" data-field-type="text" type="text" placeholder="Digite aqui" autocomplete="off">';
   }
@@ -1690,11 +1988,40 @@
     }
   }
 
+  function syncLinkMulti(root) {
+    const values = [...root.querySelectorAll('input[type="checkbox"]:checked')].map(input => input.value);
+    const label = root.querySelector('.link-select-value');
+    label.textContent = values.length ? values.join(', ') : 'Selecione';
+    label.classList.toggle('is-placeholder', !values.length);
+  }
+
+  function syncLinkSelect(input) {
+    const root = input.closest('.link-select');
+    if (!root) return;
+    const value = input.value;
+    const label = root.querySelector('.link-select-value');
+    label.textContent = value || 'Selecione';
+    label.classList.toggle('is-placeholder', !value);
+    root.querySelectorAll('.link-select-option').forEach(option => {
+      option.setAttribute('aria-selected', option.dataset.value === value ? 'true' : 'false');
+    });
+  }
+
+  function closeLinkSelects() {
+    document.querySelectorAll('.link-select.is-open').forEach(root => {
+      root.classList.remove('is-open');
+      root.querySelector('.link-select-menu').hidden = true;
+      root.querySelector('.link-select-trigger').setAttribute('aria-expanded', 'false');
+    });
+  }
+
   function clearCreateFields() {
     document.querySelectorAll('#link-create-fields input, #link-create-fields select').forEach(input => {
       if (input.type === 'checkbox') input.checked = false;
       else input.value = '';
     });
+    document.querySelectorAll('#link-create-fields .link-select input[type="hidden"]').forEach(syncLinkSelect);
+    document.querySelectorAll('#link-create-fields .link-select[data-multiple]').forEach(syncLinkMulti);
   }
 
   function fieldStoredValue(field, data) {
@@ -1711,11 +2038,14 @@
         document.querySelectorAll('#link-create-fields input[data-field-id="' + field.id + '"]').forEach(input => {
           input.checked = values.includes(input.value);
         });
+        const multi = document.querySelector('#link-create-fields .link-select[data-field-root="' + field.id + '"]');
+        if (multi) syncLinkMulti(multi);
         return;
       }
       const input = document.querySelector('#link-create-fields [data-field-id="' + field.id + '"]');
       if (!input) return;
       input.value = Array.isArray(stored) ? stored.join(', ') : String(stored || '');
+      if (input.closest('.link-select')) syncLinkSelect(input);
     });
   }
 
@@ -2097,6 +2427,31 @@
     if (!button || button.contains(event.relatedTarget)) return;
     hideLinkPrincipalTip();
   });
+  document.getElementById('link-create-fields').addEventListener('click', event => {
+    const option = event.target.closest('.link-select-option');
+    if (option) {
+      if (option.querySelector('input[type="checkbox"]')) return;
+      const input = option.closest('.link-select').querySelector('input[type="hidden"]');
+      input.value = option.dataset.value || '';
+      syncLinkSelect(input);
+      closeLinkSelects();
+      return;
+    }
+    const trigger = event.target.closest('.link-select-trigger');
+    if (!trigger) return;
+    const root = trigger.closest('.link-select');
+    const menu = root.querySelector('.link-select-menu');
+    const open = menu.hidden;
+    closeLinkSelects();
+    if (!open) return;
+    root.classList.add('is-open');
+    menu.hidden = false;
+    trigger.setAttribute('aria-expanded', 'true');
+  });
+  document.getElementById('link-create-fields').addEventListener('change', event => {
+    const box = event.target.closest('.link-select input[type="checkbox"]');
+    if (box) syncLinkMulti(box.closest('.link-select'));
+  });
   document.getElementById('link-create-form').addEventListener('submit', event => event.preventDefault());
   document.getElementById('link-drawer-save').addEventListener('click', saveLinkPanel);
   document.getElementById('link-drawer-cancel').addEventListener('click', () => {
@@ -2108,6 +2463,7 @@
   });
   document.getElementById('link-drawer-close').addEventListener('click', closeLinkPanel);
   document.addEventListener('click', event => {
+    if (!event.target.closest('.link-select')) closeLinkSelects();
     if ((cardMenuOpen || (linkPanel && linkPanel.menuId)) && !event.target.closest('.company-selected-menu')) closeLinkMenu();
     if (!linkPanel) return;
     if (linkPanel.tab !== 'existing' || linkPanel.editingId) return;
@@ -2117,6 +2473,10 @@
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
+    if (document.querySelector('.link-select.is-open')) {
+      closeLinkSelects();
+      return;
+    }
     if (cardMenuOpen || (linkPanel && linkPanel.menuId)) {
       closeLinkMenu();
       return;
@@ -2136,6 +2496,7 @@
   });
   document.querySelector('#drawer-edit-link .drawer-body').addEventListener('scroll', () => {
     hideLinkPrincipalTip();
+    closeLinkSelects();
     if (linkPanel && linkPanel.menuId) closeLinkMenu();
   });
   document.addEventListener('scroll', () => {
@@ -2165,6 +2526,60 @@
     document.querySelectorAll('.profile-tab').forEach(item => item.classList.toggle('active', item === tab));
     document.querySelectorAll('.profile-tab-panel').forEach(panel => {
       panel.classList.toggle('active', panel.dataset.tabPanel === tab.dataset.tab);
+    });
+  });
+
+  function sortDealRows(table, mode) {
+    const rows = [...table.querySelectorAll('[data-deal-row]')];
+    const amount = row => Number(row.dataset.amount) || 0;
+    const created = row => Number(row.dataset.created) || 0;
+    rows.sort((a, b) => {
+      if (mode === 'oldest') return created(a) - created(b);
+      if (mode === 'value-desc') return amount(b) - amount(a);
+      if (mode === 'value-asc') return amount(a) - amount(b);
+      if (mode === 'name') return String(a.dataset.name || '').localeCompare(String(b.dataset.name || ''), 'pt-BR');
+      return created(b) - created(a);
+    });
+    rows.forEach(row => table.appendChild(row));
+  }
+
+  document.getElementById('profile-panels').addEventListener('click', event => {
+    const option = event.target.closest('[data-deal-sort]');
+    if (option) {
+      const sort = option.closest('.pv-sort');
+      const table = sort && sort.parentElement && sort.parentElement.nextElementSibling;
+      const label = sort && sort.querySelector('[data-deal-sort-label]');
+      if (table && table.classList.contains('pv-table')) sortDealRows(table, option.dataset.dealSort);
+      if (label) label.textContent = option.textContent;
+      sort.querySelectorAll('.pv-sort-option').forEach(item => item.classList.toggle('is-selected', item === option));
+      sort.querySelector('.pv-sort-menu').hidden = true;
+      sort.querySelector('[data-deal-sort-trigger]').setAttribute('aria-expanded', 'false');
+      return;
+    }
+    const trigger = event.target.closest('[data-deal-sort-trigger]');
+    if (!trigger) return;
+    const menu = trigger.parentElement.querySelector('.pv-sort-menu');
+    const open = menu.hidden;
+    document.querySelectorAll('.pv-sort-menu').forEach(item => { item.hidden = true; });
+    document.querySelectorAll('[data-deal-sort-trigger]').forEach(item => item.setAttribute('aria-expanded', 'false'));
+    menu.hidden = !open;
+    trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  document.addEventListener('click', event => {
+    if (event.target.closest('.pv-sort')) return;
+    document.querySelectorAll('.pv-sort-menu').forEach(menu => { menu.hidden = true; });
+    document.querySelectorAll('[data-deal-sort-trigger]').forEach(button => button.setAttribute('aria-expanded', 'false'));
+  });
+
+  document.getElementById('profile-panels').addEventListener('input', event => {
+    const input = event.target.closest('.pv-search input');
+    if (!input) return;
+    const section = input.closest('.profile-assoc-tab-section');
+    if (!section) return;
+    const query = fold(input.value.trim());
+    section.querySelectorAll('[data-deal-row]').forEach(row => {
+      row.hidden = Boolean(query) && !String(row.dataset.search || '').includes(query);
     });
   });
 

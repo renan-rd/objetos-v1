@@ -205,7 +205,7 @@
     function renderCard() {
       const people = orderedPeople(saved.values());
       const editBtn = document.getElementById('profile-edit-responsible-btn');
-      if (editBtn) editBtn.textContent = people.length > 1 ? 'Editar responsáveis' : 'Editar responsável';
+      if (editBtn) editBtn.textContent = people.length > 1 ? 'Adicionar responsáveis' : 'Adicionar responsável';
       cardListEl.innerHTML = people.map(personRow).join('');
     }
 

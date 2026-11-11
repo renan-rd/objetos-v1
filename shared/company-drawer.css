@@ -328,6 +328,22 @@
   border-radius: 8px;
 }
 
+.company-selected-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.company-selected-item:has(> .company-selected-link) { cursor: pointer; }
+
+.company-selected-item:has(> .company-selected-link):hover {
+  background: var(--color-surface-low);
+}
+
 .company-selected-logo {
   width: 40px;
   height: 40px;
@@ -365,6 +381,8 @@
   letter-spacing: -0.16px;
   color: var(--color-text-high);
 }
+
+.company-selected-link .company-selected-name { color: #0077B2; }
 
 .company-selected-meta {
   font-family: var(--font);

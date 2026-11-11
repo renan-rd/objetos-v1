@@ -107,20 +107,28 @@
       + '</div></div></div>';
   }
 
-  function rowHtml(item, principal) {
-    return '<div class="company-selected-item" data-record-id="' + escapeHtml(item.id) + '">'
-      + '<div class="company-selected-logo">' + escapeHtml(initials(item.name)) + '</div>'
+  function profileHref(object, id) {
+    if (!object || !object.name || !id) return '';
+    return '../custom-objects/perfil/?objeto=' + encodeURIComponent(object.name) + '&id=' + encodeURIComponent(id);
+  }
+
+  function rowHtml(item, principal, object) {
+    const href = profileHref(object, item.id);
+    const content = '<div class="company-selected-logo">' + escapeHtml(initials(item.name)) + '</div>'
       + '<div class="company-selected-info"><span class="company-selected-name">' + escapeHtml(item.name) + '</span>'
       + (item.meta ? '<span class="company-selected-meta">' + escapeHtml(item.meta) + '</span>' : '')
-      + '</div>' + actionsHtml(item, principal) + '</div>';
+      + '</div>';
+    return '<div class="company-selected-item" data-record-id="' + escapeHtml(item.id) + '">'
+      + (href ? '<a class="company-selected-link" href="' + escapeHtml(href) + '">' + content + '</a>' : content)
+      + actionsHtml(item, principal) + '</div>';
   }
 
   function cardHtml(entry) {
     const items = entry.items;
     const empty = !items.length;
     const flagged = items.some(item => item.principal);
-    const label = 'Editar ' + pluralOf(entry.object, items.length);
-    const rows = items.map((item, index) => rowHtml(item, item.principal || (!flagged && index === 0))).join('');
+    const label = 'Adicionar ' + pluralOf(entry.object, items.length);
+    const rows = items.map((item, index) => rowHtml(item, item.principal || (!flagged && index === 0), entry.object)).join('');
     return '<section class="overview-card' + (empty ? ' is-card-empty is-collapsed' : '') + '" data-custom-object-card data-object-link="' + escapeHtml(entry.link.id) + '">'
       + '<button type="button" class="overview-accordion-head" aria-expanded="' + (empty ? 'false' : 'true') + '">'
       + '<span class="overview-accordion-icon" aria-hidden="true">' + GRID_ICON + '</span>'
@@ -290,22 +298,40 @@
     document.getElementById('custom-link-search')?.setAttribute('aria-expanded', 'false');
   }
 
+  function optionLabel(option) {
+    if (option && typeof option === 'object') return option.label || option.value || '';
+    return option == null ? '' : String(option);
+  }
+
+  function selectCaret() {
+    return '<svg class="link-select-caret" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.53907 10H15.4609C15.9402 10 16.1803 10.6386 15.8414 11.0121L12.3804 14.8264C12.1703 15.0579 11.8297 15.0579 11.6196 14.8264L8.15866 11.0121C7.81973 10.6386 8.05978 10 8.53907 10Z" fill="currentColor"/></svg>';
+  }
+
   function createControl(field) {
     const id = 'custom-field-' + field.id;
     if (field.field_type === 'date') {
       return '<input class="drawer-input" id="' + id + '" data-field-id="' + escapeHtml(field.id) + '" data-field-type="date" placeholder="DD/MM/AAAA" autocomplete="off">';
     }
     if (field.field_type === 'option') {
-      const options = fieldOptions(field).map(option => (
-        '<option value="' + escapeHtml(option) + '">' + escapeHtml(option) + '</option>'
+      const options = fieldOptions(field).map(optionLabel).filter(Boolean).map(option => (
+        '<button type="button" class="link-select-option" role="option" data-value="' + escapeHtml(option) + '" aria-selected="false">' + escapeHtml(option) + '</button>'
       )).join('');
-      return '<select class="drawer-select" id="' + id + '" data-field-id="' + escapeHtml(field.id) + '"><option value="">Selecione</option>' + options + '</select>';
+      return '<div class="link-select">'
+        + '<button type="button" class="link-select-trigger" id="' + id + '" aria-haspopup="listbox" aria-expanded="false">'
+        + '<span class="link-select-value is-placeholder">Selecione</span>' + selectCaret() + '</button>'
+        + '<div class="link-select-menu" role="listbox" hidden>' + options + '</div>'
+        + '<input type="hidden" data-field-id="' + escapeHtml(field.id) + '" data-field-type="option" value="">'
+        + '</div>';
     }
     if (field.field_type === 'multiple_choice') {
-      const options = fieldOptions(field).map(option => (
-        '<label class="custom-link-check"><input type="checkbox" value="' + escapeHtml(option) + '" data-field-id="' + escapeHtml(field.id) + '"><span>' + escapeHtml(option) + '</span></label>'
+      const options = fieldOptions(field).map(optionLabel).filter(Boolean).map(option => (
+        '<label class="link-select-option"><input class="link-select-check" type="checkbox" value="' + escapeHtml(option) + '" data-field-id="' + escapeHtml(field.id) + '"><span>' + escapeHtml(option) + '</span></label>'
       )).join('');
-      return '<div class="custom-link-checks">' + options + '</div>';
+      return '<div class="link-select" data-multiple="true" data-field-root="' + escapeHtml(field.id) + '">'
+        + '<button type="button" class="link-select-trigger" id="' + id + '" aria-haspopup="listbox" aria-expanded="false">'
+        + '<span class="link-select-value is-placeholder">Selecione</span>' + selectCaret() + '</button>'
+        + '<div class="link-select-menu" role="listbox" aria-multiselectable="true" hidden>' + options + '</div>'
+        + '</div>';
     }
     return '<input class="drawer-input" id="' + id + '" data-field-id="' + escapeHtml(field.id) + '" type="text" placeholder="Digite aqui" autocomplete="off">';
   }
@@ -337,11 +363,40 @@
     return { data, missing };
   }
 
+  function syncLinkMulti(root) {
+    const values = [...root.querySelectorAll('input[type="checkbox"]:checked')].map(input => input.value);
+    const label = root.querySelector('.link-select-value');
+    label.textContent = values.length ? values.join(', ') : 'Selecione';
+    label.classList.toggle('is-placeholder', !values.length);
+  }
+
+  function syncLinkSelect(input) {
+    const root = input.closest('.link-select');
+    if (!root) return;
+    const value = input.value;
+    const label = root.querySelector('.link-select-value');
+    label.textContent = value || 'Selecione';
+    label.classList.toggle('is-placeholder', !value);
+    root.querySelectorAll('.link-select-option').forEach(option => {
+      option.setAttribute('aria-selected', option.dataset.value === value ? 'true' : 'false');
+    });
+  }
+
+  function closeLinkSelects() {
+    document.querySelectorAll('#custom-link-create-fields .link-select.is-open').forEach(root => {
+      root.classList.remove('is-open');
+      root.querySelector('.link-select-menu').hidden = true;
+      root.querySelector('.link-select-trigger').setAttribute('aria-expanded', 'false');
+    });
+  }
+
   function clearCreateFields() {
     document.querySelectorAll('#custom-link-create-fields input, #custom-link-create-fields select').forEach(input => {
       if (input.type === 'checkbox') input.checked = false;
       else input.value = '';
     });
+    document.querySelectorAll('#custom-link-create-fields .link-select input[type="hidden"]').forEach(syncLinkSelect);
+    document.querySelectorAll('#custom-link-create-fields .link-select[data-multiple]').forEach(syncLinkMulti);
   }
 
   function fillCreateForm(item) {
@@ -353,10 +408,14 @@
         document.querySelectorAll('#custom-link-create-fields input[data-field-id="' + field.id + '"]').forEach(input => {
           input.checked = values.includes(input.value);
         });
+        const multi = document.querySelector('#custom-link-create-fields .link-select[data-field-root="' + field.id + '"]');
+        if (multi) syncLinkMulti(multi);
         return;
       }
       const input = document.querySelector('#custom-link-create-fields [data-field-id="' + field.id + '"]');
-      if (input) input.value = Array.isArray(stored) ? stored.join(', ') : String(stored || '');
+      if (!input) return;
+      input.value = Array.isArray(stored) ? stored.join(', ') : String(stored || '');
+      if (input.closest('.link-select')) syncLinkSelect(input);
     });
   }
 
@@ -725,6 +784,35 @@
     renderResults();
   });
 
+  document.getElementById('custom-link-create-fields').addEventListener('click', event => {
+    const option = event.target.closest('.link-select-option');
+    if (option) {
+      if (option.querySelector('input[type="checkbox"]')) return;
+      const input = option.closest('.link-select').querySelector('input[type="hidden"]');
+      input.value = option.dataset.value || '';
+      syncLinkSelect(input);
+      closeLinkSelects();
+      return;
+    }
+    const trigger = event.target.closest('.link-select-trigger');
+    if (!trigger) return;
+    const root = trigger.closest('.link-select');
+    const menu = root.querySelector('.link-select-menu');
+    const open = menu.hidden;
+    closeLinkSelects();
+    if (!open) return;
+    root.classList.add('is-open');
+    menu.hidden = false;
+    trigger.setAttribute('aria-expanded', 'true');
+  });
+  document.getElementById('custom-link-create-fields').addEventListener('change', event => {
+    const box = event.target.closest('.link-select input[type="checkbox"]');
+    if (box) syncLinkMulti(box.closest('.link-select'));
+  });
+  document.addEventListener('click', event => {
+    if (!event.target.closest('#custom-link-create-fields .link-select')) closeLinkSelects();
+  });
+
   document.getElementById('custom-link-drawer-save').addEventListener('click', savePanel);
   document.getElementById('custom-link-drawer-close').addEventListener('click', closePanel);
   document.getElementById('custom-link-drawer-cancel').addEventListener('click', () => {
@@ -741,6 +829,10 @@
 
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
+    if (document.querySelector('#custom-link-create-fields .link-select.is-open')) {
+      closeLinkSelects();
+      return;
+    }
     if (openMenu) {
       closeMenu();
       return;

@@ -2560,7 +2560,7 @@
     const primaryBody = document.getElementById('fields-primary');
     const secondaryBody = document.getElementById('fields-secondary');
     const standardNames = new Set((STANDARD_FIELDS[name] || []).map(field => field.name.toLocaleLowerCase()));
-    if (object.first) standardNames.add(object.first.toLocaleLowerCase());
+    if (object.first && STANDARD_FIELDS[name]) standardNames.add(object.first.toLocaleLowerCase());
 
     function isCoveredByStandardField(fieldName) {
       return standardNames.has(String(fieldName || '').trim().toLocaleLowerCase());
